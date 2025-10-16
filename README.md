@@ -1,5 +1,5 @@
 # L3-1.1
-TEAM MEMBERS : DJEDJIG Yasmine - HELLAL Sara - LACHI Maram - MEKLATI Kenza - MOUFOUKI Warda
+TEAM MEMBERS : DJEDJIG Yasmine - HELLAL Sara - LACHI Maram - MEKLATI Kenza - MOUFOUKI Warda 
 
 Log in : via the access point (a website page) each person can see and search different clinics, when a clinic is chosen a log in button appears, in case the person doesn’t have an account he will be directed to a form where he can fill his info to create one, but if he already has an account he will be asked about his role (doctor / assistant / or patient) if the person is a doctor or an assistant he will have to authenticate using the clinic ID and password then if approved he’ll authenticate for the 2nd time using his email and password, if the person is a patient he’ll authenticate using his email and password only.
 
