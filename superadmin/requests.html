@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Requests - Clinic Management</title>
+    <link rel="stylesheet" href="superadmin.css">
+</head>
+<body>
+    <div class="dashboard-container">
+      
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Clinic Manager</h2>
+                <p>Super Admin Dashboard</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"><i>📊</i> <span>Dashboard</span></a></li>
+                <li><a href="clinics.html"><i>🏥</i> <span>Clinics</span></a></li>
+                <li><a href="subscriptions.html"><i>💰</i> <span>Subscriptions</span></a></li>
+                <li><a href="requests.html" class="active"><i>📋</i> <span>Requests</span></a></li>
+                <li><a href="archived.html"><i>🗄️</i> <span>Archived</span></a></li>
+                <li><a href="#"><i>⚙️</i> <span>Settings</span></a></li>
+              
+            </ul>
+        </div>
+
+      
+        <div class="main-content">
+            <div class="header">
+                <h1>Subscription Requests</h1>
+                <div class="user-info">
+                    <span>Super Admin</span>
+                    <div class="user-avatar">SA</div>
+                </div>
+            </div>
+
+            <div class="page-title">Manage Subscription Requests</div>
+            <p class="page-description">Review and approve or reject subscription change requests from clinics.</p>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Subscription Change Requests</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-outline">Filter</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Clinic</th>
+                            <th>Current Plan</th>
+                            <th>Requested Plan</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>MediCare Center</td>
+                            <td><span class="plan-badge plan-premium">Premium</span></td>
+                            <td><span class="plan-badge plan-free">Free</span></td>
+                            <td>2023-10-15</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <a href="approve-confirmation.html" class="btn btn-sm btn-secondary">Approve</a>
+                                <a href="reject-confirmation.html" class="btn btn-sm btn-danger">Reject</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>HealthPlus Clinic</td>
+                            <td><span class="plan-badge plan-free">Free</span></td>
+                            <td><span class="plan-badge plan-premium">Premium</span></td>
+                            <td>2023-10-12</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <a href="approve-confirmation.html" class="btn btn-sm btn-secondary">Approve</a>
+                                <a href="reject-confirmation.html" class="btn btn-sm btn-danger">Reject</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Family Care Center</td>
+                            <td><span class="plan-badge plan-free">Free</span></td>
+                            <td><span class="plan-badge plan-premium">Premium</span></td>
+                            <td>2023-10-10</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <a href="approve-confirmation.html" class="btn btn-sm btn-secondary">Approve</a>
+                                <a href="reject-confirmation.html" class="btn btn-sm btn-danger">Reject</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
