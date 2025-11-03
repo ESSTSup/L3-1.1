@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-section h1 {
+            color: #667eea;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logo-section p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-details h3 {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            height: fit-content;
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #555;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-item.disconnect {
+            color: #e74c3c;
+            margin-top: 20px;
+        }
+
+        .nav-item.disconnect:hover {
+            background: #ffe5e5;
+        }
+
+        .content-area {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+
+        .profile-form {
+            max-width: 600px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: block;
+                background: white;
+                padding: 15px;
+                border-radius: 15px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+                margin-bottom: 20px;
+            }
+
+            .mobile-nav select {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 15px;
+                background: white;
+            }
+        }
+
+        @media (min-width: 969px) {
+            .mobile-nav {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .logo-section h1 {
+                font-size: 22px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div class="logo-section">
+                <h1> HealthCare Portal</h1>
+                <p>Your Health, Our Priority</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">HY</div>
+                <div class="user-details">
+                    <h3>hallel yacine</h3>
+                    <p>Patient ID: #12345</p>
+                </div>
+            </div>
+        </div>
+       
+
+
+        <div class="mobile-nav">
+            <select id="mobileNavSelect" onchange="handleMobileNav(this.value)">
+                <option value="history">Consultation History</option>
+                <option value="requests">Requests & Appointments</option>
+                
+                <option value="book">Book New Appointment</option>
+                <option value="about">About Us</option>
+                <option value="profile">Profile</option>
+                <option value="disconnect">Disconnect</option>
+            </select>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="nav-item active" onclick="showSection('history')">
+                    Consultation History
+                </div>
+                <div class="nav-item" onclick="showSection('requests')">
+                    Requests & Appointments
+                </div>
+                
+                <div class="nav-item" onclick="showSection('book')">
+                    Book New Appointment
+                </div>
+                <div class="nav-item" onclick="showSection('about')">
+                    About Us
+                </div>
+                <div class="nav-item" onclick="showSection('profile')">
+                    Profile
+                </div>
+                <div class="nav-item disconnect" onclick="disconnect()">
+                     Disconnect
+                </div>
+            </div>
+
+            <div class="content-area">
+                
+                <div class="content-section active" id="history">
+                    <h2 class="section-title">Consultation History</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Total Consultations</h4>
+                            <div class="number">24</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>This Year</h4>
+                            <div class="number">8</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dr. hallel sara sofia- Cardiology</h3>
+                        <p><strong>Date:</strong> October 28, 2025</p>
+                        <p><strong>Diagnosis:</strong> Routine cardiac checkup - All parameters normal</p>
+                        <p><strong>Prescription:</strong> Continue current medication, follow-up in 3 months</p>
+                        <div class="card-meta">
+                            <span class="meta-item">45 mins</span>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dr. lachi maram - General Physician</h3>
+                        <p><strong>Date:</strong> September 15, 2025</p>
+                        <p><strong>Diagnosis:</strong> Seasonal flu - Prescribed antibiotics and rest</p>
+                        <p><strong>Prescription:</strong> Amoxicillin 500mg (3x daily for 7 days), Paracetamol as needed</p>
+                        <div class="card-meta">
+                            <span class="meta-item">30 mins</span>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dr. hallel lina - Dermatology</h3>
+                        <p><strong>Date:</strong> August 22, 2025</p>
+                        <p><strong>Diagnosis:</strong> Skin allergy - Allergic reaction to new detergent</p>
+                        <p><strong>Prescription:</strong> Topical corticosteroid cream, antihistamine tablets</p>
+                        <div class="card-meta">
+                            <span class="meta-item">25 mins</span>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="content-section" id="requests">
+                    <h2 class="section-title">Requests & Appointments</h2>
+
+                    <div class="card">
+                        <h3>Upcoming: Dr. meklati kenza- Cardiology</h3>
+                        <p><strong>Date:</strong> November 15, 2025</p>
+                        <p><strong>Time:</strong> 10:30 AM</p>
+                        <p><strong>Location:</strong> Main Hospital - Cardiology Wing, Room 305</p>
+                        <p><strong>Type:</strong> Follow-up consultation</p>
+                        <div class="card-meta">
+                            <span class="status-badge status-confirmed">Confirmed</span>
+                        </div>
+                    </div>
+                    
+                
+
+                    <div class="card">
+                        <h3>Pending: Laboratory Tests</h3>
+                        <p><strong>Requested Date:</strong> November 1, 2025</p>
+                        <p><strong>Tests:</strong> Complete Blood Count, Lipid Profile</p>
+                        <p><strong>Status:</strong> Waiting for appointment slot confirmation</p>
+                        <div class="card-meta">
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Upcoming: Dr. lachi maram - General Checkup</h3>
+                        <p><strong>Date:</strong> November 20, 2025</p>
+                        <p><strong>Time:</strong> 2:00 PM</p>
+                        <p><strong>Location:</strong> Clinic B, 2nd Floor</p>
+                        <p><strong>Type:</strong> Annual physical examination</p>
+                        <div class="card-meta">
+                            <span class="status-badge status-confirmed">Confirmed</span>
+                        </div>
+                    </div>
+                </div>
+
+              
+                <div class="content-section" id="book">
+                    <h2 class="section-title">Book New Appointment</h2>
+
+                    <form onsubmit="bookAppointment(event)">
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department" required>
+                                <option value="">Select Department</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="dermatology">Dermatology</option>
+                                <option value="general">General Physician</option>
+                                <option value="orthopedics">Orthopedics</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="neurology">Neurology</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="doctor">Doctor</label>
+                            <select id="doctor" required>
+                                <option value="">Select Doctor</option>
+                                <option value="sarah">Dr. hallel sara sofia</option>
+                                <option value="maram">Dr. lachi maram</option>
+                                <option value="lina">Dr. hallel lina</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Preferred Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="time">Preferred Time</label>
+                            <input type="time" id="time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reason">Reason for Visit</label>
+                            <textarea id="reason" rows="4" placeholder="Please describe your symptoms or reason for appointment" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Book Appointment</button>
+                    </form>
+                </div>
+
+                
+                <div class="content-section" id="about">
+                    <h2 class="section-title">About Us</h2>
+
+                    <div class="card">
+                        <h3> Our Mission</h3>
+                        <p>We are dedicated to providing exceptional healthcare services with compassion and excellence. Our state-of-the-art facility combines cutting-edge medical technology with a patient-centered approach to ensure the best possible outcomes for all our patients.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Our Team</h3>
+                        <p>Our medical staff consists of over 150 highly qualified doctors and specialists across 20+ departments. Each member of our team is committed to continuous learning and implementing the latest medical advancements.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3> Our Services</h3>
+                        <p>We offer comprehensive medical services including emergency care, specialized consultations, diagnostic imaging, laboratory services, surgical procedures, and rehabilitation programs. </p>
+                    </div>
+
+                    <div class="card">
+                        <h3> Contact Information</h3>
+                        <p><strong>Address:</strong> kolea,rue 120,tipaza</p>
+                        <p><strong>Phone:</strong> +213 20 123 4567</p>
+                        <p><strong>Emergency:</strong> + 213 10 200 3000/p>
+                        <p><strong>Email:</strong> info@healthcareportal.com</p>
+                    </div>
+
+                    <div class="card">
+                        <h3> Operating Hours</h3>
+                        <p><strong>Outpatient Services:</strong> Monday - Friday: 8:00 AM - 8:00 PM</p>
+                        <p><strong>Saturday - Sunday:</strong> 9:00 AM - 5:00 PM</p>
+                        <p><strong>Emergency Services:</strong> 24/7 - Always available</p>
+                    </div>
+                </div>
+
+                <div class="content-section" id="profile">
+                    <h2 class="section-title">My Profile</h2>
+
+                    <form class="profile-form" onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input type="text" id="fullname" value="halle yacine" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" value="halle.yacine@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" value="+213 20 123 4567" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" value="2000-10-16" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" required>
+                                <option value="male" selected>Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea id="address" rows="3" required>kolea,rue 120,tipaza</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="insurance">Insurance Provider</label>
+                            <input type="text" id="insurance" value="HealthPlus Insurance">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="allergies">Known Allergies</label>
+                            <textarea id="allergies" rows="2" placeholder="List any known allergies">Penicillin, Pollen</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+           
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            
+            document.getElementById(sectionId).classList.add('active');
+
+            const navItems = document.querySelectorAll('.nav-item:not(.disconnect)');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+
+            
+            document.getElementById('mobileNavSelect').value = sectionId;
+        }
+
+        function handleMobileNav(value) {
+            if (value === 'disconnect') {
+                disconnect();
+            } else {
+                showSection(value);
+            }
+        }
+
+        function bookAppointment(e) {
+            e.preventDefault();
+            alert('Appointment request submitted successfully! You will receive a confirmation email shortly.');
+            e.target.reset();
+        }
+
+        function updateProfile(e) {
+            e.preventDefault();
+            alert('Profile updated successfully!');
+        }
+
+        function disconnect() {
+            if (confirm('Are you sure you want to disconnect?')) {
+                alert('You have been disconnected. Redirecting to login page...');
+               
+            }
+        }
+
+        
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    </script>
+</body>
+</html>
+
