@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinique des Médecins - Compte</title>
+
+  <!-- ✅ Lien vers le CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* --- Simple menu styling if not in style.css --- */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+
+   
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main.account-check {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .options {
+      margin-top: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: white;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+
+    .yes {
+      background-color: #A6615A;
+    }
+
+    .yes:hover {
+      background-color: #8e554f;
+    }
+
+    .no {
+      background-color: #555;
+    }
+
+    .no:hover {
+      background-color: #333;
+    }
+
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <h1>Clinique des Médecins</h1>
+    <nav>
+      <!-- ✅ Accueil renvoie maintenant vers la page principale -->
+      <a href="mainpage.html">Accueil</a>
+      <a href="login.html">Connexion</a>
+      <a href="personalInformation.html">Créer un compte</a>
+    </nav>
+  </header>
+
+  <!-- ===== CONTENU PRINCIPAL ===== -->
+  <main class="account-check">
+    <h2>Do you have an account?</h2>
+
+    <div class="options">
+      <a href="login.html" class="btn yes">Yes</a>
+      <a href="personalInformation.html" class="btn no">No</a>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>© 2025 Clinique des Médecins — Tous droits réservés</p>
+  </footer>
+
+</body>
+</html>
