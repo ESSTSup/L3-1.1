@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Calendar Management</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        padding: 30px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #424347;
+        margin-bottom: 20px;
+      }
+
+      .calendar-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .calendar-header button {
+        background: #474950;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+
+      .calendar-header h2 {
+        color: #85868b;
+      }
+
+      .calendar {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        text-align: center;
+        width: 14.2%;
+        height: 90px;
+        vertical-align: top;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      td:hover {
+        background: #e9efff;
+      }
+
+      .has-appointments {
+        background: #c3dafe;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      #appointmentForm {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      #appointmentForm input,
+      #appointmentForm button {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+
+      #appointmentForm button {
+        background: #2b3a67;
+        color: white;
+        cursor: pointer;
+      }
+
+      .appointment-item {
+        background: #f7f9ff;
+        padding: 6px;
+        border-radius: 6px;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .delete-btn {
+        background: #d9534f;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        padding: 3px 6px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Doctor Calendar Management</h1>
+
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <button id="prev">&lt;</button>
+        <h2 id="monthYear"></h2>
+        <button id="next">&gt;</button>
+      </div>
+
+      <table class="calendar">
+        <thead>
+          <tr>
+            <th>Sun</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+          </tr>
+        </thead>
+        <tbody id="calendarBody"></tbody>
+      </table>
+    </div>
+
+    <div class="modal" id="appointmentModal">
+      <div class="modal-content">
+        <h3 id="selectedDate"></h3>
+
+        <form id="appointmentForm">
+          <input type="time" id="startTime" required />
+          <input type="time" id="endTime" required />
+          <input
+            type="text"
+            id="patientName"
+            placeholder="Patient Name"
+            required
+          />
+          <button type="submit">Add Appointment</button>
+        </form>
+
+        <div id="appointmentsList"></div>
+        <button id="closeModal">Close</button>
+      </div>
+    </div>
+
+    <script>
+      const monthYear = document.getElementById("monthYear");
+      const calendarBody = document.getElementById("calendarBody");
+      const prevBtn = document.getElementById("prev");
+      const nextBtn = document.getElementById("next");
+      const modal = document.getElementById("appointmentModal");
+      const selectedDateEl = document.getElementById("selectedDate");
+      const form = document.getElementById("appointmentForm");
+      const appointmentsList = document.getElementById("appointmentsList");
+      const closeModal = document.getElementById("closeModal");
+
+      let currentDate = new Date();
+      let selectedDate = null;
+
+      function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        monthYear.textContent = `${currentDate.toLocaleString("default", {
+          month: "long",
+        })} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        calendarBody.innerHTML = "";
+        let date = 1;
+
+        for (let i = 0; i < 6; i++) {
+          const row = document.createElement("tr");
+
+          for (let j = 0; j < 7; j++) {
+            const cell = document.createElement("td");
+
+            if (i === 0 && j < firstDay) {
+              cell.innerHTML = "";
+            } else if (date > lastDate) {
+              break;
+            } else {
+              cell.innerHTML = `<div>${date}</div>`;
+              const dateKey = `${year}-${month + 1}-${date}`;
+              const data =
+                JSON.parse(localStorage.getItem("appointments")) || {};
+              if (data[dateKey]) cell.classList.add("has-appointments");
+              cell.addEventListener("click", () => openModal(dateKey));
+              date++;
+            }
+
+            row.appendChild(cell);
+          }
+
+          calendarBody.appendChild(row);
+        }
+      }
+
+      function openModal(dateKey) {
+        selectedDate = dateKey;
+        selectedDateEl.textContent = `Appointments for ${dateKey}`;
+        modal.style.display = "flex";
+        loadAppointments();
+      }
+
+      function closeModalWindow() {
+        modal.style.display = "none";
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const start = document.getElementById("startTime").value;
+        const end = document.getElementById("endTime").value;
+        const patient = document.getElementById("patientName").value;
+
+        const data = JSON.parse(localStorage.getItem("appointments")) || {};
+        if (!data[selectedDate]) data[selectedDate] = [];
+        data[selectedDate].push({ start, end, patient });
+
+        localStorage.setItem("appointments", JSON.stringify(data));
+        form.reset();
+        loadAppointments();
+        renderCalendar();
+      });
+
+      function loadAppointments() {
+        appointmentsList.innerHTML = "";
+        const data = JSON.parse(localStorage.getItem("appointments")) || {};
+        const appointments = data[selectedDate] || [];
+
+        appointments.forEach((a, index) => {
+          const div = document.createElement("div");
+          div.classList.add("appointment-item");
+          div.innerHTML = `
+          <span>${a.start} - ${a.end} | ${a.patient}</span>
+          <button class="delete-btn" onclick="deleteAppointment(${index})">X</button>
+        `;
+          appointmentsList.appendChild(div);
+        });
+      }
+
+      function deleteAppointment(index) {
+        const data = JSON.parse(localStorage.getItem("appointments")) || {};
+        data[selectedDate].splice(index, 1);
+        localStorage.setItem("appointments", JSON.stringify(data));
+        loadAppointments();
+        renderCalendar();
+      }
+
+      prevBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+      });
+
+      closeModal.addEventListener("click", closeModalWindow);
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) closeModalWindow();
+      });
+
+      renderCalendar();
+    </script>
+    <button type="submit">
+      <a href="../dashboard/dashboard.html  ">back </a>
+    </button>
+  </body>
+</html>
