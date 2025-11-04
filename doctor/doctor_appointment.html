@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Appointment Management</title>
+    <link rel="stylesheet" href="doctor_appointment.css" />
+  </head>
+  <body>
+    <h1>Doctor Appointment Management</h1>
+    <div class="container">
+      <form id="workingForm">
+        <select id="day" required>
+          <option value="">Select Day</option>
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+          <option>Sunday</option>
+        </select>
+
+        <input type="time" id="start" required />
+        <input type="time" id="end" required />
+        <input
+          type="number"
+          id="max"
+          placeholder="Max Patients"
+          min="1"
+          required
+        />
+        <button type="submit">Add / Update</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Max Patients</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <script>
+      const form = document.getElementById("workingForm");
+      const tableBody = document.getElementById("tableBody");
+      let editIndex = null;
+
+      function loadData() {
+        const data = JSON.parse(localStorage.getItem("schedule")) || [];
+        tableBody.innerHTML = "";
+        data.forEach((item, index) => {
+          const row = `
+          <tr>
+            <td>${item.day}</td>
+            <td>${item.start}</td>
+            <td>${item.end}</td>
+            <td>${item.max}</td>
+            <td>
+              <button class="action-btn edit" onclick="editItem(${index})">Edit</button>
+              <button class="action-btn delete" onclick="deleteItem(${index})">Delete</button>
+            </td>
+          </tr>
+        `;
+          tableBody.innerHTML += row;
+        });
+      }
+
+      function saveData(data) {
+        localStorage.setItem("schedule", JSON.stringify(data));
+        loadData();
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const day = document.getElementById("day").value;
+        const start = document.getElementById("start").value;
+        const end = document.getElementById("end").value;
+        const max = document.getElementById("max").value;
+
+        if (!day || !start || !end || !max) return;
+
+        const data = JSON.parse(localStorage.getItem("schedule")) || [];
+
+        if (editIndex !== null) {
+          data[editIndex] = { day, start, end, max };
+          editIndex = null;
+        } else {
+          data.push({ day, start, end, max });
+        }
+
+        saveData(data);
+        form.reset();
+      });
+
+      function editItem(index) {
+        const data = JSON.parse(localStorage.getItem("schedule")) || [];
+        const item = data[index];
+        document.getElementById("day").value = item.day;
+        document.getElementById("start").value = item.start;
+        document.getElementById("end").value = item.end;
+        document.getElementById("max").value = item.max;
+        editIndex = index;
+      }
+
+      function deleteItem(index) {
+        const data = JSON.parse(localStorage.getItem("schedule")) || [];
+        data.splice(index, 1);
+        saveData(data);
+      }
+
+      loadData();
+    </script>
+     <button type="submit">
+      <a href="../dashboard/dashboard.html  ">back </a>
+    </button>
+  </body>
+</html>
