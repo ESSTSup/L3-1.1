@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mot de passe oublié - Clinique</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color:#f7f7f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .forgot-container {
+      background-color: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2f207b;
+      margin-bottom: 25px;
+    }
+
+    p {
+      color: #555;
+      font-size: 15px;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #555;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .reset-btn {
+      background-color: #A6615A;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .reset-btn:hover {
+      background-color: #b3b3b4;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #1e218d;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: #091a5f;
+      text-decoration: underline;
+    }
+  </style>
+
+  <script>
+    function sendResetEmail() {
+      const email = document.getElementById("email").value.trim();
+      if (email === "") {
+        alert("Veuillez entrer votre adresse email !");
+        return;
+      }
+      alert("Un lien de réinitialisation a été envoyé à " + email);
+      window.location.href = "login.html";
+    }
+  </script>
+</head>
+
+<body class="login-page">
+  <div class="forgot-container">
+    <h1>Mot de passe oublié</h1>
+    <p>Entrez votre adresse email pour recevoir un lien de réinitialisation.</p>
+
+    <div class="form-group">
+      <label for="email">Adresse email :</label>
+      <input type="email" id="email" placeholder="exemple@clinique.com" required>
+    </div>
+
+    <button class="reset-btn" onclick="sendResetEmail()">Réinitialiser le mot de passe</button>
+
+    <a href="login.html" class="back-link">← Retour à la connexion</a>
+  </div>
+</body>
+</html>
