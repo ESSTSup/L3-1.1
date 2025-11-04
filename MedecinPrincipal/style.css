@@ -1,0 +1,572 @@
+/* ===== STYLE GLOBAL ===== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  background-color: #f7f7f7;
+  color: #333;
+}
+/* ===== MAIN PAGE ===== */
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+    }
+
+   
+
+    /* --- Decision Support System --- */
+    .decision-system {
+      background-color: #3c88b1;
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid #8c94cc;
+    }
+
+    .decision-system h2 {
+      margin-bottom: 1rem;
+      color: #0d102e;
+    }
+
+    .decision-options {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .decision-options label {
+      background-color: white;
+      border: 2px solid #440364;
+      border-radius: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .decision-options input[type="radio"] {
+      display: none;
+    }
+
+    .decision-options input[type="radio"]:checked + label {
+      background-color: #5d46a8;
+      color: white;
+    }
+
+    /* --- Search Section --- */
+    .search-section {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .search-section input, .search-section select {
+      margin: 0.5rem;
+      padding: 0.6rem;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .search-section button {
+      padding: 0.6rem 1.2rem;
+      background-color: #2f1975;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .search-section button:hover {
+      background-color:#402e79;
+    }
+
+   
+    /* --- Results Section --- */
+    .results {
+      width: 80%;
+      margin: 2rem auto;
+    }
+
+    .hospital-card {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .buttons {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .appointment,
+    .login {
+      background-color:  #2f1975;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .login {
+      background-color: #5e6379;
+    }
+
+    .appointment:hover {
+      background-color: #4b3e7d;
+    }
+
+    .login:hover {
+      background-color: #333;
+    }
+
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+header {
+  text-align: center;
+  background-color: #004080;
+  color: white;
+  padding: 2px 0;
+}
+
+header a {
+  color: #66b2ff;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+header a:hover {
+  text-decoration: underline;
+}
+
+/* ===== SEARCH SECTION ===== */
+.search-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.search-section input {
+  padding: 8px;
+  margin: 5px;
+}
+
+.search-section button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.search-section button:hover {
+  background-color: #0056b3;
+}
+
+/* ===== HOSPITAL CARD ===== */
+.hospital-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.hospital-card .plus {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.specialties button {
+  margin: 5px;
+  background-color: #cce5ff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: #004080;
+  font-weight: bold;
+}
+
+.rating {
+  background-color: #ff9800;
+  color: white;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.availability {
+  background-color: #28a745;
+  color: white;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin-left: 10px;
+}
+
+.info {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+}
+
+/* ===== BUTTONS ===== */
+.buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.appointment {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.appointment:hover {
+  background-color: #0056b3;
+}
+
+.login {
+  background-color: #66b2ff;
+  margin-left: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.login:hover {
+  background-color: #3399ff;
+}
+
+.login a {
+  color: white;
+  text-decoration: none;
+}
+
+/* ===== ACCOUNT CHECK ===== */
+.account-check {
+  background: white;
+  width: 400px;
+  margin: 100px auto;
+  text-align: center;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.account-check h2 {
+  margin-bottom: 30px;
+}
+
+.options .btn {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.btn.yes {
+  background-color: #28a745;
+}
+
+.btn.no {
+  background-color: #007bff;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* ===== FORMULAIRES ===== */
+.form-container {
+  background: white;
+  width: 420px;
+  margin: 80px auto;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #004080;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.photo-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.next-step {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.next-step:hover {
+  background-color: #0056b3;
+}
+
+.next-step:disabled {
+  background-color: #99ccff;
+  cursor: not-allowed;
+}
+
+/* ===== CONTACT & ADDRESS ===== */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.btn.previous {
+  background-color: #aaa;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.btn.previous:hover {
+  background-color: #888;
+}
+
+.btn.submit {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===== SECURITY PAGE ===== */
+.password-rules {
+  font-size: 14px;
+  color: #555;
+  margin-top: 5px;
+  margin-left: 15px;
+}
+
+.password-rules li::before {
+  content: "• ";
+  color: #007bff;
+}
+
+.security-tips {
+  background-color: #f9f9f9;
+  border-left: 4px solid #007bff;
+  padding: 15px;
+  margin-top: 25px;
+  border-radius: 8px;
+}
+
+.security-tips h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.security-tips ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.security-tips ul li::before {
+  content: "• ";
+  color: #007bff;
+}
+
+/* ===== TEXTAREA ===== */
+textarea {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-family: Arial, sans-serif;
+  resize: none;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background-color: #004080;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+footer a {
+  color: #66b2ff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ===== LOGIN PAGE ===== */
+body.login-page {
+  background-color: #cce6ff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  background: white;
+  width: 320px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.login-container h1 {
+  color: #004080;
+  margin-bottom: 25px;
+}
+
+.connect-btn {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.connect-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===== PROFILE PAGE ===== */
+.profile-page {
+  padding: 40px;
+  text-align: center;
+}
+
+.profile-page h2 {
+  margin-bottom: 20px;
+  color: #004080;
+}
+
+.profile-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.profile-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 150px;
+  padding: 10px;
+  transition: transform 0.2s;
+}
+
+.profile-card:hover {
+  transform: scale(1.05);
+}
+
+.profile-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.profile-card p {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* ===== LOGOUT BUTTON ===== */
+.logout-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===== RESPONSIVE LOGIN ===== */
+@media (max-width: 700px) {
+  .login-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+}
