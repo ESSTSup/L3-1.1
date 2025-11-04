@@ -11,7 +11,7 @@
   <div class="login-container">
     <h1>Connexion</h1>
 
-    <form action="dashboard.html" method="post">
+    <form onsubmit="return handleLogin(event)">
       <div class="form-group">
         <label for="clinic-id">ID Clinique :</label>
         <input type="text" id="clinic-id" name="clinic-id" required>
@@ -26,6 +26,32 @@
     </form>
   </div>
 
+  <script>
+    function handleLogin(event) {
+      event.preventDefault(); 
+
+      const role = localStorage.getItem("userRole"); 
+      const id = document.getElementById("clinic-id").value;
+      const password = document.getElementById("password").value;
+
+     
+
+      if (role === "doctor") {
+        window.location.href = "dash.html"; 
+      } 
+      else if (role === "assistant") {
+        window.location.href = "assistantdash.html"; 
+      } 
+      else {
+        alert("Rôle inconnu, veuillez revenir à la page de sélection !");
+        window.location.href = "profil.html";
+      }
+
+      return false; 
+    }
+  </script>
+
 </body>
 </html>
+
 
