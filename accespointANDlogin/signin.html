@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - Clinique</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #A6615A;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #555;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .connect-btn {
+      background-color: #A6615A;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .connect-btn:hover {
+      background-color: #8d524d;
+    }
+  </style>
+
+  <script>
+    function loginUser() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (email === "" || password === "") {
+        alert("Veuillez remplir tous les champs !");
+        return;
+      }
+
+      // Récupère le rôle choisi dans profil.html
+      const role = localStorage.getItem("userRole");
+
+      // Redirige selon le rôle
+      if (role === "doctor") {
+        window.location.href = "dash.html"; 
+      } 
+      else if (role === "assistant") {
+        window.location.href = "assistant_dashboard.html";
+      } 
+      else if (role === "patient") {
+        window.location.href = "patient_dashboard.html";
+      } 
+      else {
+        alert("Aucun rôle sélectionné. Retournez à la page des profils.");
+        window.location.href = "profil.html";
+      }
+    }
+  </script>
+</head>
+<body class="login-page">
+
+  <div class="login-container">
+    <h1>Connexion</h1>
+
+    <form onsubmit="return false;">
+      <div class="form-group">
+        <label for="email">Adresse email :</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+
+      <button type="button" class="connect-btn" onclick="loginUser()">
+        Se connecter
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>
