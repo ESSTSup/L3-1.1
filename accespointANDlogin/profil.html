@@ -73,17 +73,13 @@
   </style>
 
   <script>
-    //  Fonction pour enregistrer le rôle sélectionné et rediriger vers le dashboard approprié
+    // ✅ Fonction pour enregistrer le rôle sélectionné et rediriger vers signin.html
     function selectRole(role, name) {
       localStorage.setItem("userRole", role);
       localStorage.setItem("selectedStaff", name);
       
-      
-      if (role === 'doctor') {
-        window.location.href = "../doctor/dashboard.html";
-      } else if (role === 'assistant') {
-        window.location.href = "../assistant/assistantdash.html";
-      }
+      // Rediriger vers signin.html
+      window.location.href = "signin.html";
     }
   </script>
 </head>
