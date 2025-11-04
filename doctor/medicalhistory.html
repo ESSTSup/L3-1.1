@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Management System</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 30px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #2b3a67;
+        margin-bottom: 10px;
+      }
+
+      p.subtitle {
+        text-align: center;
+        color: #555;
+        margin-bottom: 30px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 10px;
+      }
+
+      .top-bar input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      .top-bar button {
+        background: #4e515a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .top-bar button:hover {
+        background: #1a1a1d;
+      }
+
+      form {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        background: #f9fafb;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      input,
+      select,
+      textarea {
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        width: 100%;
+      }
+
+      .patient-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+      }
+
+      .patient-card {
+        background: #fafafa;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        padding: 15px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .patient-header {
+        font-size: 18px;
+        font-weight: bold;
+        color: #6e7485;
+      }
+
+      .patient-info {
+        margin: 10px 0;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .patient-dates {
+        font-size: 13px;
+        color: #666;
+      }
+
+      .actions {
+        margin-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .actions button {
+        border: none;
+        padding: 6px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+      }
+
+      .edit {
+        background: #f4b400;
+      }
+      .delete {
+        background: #d9534f;
+      }
+      .view {
+        background: #5cb85c;
+      }
+
+      /* Modal styles */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h2 {
+        color: #2b3a67;
+      }
+
+      .close {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .consultation {
+        background: #f7f7f7;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Patient Management System</h1>
+    <p class="subtitle">Manage and track your patients efficiently</p>
+
+    <div class="container">
+      <div class="top-bar">
+        <input
+          type="text"
+          id="search"
+          placeholder="🔍 Search patients by name, phone, or email..."
+        />
+        <button id="addPatientBtn">Add Patient</button>
+      </div>
+
+      <form id="patientForm">
+        <label>Full Name</label>
+        <input type="text" id="name" required />
+
+        <label>Age</label>
+        <input type="number" id="age" required />
+
+        <label>Gender</label>
+        <select id="gender" required>
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+
+        <label>Phone</label>
+        <input type="text" id="phone" required />
+
+        <label>Email</label>
+        <input type="email" id="email" required />
+
+        <label>Last Visit</label>
+        <input type="date" id="lastVisit" required />
+
+        <label>Next Appointment</label>
+        <input type="date" id="nextVisit" />
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end">
+          <button type="submit" style="background: #29292b; color: white">
+            Save
+          </button>
+          <button
+            type="button"
+            id="cancelBtn"
+            style="background: #5f5b5b; color: white"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+
+      <div id="patientList" class="patient-list"></div>
+    </div>
+
+    <!-- Consultation Modal -->
+    <div id="consultationModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Consultations</h2>
+          <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div id="consultationList"></div>
+        <hr />
+        <h3>Add Consultation</h3>
+        <textarea
+          id="consultationNotes"
+          placeholder="Write doctor notes here..."
+        ></textarea>
+        <button
+          id="saveConsultation"
+          style="
+            background: #494d59;
+            color: white;
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+          "
+        >
+          Save Consultation
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const patientForm = document.getElementById("patientForm");
+      const addPatientBtn = document.getElementById("addPatientBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const patientList = document.getElementById("patientList");
+      const search = document.getElementById("search");
+      const modal = document.getElementById("consultationModal");
+      const consultationList = document.getElementById("consultationList");
+      const consultationNotes = document.getElementById("consultationNotes");
+      const saveConsultation = document.getElementById("saveConsultation");
+
+      let editIndex = null;
+      let currentPatientIndex = null;
+
+      function loadPatients() {
+        const patients = JSON.parse(localStorage.getItem("patients")) || [];
+        const filter = search.value.toLowerCase();
+        patientList.innerHTML = "";
+
+        patients
+          .filter(
+            (p) =>
+              p.name.toLowerCase().includes(filter) ||
+              p.phone.toLowerCase().includes(filter) ||
+              p.email.toLowerCase().includes(filter)
+          )
+          .forEach((p, index) => {
+            const card = document.createElement("div");
+            card.className = "patient-card";
+            card.innerHTML = `
+            <div>
+              <div class="patient-header">${p.name}</div>
+              <div class="patient-info">
+                ${p.age} years • ${p.gender}<br>
+                📞 ${p.phone}<br>
+                ✉️ ${p.email}
+              </div>
+              <div class="patient-dates">
+                <strong>Last:</strong> ${p.lastVisit} <br>
+                <strong>Next:</strong> ${p.nextVisit || "—"}
+              </div>
+            </div>
+            <div class="actions">
+              <button class="view" onclick="viewConsultations(${index})">View</button>
+              <button class="edit" onclick="editPatient(${index})">Edit</button>
+              <button class="delete" onclick="deletePatient(${index})">Delete</button>
+            </div>
+          `;
+            patientList.appendChild(card);
+          });
+      }
+
+      function savePatients(patients) {
+        localStorage.setItem("patients", JSON.stringify(patients));
+        loadPatients();
+      }
+
+      patientForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("name").value;
+        const age = document.getElementById("age").value;
+        const gender = document.getElementById("gender").value;
+        const phone = document.getElementById("phone").value;
+        const email = document.getElementById("email").value;
+        const lastVisit = document.getElementById("lastVisit").value;
+        const nextVisit = document.getElementById("nextVisit").value;
+
+        const patients = JSON.parse(localStorage.getItem("patients")) || [];
+
+        if (editIndex !== null) {
+          patients[editIndex] = {
+            ...patients[editIndex],
+            name,
+            age,
+            gender,
+            phone,
+            email,
+            lastVisit,
+            nextVisit,
+          };
+          editIndex = null;
+        } else {
+          patients.push({
+            name,
+            age,
+            gender,
+            phone,
+            email,
+            lastVisit,
+            nextVisit,
+            consultations: [],
+          });
+        }
+
+        savePatients(patients);
+        patientForm.reset();
+        patientForm.style.display = "none";
+      });
+
+      function editPatient(index) {
+        const patients = JSON.parse(localStorage.getItem("patients")) || [];
+        const p = patients[index];
+        document.getElementById("name").value = p.name;
+        document.getElementById("age").value = p.age;
+        document.getElementById("gender").value = p.gender;
+        document.getElementById("phone").value = p.phone;
+        document.getElementById("email").value = p.email;
+        document.getElementById("lastVisit").value = p.lastVisit;
+        document.getElementById("nextVisit").value = p.nextVisit;
+        editIndex = index;
+        patientForm.style.display = "flex";
+      }
+
+      function deletePatient(index) {
+        const patients = JSON.parse(localStorage.getItem("patients")) || [];
+        if (confirm("Delete this patient?")) {
+          patients.splice(index, 1);
+          savePatients(patients);
+        }
+      }
+
+      addPatientBtn.addEventListener("click", () => {
+        patientForm.style.display = "flex";
+        patientForm.reset();
+        editIndex = null;
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        patientForm.style.display = "none";
+        patientForm.reset();
+      });
+
+      search.addEventListener("input", loadPatients);
+
+      // CONSULTATION LOGIC
+      function viewConsultations(index) {
+        const patients = JSON.parse(localStorage.getItem("patients")) || [];
+        const patient = patients[index];
+        currentPatientIndex = index;
+        consultationList.innerHTML = "";
+        (patient.consultations || []).forEach((c, i) => {
+          const div = document.createElement("div");
+          div.className = "consultation";
+          div.innerHTML = `<strong>Consultation ${i + 1}:</strong><br>${c}`;
+          consultationList.appendChild(div);
+        });
+        modal.style.display = "flex";
+      }
+
+      saveConsultation.addEventListener("click", () => {
+        const text = consultationNotes.value.trim();
+        if (!text) return alert("Please write notes first!");
+        const patients = JSON.parse(localStorage.getItem("patients")) || [];
+        patients[currentPatientIndex].consultations =
+          patients[currentPatientIndex].consultations || [];
+        patients[currentPatientIndex].consultations.push(text);
+        consultationNotes.value = "";
+        savePatients(patients);
+        viewConsultations(currentPatientIndex);
+      });
+
+      function closeModal() {
+        modal.style.display = "none";
+        consultationNotes.value = "";
+      }
+
+      window.onclick = (e) => {
+        if (e.target == modal) closeModal();
+      };
+
+      loadPatients();
+    </script>
+     <button type="submit">
+      <a href="../dashboard/dashboard.html  ">back </a>
+    </button>
+  </body>
+</html>
