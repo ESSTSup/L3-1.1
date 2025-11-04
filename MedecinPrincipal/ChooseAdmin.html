@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choisir un nouvel administrateur</title>
+  <link rel="stylesheet" href="ChooseAdmin.css" />
+</head>
+<body>
+  <div class="card">
+    <h2>Choisir un nouvel administrateur</h2>
+    <p>Pour changer l'administrateur, veuillez en sélectionner un autre :</p>
+
+    <ul class="doctor-list">
+      <li>
+        <input type="radio" name="doctor" id="doctor1" value="Doctor 1" />
+        <label for="doctor1">Doctor 1</label>
+      </li>
+      <li>
+        <input type="radio" name="doctor" id="doctor2" value="Doctor 2" />
+        <label for="doctor2">Doctor 2</label>
+      </li>
+      <li>
+        <input type="radio" name="doctor" id="doctor3" value="Doctor 3" />
+        <label for="doctor3">Doctor 3</label>
+      </li>
+    </ul>
+
+    <button id="confirmBtn">OK</button>
+  </div>
+
+  <script>
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      const selected = document.querySelector('input[name="doctor"]:checked');
+      if (!selected) {
+        alert("Veuillez choisir un docteur avant de continuer !");
+        return;
+      }
+
+      
+      localStorage.setItem("selectedAdmin", selected.value);
+
+    
+      window.location.href = "ConfirmAdmin.html";
+    });
+  </script>
+</body>
+</html>

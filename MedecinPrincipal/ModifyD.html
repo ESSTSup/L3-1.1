@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modifier Docteur</title>
+  <link rel="stylesheet" href="ModifyD.css">
+  <script>
+    function handleSubmit(event) {
+      event.preventDefault();
+      const status = document.getElementById("status").value;
+
+      
+      if (status === "Admin") {
+        window.location.href = "ConfirmAdmin.html";
+      } 
+      
+      else if (status === "Normal") {
+        window.location.href = "ChooseAdmin.html";
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Modifier un Docteur</h2>
+
+    <form onsubmit="handleSubmit(event)">
+      <label>Nom :</label>
+      <input type="text" required>
+
+      <label>Spécialité :</label>
+      <input type="text" required>
+
+      <label>Téléphone :</label>
+      <input type="text" required>
+
+      <label>Email :</label>
+      <input type="email" required>
+
+      <label>Statut :</label>
+      <select id="status" required>
+        <option value="">-- Choisir --</option>
+        <option value="Normal">Normal</option>
+        <option value="Admin">Admin</option>
+      </select>
+
+      <button type="submit">OK</button>
+    </form>
+  </div>
+
+</body>
+</html>

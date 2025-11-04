@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Assistant</title>
+  <link rel="stylesheet" href="AddA.css">
+</head>
+<body>
+  <header>
+    <h1> Add New Assistant</h1>
+  </header>
+
+  <main>
+    <form id="addAssistantForm" class="form-box">
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" placeholder="Enter assistant's name" required>
+
+      <label for="doctor">Supervising Doctor:</label>
+      <input type="text" id="doctor" placeholder="Enter supervising doctor's name" required>
+
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" placeholder="+213 ..." required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" placeholder="example@clinic.com" required>
+
+      <label for="status">Status:</label>
+      <select id="status">
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+
+      <div class="buttons">
+        <button type="submit" class="save">Save</button>
+        <a href="ListofA.html" class="cancel">Cancel</a>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById("addAssistantForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      
+      const assistant = {
+        name: document.getElementById("name").value,
+        doctor: document.getElementById("doctor").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value,
+        status: document.getElementById("status").value
+      };
+
+      
+      let assistants = JSON.parse(localStorage.getItem("assistants")) || [];
+
+      
+      assistants.push(assistant);
+
+      
+      localStorage.setItem("assistants", JSON.stringify(assistants));
+
+      
+      window.location.href = "ListofA.html";
+    });
+  </script>
+</body>
+</html>

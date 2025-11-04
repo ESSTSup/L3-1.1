@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des Docteurs</title>
+  <link rel="stylesheet" href="DoctorList.css" />
+</head>
+<body>
+  <div class="doctors-container">
+    <h1>Liste des Docteurs</h1>
+
+   
+    <button id="addDoctorBtn" class="add-btn"> Add Doctor</button>
+
+  
+    <div id="addDoctorForm" class="form-container hidden">
+      <input type="text" id="doctorName" placeholder="Nom du docteur" required />
+      <input type="text" id="doctorSpecialty" placeholder="Spécialité" required />
+      <button id="saveDoctor" class="save-btn">Save</button>
+    </div>
+
+   
+    <ul id="doctorsList" class="DoctorList"></ul>
+  </div>
+
+  <script>
+   
+    let doctors = [
+      { id: 1, name: "Dr. Ahmed B.", specialty: "Cardiologue" },
+      { id: 2, name: "Dr. Sofia M.", specialty: "Dermatologue" }
+    ];
+
+    const list = document.getElementById("doctorsList");
+    const addBtn = document.getElementById("addDoctorBtn");
+    const form = document.getElementById("addDoctorForm");
+    const saveBtn = document.getElementById("saveDoctor");
+
+   
+    function renderList() {
+      list.innerHTML = "";
+      doctors.forEach((doc) => {
+        const li = document.createElement("li");
+        li.className = "doctor-card";
+        li.innerHTML = `<h3>${doc.name}</h3><p>🩺 ${doc.specialty}</p>`;
+        list.appendChild(li);
+      });
+    }
+
+    
+    addBtn.addEventListener("click", () => {
+      form.classList.toggle("hidden");
+    });
+
+   
+    saveBtn.addEventListener("click", () => {
+      const name = document.getElementById("doctorName").value.trim();
+      const specialty = document.getElementById("doctorSpecialty").value.trim();
+
+      if (!name || !specialty) {
+        alert("Veuillez remplir tous les champs !");
+        return;
+      }
+
+      doctors.push({
+        id: doctors.length + 1,
+        name,
+        specialty
+      });
+
+      document.getElementById("doctorName").value = "";
+      document.getElementById("doctorSpecialty").value = "";
+      form.classList.add("hidden");
+
+      renderList();
+    });
+
+    
+    renderList();
+  </script>
+</body>
+</html>

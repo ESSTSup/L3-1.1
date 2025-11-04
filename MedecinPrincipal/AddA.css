@@ -1,0 +1,91 @@
+/* --- GLOBAL STYLE --- */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f6f8fb;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background: #2a9d8f;
+  color: white;
+  padding: 15px 25px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* --- FORM CONTAINER --- */
+main {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.form-box {
+  background: white;
+  width: 420px;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-box label {
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.form-box input,
+.form-box select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.form-box input:focus,
+.form-box select:focus {
+  border-color: #2a9d8f;
+  outline: none;
+}
+
+/* --- BUTTONS --- */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+button.save {
+  background: #2a9d8f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button.save:hover {
+  background: #21867a;
+}
+
+a.cancel {
+  background: #e76f51;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+a.cancel:hover {
+  background: #c6533b;
+}

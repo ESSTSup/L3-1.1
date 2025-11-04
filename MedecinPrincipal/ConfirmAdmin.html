@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirmer le changement d'administrateur</title>
+  <link rel="stylesheet" href="ConfirmAdmin.css" />
+</head>
+<body>
+  <div class="card">
+    <h2>Confirmer le changement d’administrateur</h2>
+    <p id="selectedDoctor"></p>
+    <p>Voulez-vous vraiment rendre ce docteur administrateur ?</p>
+
+    <div class="buttons">
+      <button id="cancelBtn">Annuler</button>
+      <button id="confirmBtn">Oui</button>
+    </div>
+  </div>
+
+  <script>
+    
+    const selected = localStorage.getItem("selectedAdmin");
+    const display = document.getElementById("selectedDoctor");
+
+    if (selected) {
+      display.textContent = "Docteur sélectionné : " + selected;
+    } else {
+      display.textContent = "Aucun docteur sélectionné.";
+    }
+
+    
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+      window.location.href = "ChooseAdmin.html";
+    });
+
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+        localStorage.removeItem("selectedAdmin");
+
+      alert(selected + " est maintenant le nouvel administrateur !");
+      
+      window.location.href = "ModifyD.html";
+    });
+  </script>
+</body>
+</html>

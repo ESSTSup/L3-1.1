@@ -1,0 +1,111 @@
+/* === RESET & BASE === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #f4f7fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* === CARD CONTAINER === */
+.profile-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 40px 50px;
+  width: 420px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+}
+
+/* === TITLE === */
+.profile-card h2 {
+  color: #1e3a8a;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  border-bottom: 3px solid #3b82f6;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* === DOCTOR INFO === */
+.doctor-info {
+  text-align: left;
+  background: #f9fafc;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border: 1px solid #e5e7eb;
+}
+
+.doctor-info p {
+  font-size: 15px;
+  color: #374151;
+  margin: 8px 0;
+}
+
+.doctor-info strong {
+  color: #1d4ed8;
+}
+
+/* === ACTION BUTTONS === */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actions a,
+.actions button {
+  border: none;
+  text-decoration: none;
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.actions a.edit {
+  background-color: #2563eb;
+}
+
+.actions button.delete {
+  background-color: #dc2626;
+}
+
+.actions a.back {
+  background-color: #6b7280;
+}
+
+.actions a:hover,
+.actions button:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 480px) {
+  .profile-card {
+    width: 90%;
+    padding: 25px;
+  }
+
+  .doctor-info {
+    font-size: 14px;
+  }
+}

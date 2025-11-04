@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supprimer un docteur</title>
+  <link rel="stylesheet" href="DeletD.css" />
+</head>
+<body>
+  <div class="card">
+    <h2>Supprimer un docteur</h2>
+    <p id="doctorName"></p>
+    <p>Êtes-vous sûr de vouloir supprimer ce docteur ?</p>
+
+    <div class="buttons">
+      <button id="cancelBtn">Non</button>
+      <button id="confirmBtn">Oui</button>
+    </div>
+  </div>
+
+  <script>
+    
+    const doctor = localStorage.getItem("doctorToDelete");
+    const doctorName = document.getElementById("doctorName");
+
+    if (doctor) {
+      doctorName.textContent = "Docteur sélectionné : " + doctor;
+    } else {
+      doctorName.textContent = "Aucun docteur sélectionné.";
+    }
+
+   
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+      
+      window.location.href = "modify.html";
+    });
+
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      alert(doctor + " a été supprimé avec succès !");
+      
+      window.location.href = "ConfirmAdmin.html";
+    });
+  </script>
+</body>
+</html>

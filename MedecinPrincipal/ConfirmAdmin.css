@@ -1,0 +1,64 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f4f6fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+  width: 420px;
+  padding: 30px 40px;
+  text-align: center;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+#selectedDoctor {
+  font-weight: bold;
+  color: #2d7df4;
+  margin-bottom: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+button {
+  background-color: #2d7df4;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #1c5ed9;
+}
+
+#cancelBtn {
+  background-color: #ccc;
+  color: #333;
+}
+
+#cancelBtn:hover {
+  background-color: #b5b5b5;
+}

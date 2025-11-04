@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Médecin Principal</title>
+    <link rel="stylesheet" href="Profil-medp.css">
+</head>
+<body>
+
+<div class="profile-container">
+    <h2>Profile Med-principale</h2>
+
+    <form>
+        <label for="name">Name :</label>
+        <input type="text" id="name" name="name">
+
+        <label for="password">Password :</label>
+        <input type="password" id="password" name="password">
+
+        <label for="contact">Contact :</label>
+        <input type="text" id="contact" name="contact">
+
+        <label for="email">Email :</label>
+        <input type="email" id="email" name="email">
+
+        <hr>
+
+        <label for="doctors">Number of doctor members :</label>
+        <input type="number" id="doctors" name="doctors" min="0">
+
+        <label for="patients">Number of patients accepted daily :</label>
+        <input type="number" id="patients" name="patients" min="0">
+
+        <label for="workdays">Work days :</label>
+        <input type="text" id="workdays" name="workdays" placeholder="e.g. Monday - Friday">
+
+        <button type="submit" class="modify-btn">Modify</button>
+    </form>
+
+    <a href="Dash.html" class="back-link">← Retour au Dashboard</a>
+</div>
+
+</body>
+</html>

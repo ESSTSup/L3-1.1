@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gérer l'abonnement</title>
+  <link rel="stylesheet" href="ManageSubscription.css" />
+</head>
+<body>
+  <div class="subscription-container">
+    <h2>Changer de plan</h2>
+
+    <form id="subscriptionForm" class="subscription-form">
+      <div class="plans">
+        <label class="plan active" id="freePlan">
+          <input type="radio" name="plan" value="Free" checked />
+          <h3>Free</h3>
+          <ul>
+            <li>✔ Fonctionnalités de base</li>
+            <li>✔ 5 patients maximum</li>
+            <li>✔ Support par e-mail</li>
+          </ul>
+        </label>
+
+        <label class="plan" id="premiumPlan">
+          <input type="radio" name="plan" value="Premium" />
+          <h3>Premium</h3>
+          <ul>
+            <li>✔ Toutes les fonctionnalités</li>
+            <li>✔ Patients illimités</li>
+            <li>✔ Support prioritaire</li>
+            <li>✔ Statistiques avancées</li>
+          </ul>
+        </label>
+      </div>
+
+      <button type="submit" class="change-btn">Changer maintenant</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("subscriptionForm");
+    const freePlan = document.getElementById("freePlan");
+    const premiumPlan = document.getElementById("premiumPlan");
+
+    
+    form.addEventListener("change", (e) => {
+      if (e.target.name === "plan") {
+        if (e.target.value === "Free") {
+          freePlan.classList.add("active");
+          premiumPlan.classList.remove("active");
+        } else {
+          premiumPlan.classList.add("active");
+          freePlan.classList.remove("active");
+        }
+      }
+    });
+
+    
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const selectedPlan = document.querySelector('input[name="plan"]:checked').value;
+      alert(`Votre abonnement a été changé pour : ${selectedPlan}`);
+    });
+  </script>
+</body>
+</html>

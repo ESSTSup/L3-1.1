@@ -1,0 +1,121 @@
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f6f8fb;
+  margin: 0;
+  color: #333;
+}
+
+header {
+  background: #2a9d8f;
+  color: white;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+}
+
+main {
+  margin: 40px auto;
+  width: 85%;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #2a9d8f;
+  color: white;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:hover {
+  background: #f1f1f1;
+}
+
+th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* --- ACTION BUTTONS --- */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-size: 13px;
+  transition: background 0.3s;
+}
+
+button.view {
+  background: #457b9d;
+}
+
+button.view:hover {
+  background: #35607a;
+}
+
+button.delete {
+  background: #e63946;
+}
+
+button.delete:hover {
+  background: #c5303c;
+}
+
+button.report {
+  background: #f4a261;
+}
+
+button.report:hover {
+  background: #e58e42;
+}
+
+.add-btn {
+  background: #264653;
+  color: white !important;
+  padding: 8px 15px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.add-btn:hover {
+  background: #1e3d47;
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Handler</title>
+  <link rel="stylesheet" href="manageApp.css">
+</head>
+<body>
+
+  <header>
+    <h1> Gestion des Rendez-vous</h1>
+  </header>
+
+  <main>
+    <section class="role-selector">
+      <label for="role">Choisir le rôle :</label>
+      <select id="role">
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+        <option value="assistant">Assistant</option>
+      </select>
+      <button onclick="showAppointments()">Afficher</button>
+    </section>
+
+    <section class="appointments">
+      <h2>Liste des Rendez-vous</h2>
+      <table id="appointments-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Docteur</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const sampleAppointments = {
+      patient: [
+        { id: 1, patient: "Moi", doctor: "Dr. Karim", date: "2025-11-05", time: "10:30", status: "Confirmé" },
+        { id: 2, patient: "Moi", doctor: "Dr. Sofia", date: "2025-11-10", time: "09:00", status: "En attente" }
+      ],
+      doctor: [
+        { id: 3, patient: "Ali", doctor: "Moi", date: "2025-11-04", time: "14:00", status: "Confirmé" },
+        { id: 4, patient: "Fatima", doctor: "Moi", date: "2025-11-06", time: "11:00", status: "Annulé" }
+      ],
+      assistant: [
+        { id: 5, patient: "Amine", doctor: "Dr. Karim", date: "2025-11-05", time: "10:30", status: "Confirmé" },
+        { id: 6, patient: "Sara", doctor: "Dr. Sofia", date: "2025-11-07", time: "09:30", status: "En attente" },
+        { id: 7, patient: "Nadia", doctor: "Dr. Rami", date: "2025-11-09", time: "16:00", status: "Confirmé" }
+      ]
+    };
+
+    function showAppointments() {
+      const role = document.getElementById("role").value;
+      const tableBody = document.querySelector("#appointments-table tbody");
+      tableBody.innerHTML = "";
+
+      const data = sampleAppointments[role];
+      data.forEach(app => {
+        const row = `
+          <tr>
+            <td>${app.id}</td>
+            <td>${app.patient}</td>
+            <td>${app.doctor}</td>
+            <td>${app.date}</td>
+            <td>${app.time}</td>
+            <td class="${app.status.toLowerCase()}">${app.status}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+  </script>
+
+</body>
+</html>

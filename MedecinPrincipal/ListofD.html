@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des Docteurs</title>
+  <link rel="stylesheet" href="ListofD.css" />
+</head>
+<body>
+  <header>
+    <h1>Liste des Docteurs</h1>
+    <nav>
+      <a href="AddD.html" class="btn">Ajouter un docteur</a>
+       <a href="Dash.html" class="btn">Dashboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Spécialité</th>
+          <th>Téléphone</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    const doctors = JSON.parse(localStorage.getItem("doctors")) || [];
+    const tbody = document.querySelector("tbody");
+    tbody.innerHTML = "";
+
+    doctors.forEach(doc => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${doc.name}</td>
+        <td>${doc.speciality}</td>
+        <td>${doc.phone}</td>
+        <td>${doc.email}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  </script>
+</body>
+</html>
+

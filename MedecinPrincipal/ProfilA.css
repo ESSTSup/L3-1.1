@@ -1,0 +1,42 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f6fa;
+  margin: 0;
+}
+header {
+  background: #40739e;
+  color: white;
+  padding: 1rem 2rem;
+}
+main {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.profile-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.edit {
+  background: #fbc531;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+}
+.delete {
+  background: #e84118;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
