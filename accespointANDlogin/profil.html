@@ -70,6 +70,16 @@
       font-weight: bold;
       color: #333;
     }
+
+    .principal-badge {
+      background-color: #ffd700;
+      color: #333;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      margin-top: 5px;
+      display: inline-block;
+    }
   </style>
 
   <script>
@@ -90,6 +100,18 @@
   </header>
 
   <main class="profiles">
+    <!-- SECTION MÉDECIN PRINCIPAL -->
+    <section class="principal-doctor">
+      <h2>Médecin Principal</h2>
+      <div class="grid">
+        <div class="card" onclick="selectRole('principal', 'Dr. HAMID')">
+          <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Dr. HAMID">
+          <p>Dr. HAMID</p>
+          <div class="principal-badge">Principal</div>
+        </div>
+      </div>
+    </section>
+
     <!-- SECTION MÉDECINS -->
     <section class="doctors">
       <h2>Médecins</h2>
