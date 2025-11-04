@@ -14,7 +14,17 @@
       padding: 0;
     }
 
-  
+    header {
+      text-align: center;
+      background-color: #004080;
+      color: white;
+      padding: 20px 0;
+    }
+
+    header h1 {
+      margin: 0;
+      color: white;
+    }
 
     main {
       padding: 30px;
@@ -63,10 +73,17 @@
   </style>
 
   <script>
-    // ✅ Fonction pour enregistrer le rôle sélectionné et rediriger vers la page de login
-    function selectRole(role) {
-      localStorage.setItem("userRole", role); // Enregistre le rôle (doctor / assistant / patient)
-      window.location.href = "clinic_login.html"; // Redirige vers la page de connexion
+    //  Fonction pour enregistrer le rôle sélectionné et rediriger vers le dashboard approprié
+    function selectRole(role, name) {
+      localStorage.setItem("userRole", role);
+      localStorage.setItem("selectedStaff", name);
+      
+      
+      if (role === 'doctor') {
+        window.location.href = "../doctor/dashboard.html";
+      } else if (role === 'assistant') {
+        window.location.href = "../assistant/assistantdash.html";
+      }
     }
   </script>
 </head>
@@ -81,27 +98,27 @@
     <section class="doctors">
       <h2>Médecins</h2>
       <div class="grid">
-        <div class="card" onclick="selectRole('doctor')">
+        <div class="card" onclick="selectRole('doctor', 'Dre MOUFOUKI')">
           <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Dre MOUFOUKI">
           <p>Dre MOUFOUKI</p>
         </div>
-        <div class="card" onclick="selectRole('doctor')">
+        <div class="card" onclick="selectRole('doctor', 'Dre DJEDJIG')">
           <img src="https://randomuser.me/api/portraits/women/40.jpg" alt="Dre DJEDJIG">
           <p>Dre DJEDJIG</p>
         </div>
-        <div class="card" onclick="selectRole('doctor')">
+        <div class="card" onclick="selectRole('doctor', 'Dre HELLAL')">
           <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Dre HELLAL">
           <p>Dre HELLAL</p>
         </div>
-        <div class="card" onclick="selectRole('doctor')">
+        <div class="card" onclick="selectRole('doctor', 'Dre MEKLATI')">
           <img src="https://randomuser.me/api/portraits/women/41.jpg" alt="Dre MEKLATI">
           <p>Dre MEKLATI</p>
         </div>
-        <div class="card" onclick="selectRole('doctor')">
+        <div class="card" onclick="selectRole('doctor', 'Dre LACHI')">
           <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Dre LACHI">
           <p>Dre LACHI</p>
         </div>
-        <div class="card" onclick="selectRole('doctor')">
+        <div class="card" onclick="selectRole('doctor', 'Dr OUARI')">
           <img src="https://randomuser.me/api/portraits/men/60.jpg" alt="Dr OUARI">
           <p>Dr OUARI</p>
         </div>
@@ -112,18 +129,16 @@
     <section class="assistants">
       <h2>Assistants</h2>
       <div class="grid">
-        <div class="card" onclick="selectRole('assistant')">
+        <div class="card" onclick="selectRole('assistant', 'Assis Bellingham')">
           <img src="https://randomuser.me/api/portraits/men/30.jpg" alt="Assis Bellingham">
           <p>Assis Bellingham</p>
         </div>
-        <div class="card" onclick="selectRole('assistant')">
+        <div class="card" onclick="selectRole('assistant', 'Assis Slimani')">
           <img src="https://randomuser.me/api/portraits/men/31.jpg" alt="Assis Slimani">
           <p>Assis Slimani</p>
         </div>
       </div>
     </section>
-
-    
   </main>
 
 </body>
