@@ -6,6 +6,7 @@
   <title>Choisir le type de compte</title>
   <link rel="stylesheet" href="style.css">
 
+  <script defer src="script.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,13 +59,7 @@
     }
   </style>
 
-  <script>
-    // Fonction pour enregistrer le rôle et aller à la page correspondante
-    function selectRole(role, page) {
-      localStorage.setItem("userRole", role);
-      window.location.href = page;
-    }
-  </script>
+ 
 </head>
 <body class="login-page">
 
@@ -73,15 +68,12 @@
     <p>Choisissez votre type de compte :</p>
 
     <div class="options">
-
-      <button class="btn" onclick="selectRole('doctor', 'profil.html')">Docteur</button>
-      <button class="btn" onclick="selectRole('assistant', 'profil.html')">Assistant</button>
-      <button class="btn" onclick="selectRole('patient', 'signin.html')">Patient</button>
+     
+      <button class="btn" onclick="selectRoleLogin('doctor', 'profil.html')">Docteur</button>
+      <button class="btn" onclick="selectRoleLogin('assistant', 'profil.html')">Assistant</button>
+      <button class="btn" onclick="selectRoleLogin('patient', 'signin.html')">Patient</button>
     </div>
   </div>
 
 </body>
 </html>
-
-
-
