@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mot de passe oublié - Clinique</title>
+  <script defer src="script.js"></script>
+
   <link rel="stylesheet" href="style.css">
 
   <style>
@@ -89,17 +91,7 @@
     }
   </style>
 
-  <script>
-    function sendResetEmail() {
-      const email = document.getElementById("email").value.trim();
-      if (email === "") {
-        alert("Veuillez entrer votre adresse email !");
-        return;
-      }
-      alert("Un lien de réinitialisation a été envoyé à " + email);
-      window.location.href = "login.html";
-    }
-  </script>
+
 </head>
 
 <body class="login-page">
