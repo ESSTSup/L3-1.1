@@ -1,673 +1,215 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recherche de Cabinets Médicaux</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .search-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-
-        .search-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .search-header i {
-            font-size: 1.8rem;
-            color: #667eea;
-            margin-right: 15px;
-        }
-
-        .search-header h2 {
-            color: #333;
-            font-size: 1.5rem;
-        }
-
-        .search-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            color: #555;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-
-        .input-group input,
-        .input-group select {
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .checkbox-item:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-            accent-color: #667eea;
-        }
-
-        .checkbox-item label {
-            cursor: pointer;
-            user-select: none;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .price-range {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .price-range input {
-            flex: 1;
-        }
-
-        .search-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .search-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .search-button:active {
-            transform: translateY(0);
-        }
-
-        .results-section {
-            display: block;
-        }
-
-        .results-header {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .results-header h3 {
-            color: #333;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-
-        .results-count {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .cabinet-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .cabinet-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .cabinet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .cabinet-info h4 {
-            color: #333;
-            font-size: 1.3rem;
-            margin-bottom: 5px;
-        }
-
-        .cabinet-specialty {
-            color: #667eea;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 600;
-        }
-
-        .rating i {
-            color: #ffd700;
-        }
-
-        .cabinet-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #666;
-        }
-
-        .detail-item i {
-            color: #667eea;
-            width: 20px;
-        }
-
-        .badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .badge.handicap {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .badge.price {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-
-        .badge.top-doctor {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .badge.urgence {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .badge.parking {
-            background: #f3e5f5;
-            color: #6a1b9a;
-        }
-
-        .cabinet-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            header h1 {
-                font-size: 1.8rem;
-            }
-
-            header p {
-                font-size: 0.95rem;
-            }
-
-            .search-card {
-                padding: 20px;
-            }
-
-            .search-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .cabinet-header {
-                flex-direction: column;
-            }
-
-            .cabinet-details {
-                grid-template-columns: 1fr;
-            }
-
-            .cabinet-actions {
-                width: 100%;
-            }
-
-            .btn {
-                flex: 1;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            header h1 {
-                font-size: 1.5rem;
-            }
-
-            .search-header h2 {
-                font-size: 1.2rem;
-            }
-
-            .checkbox-group {
-                flex-direction: column;
-            }
-
-            .checkbox-item {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Your Doctor</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-hospital"></i> Recherche de Cabinets Médicaux</h1>
-            <p>Trouvez le cabinet médical qui correspond à vos besoins</p>
-        </header>
 
-        <div class="search-card">
-            <div class="search-header">
-                <i class="fas fa-search"></i>
-                <h2>Critères de Recherche</h2>
-            </div>
+<header class="header">
+  <h1>Find Your Medical Center </h1>
+  <nav>
+    <a href="mainpage.html">Home</a>
+    <a href="account.html">Create Account</a>
+    <a href="login.html">Login</a>
+  </nav>
+</header>
 
-            <form>
-                <div class="search-grid">
-                    <div class="input-group">
-                        <label for="location"><i class="fas fa-map-marker-alt"></i> Localisation</label>
-                        <input type="text" id="location" placeholder="Ville, quartier, code postal...">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="specialty"><i class="fas fa-stethoscope"></i> Spécialité</label>
-                        <select id="specialty">
-                            <option value="">Toutes les spécialités</option>
-                            <option value="generaliste">Médecin Généraliste</option>
-                            <option value="cardiologue">Cardiologue</option>
-                            <option value="dermatologue">Dermatologue</option>
-                            <option value="pediatre">Pédiatre</option>
-                            <option value="ophtalmologue">Ophtalmologue</option>
-                            <option value="dentiste">Dentiste</option>
-                            <option value="gynécologue">Gynécologue</option>
-                            <option value="orthopédiste">Orthopédiste</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label><i class="fas fa-euro-sign"></i> Prix de consultation</label>
-                        <div class="price-range">
-                            <input type="number" id="priceMin" placeholder="Min (DA)">
-                            <span>-</span>
-                            <input type="number" id="priceMax" placeholder="Max (DA)">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-group" style="margin-top: 20px;">
-                    <label><i class="fas fa-filter"></i> Filtres supplémentaires</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="handicap" name="handicap">
-                            <label for="handicap"><i class="fas fa-wheelchair"></i> Accessible handicapés</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="topDoctor" name="topDoctor">
-                            <label for="topDoctor"><i class="fas fa-star"></i> Meilleurs docteurs</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="urgence" name="urgence">
-                            <label for="urgence"><i class="fas fa-clock"></i> Urgences acceptées</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="parking" name="parking">
-                            <label for="parking"><i class="fas fa-parking"></i> Parking disponible</label>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="search-button">
-                    <i class="fas fa-search"></i>
-                    Rechercher
-                </button>
-            </form>
-        </div>
-
-        <div class="results-section">
-            <div class="results-header">
-                <h3>Résultats de recherche</h3>
-                <p><span class="results-count">4</span> cabinets trouvés</p>
-            </div>
-
-            
-            <div class="cabinet-card">
-                <div class="cabinet-header">
-                    <div class="cabinet-info">
-                        <h4>Cabinet Dr. Benali</h4>
-                        <p class="cabinet-specialty">Médecin Généraliste</p>
-                    </div>
-                    <div class="rating">
-                        <i class="fas fa-star"></i>
-                        <span>4.8</span>
-                        <span style="color: #999;">(156)</span>
-                    </div>
-                </div>
-
-                <div class="cabinet-details">
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>15 Rue Didouche Mourad, Alger</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-phone"></i>
-                        <span>023 45 67 89</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-euro-sign"></i>
-                        <span>2000 DA</span>
-                    </div>
-                </div>
-
-                <div class="badges">
-                    <span class="badge handicap"><i class="fas fa-wheelchair"></i> Accessible</span>
-                    <span class="badge top-doctor"><i class="fas fa-star"></i> Top Docteur</span>
-                    <span class="badge urgence"><i class="fas fa-ambulance"></i> Urgences</span>
-                    <span class="badge parking"><i class="fas fa-parking"></i> Parking</span>
-                </div>
-
-                <div class="cabinet-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-calendar-check"></i>
-                        Prendre RDV
-                    </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-info-circle"></i>
-                        Plus d'infos
-                    </button>
-                </div>
-            </div>
-
-           
-            <div class="cabinet-card">
-                <div class="cabinet-header">
-                    <div class="cabinet-info">
-                        <h4>Clinique El azhar</h4>
-                        <p class="cabinet-specialty">Cardiologue</p>
-                    </div>
-                    <div class="rating">
-                        <i class="fas fa-star"></i>
-                        <span>4.9</span>
-                        <span style="color: #999;">(203)</span>
-                    </div>
-                </div>
-
-                <div class="cabinet-details">
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Avenue de l'Indépendance, Bab Ezzouar</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-phone"></i>
-                        <span>023 78 90 12</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-euro-sign"></i>
-                        <span>3500 DA</span>
-                    </div>
-                </div>
-
-                <div class="badges">
-                    <span class="badge handicap"><i class="fas fa-wheelchair"></i> Accessible</span>
-                    <span class="badge top-doctor"><i class="fas fa-star"></i> Top Docteur</span>
-                    <span class="badge parking"><i class="fas fa-parking"></i> Parking</span>
-                </div>
-
-                <div class="cabinet-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-calendar-check"></i>
-                        Prendre RDV
-                    </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-info-circle"></i>
-                        Plus d'infos
-                    </button>
-                </div>
-            </div>
-
-            
-            <div class="cabinet-card">
-                <div class="cabinet-header">
-                    <div class="cabinet-info">
-                        <h4>Cabinet Dr. Amara</h4>
-                        <p class="cabinet-specialty">Pédiatre</p>
-                    </div>
-                    <div class="rating">
-                        <i class="fas fa-star"></i>
-                        <span>4.7</span>
-                        <span style="color: #999;">(124)</span>
-                    </div>
-                </div>
-
-                <div class="cabinet-details">
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Rue des Frères Ouddek, Hydra</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-phone"></i>
-                        <span>023 34 56 78</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-euro-sign"></i>
-                        <span>2500 DA</span>
-                    </div>
-                </div>
-
-                <div class="badges">
-                    <span class="badge top-doctor"><i class="fas fa-star"></i> Top Docteur</span>
-                    <span class="badge urgence"><i class="fas fa-ambulance"></i> Urgences</span>
-                </div>
-
-                <div class="cabinet-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-calendar-check"></i>
-                        Prendre RDV
-                    </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-info-circle"></i>
-                        Plus d'infos
-                    </button>
-                </div>
-            </div>
-
-            <!-- Cabinet 4 -->
-            <div class="cabinet-card">
-                <div class="cabinet-header">
-                    <div class="cabinet-info">
-                        <h4>Centre Médical El Hayat</h4>
-                        <p class="cabinet-specialty">Dermatologue</p>
-                    </div>
-                    <div class="rating">
-                        <i class="fas fa-star"></i>
-                        <span>4.6</span>
-                        <span style="color: #999;">(89)</span>
-                    </div>
-                </div>
-
-                <div class="cabinet-details">
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Boulevard Mohamed V, Kouba</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-phone"></i>
-                        <span>023 56 78 90</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-euro-sign"></i>
-                        <span>3000 DA</span>
-                    </div>
-                </div>
-
-                <div class="badges">
-                    <span class="badge handicap"><i class="fas fa-wheelchair"></i> Accessible</span>
-                    <span class="badge parking"><i class="fas fa-parking"></i> Parking</span>
-                </div>
-
-                <div class="cabinet-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-calendar-check"></i>
-                        Prendre RDV
-                    </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-info-circle"></i>
-                        Plus d'infos
-                    </button>
-                </div>
-            </div>
-        </div>
+<main class="container">
+  <!-- SEARCH METHOD + DOCTOR NAME -->
+  <section class="search-method">
+    <div class="method-banner">
+      Select at least <strong>2 criteria</strong> to get personalized doctor recommendations based on your preferences.
     </div>
+
+    <div class="method-choices">
+      <label>
+        <input type="radio" name="searchMethod" value="method1" checked>
+        Method 1
+      </label>
+      <label>
+        <input type="radio" name="searchMethod" value="method2">
+        Method 2
+      </label>
+      <label>
+        <input type="radio" name="searchMethod" value="method3">
+        Method 3
+      </label>
+    </div>
+
+    <div class="doctor-search">
+      <input type="text" id="doctorSearchInput" placeholder="Search by doctor name...">
+      <button class="btn btn-primary" id="doctorSearchBtn">Search</button>
+    </div>
+  </section>
+
+  <h2 class="section-title">Select Your Preferences <span>(Choose at least 2)</span></h2>
+
+  <div class="criteria-grid">
+
+    <!-- SPECIALTY -->
+    <div class="criteria-card" data-criteria="specialty">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>🎯 Specialty</span>
+      </div>
+
+      <div class="criteria-content">
+        <select id="specialtySelect">
+          <option value="">Select Specialty</option>
+          <option value="cardiology">Cardiology</option>
+          <option value="dermatology">Dermatology</option>
+          <option value="pediatrics">Pediatrics</option>
+          <option value="general">General Medicine</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- AVAILABILITY -->
+    <div class="criteria-card" data-criteria="availability">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>⏰ Availability</span>
+      </div>
+
+      <div class="criteria-content">
+        <label><input type="checkbox" id="night"> Night Availability</label>
+        <label><input type="checkbox" id="weekend"> Weekend Availability</label>
+        <label><input type="checkbox" id="allday"> 24/7 Availability</label>
+      </div>
+    </div>
+
+    <!-- HANDICAP -->
+    <div class="criteria-card" data-criteria="handicap">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>♿ Handicap Friendly</span>
+      </div>
+      <div class="criteria-content">
+        <p>Clinics with wheelchair access.</p>
+      </div>
+    </div>
+
+    <!-- HIGH COMPETENCE -->
+    <div class="criteria-card" data-criteria="competence">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>⭐ High Competence</span>
+      </div>
+      <div class="criteria-content">
+        <label>Minimum Competence Rating:</label>
+        <input type="range" id="competenceRange" min="3" max="5" step="0.1" value="4">
+        <span id="competenceDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="criteria-card" data-criteria="location">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>📍 Location</span>
+      </div>
+
+      <div class="criteria-content">
+        <input type="text" id="locationInput" placeholder="Your address...">
+        <button class="btn-location" onclick="detectLocation()">Use My Location</button>
+      </div>
+    </div>
+
+    <!-- WELCOME -->
+    <div class="criteria-card" data-criteria="welcome">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>👋 Quality of Welcome</span>
+      </div>
+      <div class="criteria-content">
+        <label>Minimum Welcome Rating:</label>
+        <input type="range" id="welcomeRange" min="3" max="5" step="0.1" value="4">
+        <span id="welcomeDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- HYGIENE -->
+    <div class="criteria-card" data-criteria="hygiene">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>🧼 Hygiene Standards</span>
+      </div>
+
+      <div class="criteria-content">
+        <label>Minimum Hygiene Rating:</label>
+        <input type="range" id="hygieneRange" min="3" max="5" step="0.1" value="4">
+        <span id="hygieneDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- PUNCTUALITY -->
+    <div class="criteria-card" data-criteria="punctuality">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>⏱ Punctuality</span>
+      </div>
+
+      <div class="criteria-content">
+        <label>Minimum Punctuality Rating:</label>
+        <input type="range" id="punctualityRange" min="3" max="5" step="0.1" value="4">
+        <span id="punctualityDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="criteria-card" data-criteria="equipment">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>📚 Medical Equipment Quality</span>
+      </div>
+
+      <div class="criteria-content">
+        <select id="equipmentSelect">
+          <option value="">Any level</option>
+          <option value="basic">Basic</option>
+          <option value="standard">Standard</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- APPOINTMENT AVAILABILITY -->
+    <div class="criteria-card" data-criteria="appointment">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>📅 Appointment Availability</span>
+      </div>
+
+      <div class="criteria-options">
+        <label><input type="radio" name="appoint" value="same-day"> Same Day</label>
+        <label><input type="radio" name="appoint" value="3-days"> Within 3 Days</label>
+        <label><input type="radio" name="appoint" value="7-days"> Within a Week</label>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn-clear" id="clearBtn">Clear All</button>
+    <button class="btn-main" id="findBtn" disabled>Find Recommended Doctors</button>
+  </div>
+
+  <section class="results">
+    <h2>Recommended Doctors</h2>
+    <div id="resultsInfo">Choose at least 2 criteria.</div>
+    <div id="resultsList"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  © 2025 Medical Appointment System — All rights reserved.
+</footer>
+
+<script src="script.js"></script>
+
 </body>
 </html>
