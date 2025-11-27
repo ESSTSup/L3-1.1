@@ -14,9 +14,44 @@
 
       <div class="buttons">
         <a href="ListofA.html" class="no">No</a>
-        <a href="ListofA.html" class="yes">Yes, Delete</a>
+        <a href="#" class="yes" id="confirmDelete">Yes, Delete</a>
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const confirmDeleteBtn = document.getElementById('confirmDelete');
+      
+      confirmDeleteBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const assistantId = urlParams.get('id') || localStorage.getItem('assistantToDelete');
+        
+        if (assistantId) {
+        
+          let assistants = JSON.parse(localStorage.getItem('assistants')) || [];
+          
+          
+          assistants = assistants.filter(assistant => assistant.id != assistantId);
+          
+          
+          localStorage.setItem('assistants', JSON.stringify(assistants));
+          
+          
+          localStorage.removeItem('assistantToDelete');
+          
+          alert('Assistant deleted successfully!');
+        } else {
+          alert('No assistant selected for deletion.');
+        }
+        
+        
+        window.location.href = 'ListofA.html';
+      });
+    });
+  </script>
 </body>
 </html>

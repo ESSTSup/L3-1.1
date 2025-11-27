@@ -11,7 +11,7 @@
     <h1>Liste des Docteurs</h1>
     <nav>
       <a href="AddD.html" class="btn">Ajouter un docteur</a>
-       <a href="Dash.html" class="btn">Dashboard</a>
+      <a href="Dash.html" class="btn">Dashboard</a>
     </nav>
   </header>
 
@@ -23,30 +23,68 @@
           <th>Spécialité</th>
           <th>Téléphone</th>
           <th>Email</th>
+          <th>Actions</th> 
         </tr>
       </thead>
-      <tbody>
-        
-      </tbody>
+      <tbody></tbody>
     </table>
   </main>
 
   <script>
-    const doctors = JSON.parse(localStorage.getItem("doctors")) || [];
-    const tbody = document.querySelector("tbody");
-    tbody.innerHTML = "";
+    function loadDoctors() {
+      const doctors = JSON.parse(localStorage.getItem("doctors")) || [];
+      const tbody = document.querySelector("tbody");
 
-    doctors.forEach(doc => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${doc.name}</td>
-        <td>${doc.speciality}</td>
-        <td>${doc.phone}</td>
-        <td>${doc.email}</td>
-      `;
-      tbody.appendChild(tr);
+      tbody.innerHTML = "";
+
+      if (doctors.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 2rem; color: #757575; font-style: italic;">
+              Aucun docteur enregistré. <a href="AddD.html">Ajouter un docteur</a>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      doctors.forEach((doc, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${doc.name || 'Non spécifié'}</td>
+          <td>${doc.speciality || 'Non spécifié'}</td>
+          <td>${doc.phone || 'Non spécifié'}</td>
+          <td>${doc.email || 'Non spécifié'}</td>
+          <td>
+            <button onclick="deleteDoctor(${index})" style="background: red; color: white; border: none; padding: 5px 8px; cursor: pointer; border-radius: 4px;">
+              Supprimer
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    
+    function deleteDoctor(index) {
+      const doctors = JSON.parse(localStorage.getItem("doctors")) || [];
+
+      if (confirm("Voulez-vous vraiment supprimer ce docteur ?")) {
+        doctors.splice(index, 1); 
+        localStorage.setItem("doctors", JSON.stringify(doctors)); 
+        loadDoctors(); 
+      }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', loadDoctors);
+
+   
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'doctors') {
+        loadDoctors();
+      }
     });
   </script>
 </body>
 </html>
-

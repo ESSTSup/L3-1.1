@@ -8,7 +8,6 @@
 <body>
     <h2>Appointment Requests</h2>
 
-    
     <div class="message success">Request updated successfully</div>
     
     <div class="request">
@@ -36,5 +35,44 @@
     </div>
 
     <a href="Dash.html" class="back-link">← Back to Dashboard</a>
+
+    <script>
+   
+    function showMessage(text, type = "success") {
+        const messageBox = document.querySelector(".message");
+
+        if (!messageBox) return;
+
+        messageBox.textContent = text;
+        messageBox.className = "message " + type;
+        messageBox.style.display = "block";
+
+        
+        setTimeout(() => {
+            messageBox.style.display = "none";
+        }, 2500);
+    }
+
+    
+    document.querySelectorAll(".request").forEach(request => {
+        const confirmBtn = request.querySelector(".confirm");
+        const rejectBtn = request.querySelector(".reject");
+
+        confirmBtn.addEventListener("click", () => {
+            request.style.borderLeft = "6px solid #28a745"; 
+            showMessage("Appointment confirmed!", "success");
+            confirmBtn.disabled = true;
+            rejectBtn.disabled = true;
+        });
+
+        rejectBtn.addEventListener("click", () => {
+            request.style.borderLeft = "6px solid #dc3545"; 
+            showMessage("Appointment rejected!", "error");
+            confirmBtn.disabled = true;
+            rejectBtn.disabled = true;
+        });
+    });
+    </script>
+
 </body>
 </html>

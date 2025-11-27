@@ -4,81 +4,138 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choisir le type de compte</title>
-  <link rel="stylesheet" href="style.css">
+  
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(135deg,#A6615A,#2E2E2E);
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .login-container {
-      background-color: white;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      padding: 35px 45px;
+      border-radius: 15px;
+      box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       text-align: center;
+      animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     h1 {
       color: #A6615A;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      font-size: 28px;
+      font-weight: bold;
     }
 
     p {
-      color: #555;
-      margin-bottom: 25px;
+      color: #444;
+      margin-bottom: 28px;
+      font-size: 15px;
     }
 
     .options {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 18px;
     }
 
     .btn {
       background-color: #A6615A;
       color: white;
-      text-decoration: none;
-      padding: 12px 18px;
+      border: none;
+      padding: 14px 20px;
       border-radius: 8px;
-      font-size: 16px;
-      transition: background-color 0.3s;
+      font-size: 17px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.25s;
+      box-shadow: 0 4px 10px rgba(0,0,0,.15);
     }
 
     .btn:hover {
-      background-color: #8d524d;
+      transform: scale(1.07);
+      background-color: #8d514a;
+    }
+
+   
+    #loader {
+      display: none;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 4px solid #A6615A;
+      border-top-color: transparent;
+      border-radius: 50%;
+      margin: 10px auto;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 
   <script>
-    // Fonction pour enregistrer le rôle et aller à la page correspondante
+    
     function selectRole(role, page) {
       localStorage.setItem("userRole", role);
-      window.location.href = page;
+
+      document.querySelector(".options").style.display = "none";
+      document.getElementById("loader").style.display = "block";
+
+      setTimeout(()=> {
+        window.location.href = page;
+      },1500); // délai avant redirection (1.5 sec)
     }
   </script>
+
 </head>
-<body class="login-page">
+<body>
 
   <div class="login-container">
     <h1>Connexion</h1>
     <p>Choisissez votre type de compte :</p>
 
     <div class="options">
-      <!-- ✅ On enregistre le rôle avant d'aller vers la page -->
-      <button class="btn" onclick="selectRole('doctor', 'profil.html')">Docteur</button>
-      <button class="btn" onclick="selectRole('assistant', 'profil.html')">Assistant</button>
-      <button class="btn" onclick="selectRole('patient', 'signin.html')">Patient</button>
+      <button class="btn" onclick="selectRole('doctor', 'ProfilD.html')">Docteur</button>
+      <button class="btn" onclick="selectRole('assistant', 'ProfilA.html')">Assistant</button>
+      <button class="btn" onclick="selectRole('patient', 'ProfilP.html')">Patient</button>
+      
     </div>
+
+   
+    <div id="loader">
+      <div class="spinner"></div>
+      Chargement...
+    </div>
+
   </div>
 
 </body>
 </html>
+

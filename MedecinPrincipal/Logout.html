@@ -1,0 +1,216 @@
+<!-- logout.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!-- garde la meta-refresh pour les navigateurs sans JS -->
+  <meta http-equiv="refresh" content="2;url=Login.html">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Déconnexion...</title>
+
+  <!-- CSS intégré -->
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#3b82f6;
+      --muted:#a8b3c6;
+      --success:#10b981;
+      --glass: rgba(255,255,255,0.04);
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #071029 0%, var(--bg) 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .card{
+      width:100%;
+      max-width:520px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:28px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.04);
+      text-align:center;
+      backdrop-filter: blur(6px);
+    }
+
+    h2{
+      margin:0 0 8px;
+      font-size:1.5rem;
+      letter-spacing:0.2px;
+    }
+
+    p.lead{
+      margin:0 0 18px;
+      color:var(--muted);
+    }
+
+    .countdown{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:18px;
+      padding:8px 14px;
+      background:var(--glass);
+      border-radius:999px;
+      color:#dff1ff;
+      font-weight:600;
+      font-size:1.1rem;
+    }
+
+    .btns{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      margin-top:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:0;
+      padding:10px 16px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+
+    .btn:hover{ transform: translateY(-2px); }
+
+    .btn-primary{
+      background: linear-gradient(90deg,var(--accent), #2563eb);
+      color:white;
+      box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+    }
+
+    .btn-secondary{
+      background:transparent;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,0.04);
+    }
+
+    .small{
+      margin-top:14px;
+      font-size:0.86rem;
+      color:#9fb0cc;
+    }
+
+    /* responsive */
+    @media (max-width:420px){
+      .card{ padding:18px; border-radius:12px; }
+      h2{ font-size:1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="status" aria-live="polite">
+      <h2>Déconnecté avec succès</h2>
+      <p class="lead">Vous avez été déconnecté de votre session.</p>
+
+      <!-- Compte à rebours visuel -->
+      <div class="countdown" id="countdown" aria-hidden="false">
+        Redirection dans <strong id="secs">2</strong>s
+      </div>
+
+      <!-- Boutons -->
+      <div class="btns">
+        <button class="btn btn-primary" id="goNow">Se reconnecter maintenant</button>
+        <button class="btn btn-secondary" id="stay">Rester sur cette page</button>
+      </div>
+
+      <div class="small">Si vous n'êtes pas redirigé automatiquement, <a href="Login.html" style="color:inherit; text-decoration:underline;">cliquez ici</a>.</div>
+
+      <!-- Fallback pour les navigateurs sans JS -->
+      <noscript>
+        <div class="small" style="color:#ffcaca; margin-top:12px;">
+          JavaScript est désactivé — vous serez redirigé par la meta-refresh.
+        </div>
+      </noscript>
+    </div>
+  </div>
+
+  <!-- JavaScript intégré -->
+  <script>
+    (function(){
+      // durée en secondes (doit correspondre à la meta-refresh)
+      var seconds = 2;
+
+      var secsEl = document.getElementById('secs');
+      var goNowBtn = document.getElementById('goNow');
+      var stayBtn = document.getElementById('stay');
+      var redirectUrl = 'Login.html';
+      var intervalId;
+      var countdownEl = document.getElementById('countdown');
+
+      // sécurité: si l'élément n'existe pas on sort
+      if(!secsEl || !goNowBtn || !stayBtn) return;
+
+      // affiche la valeur initiale
+      secsEl.textContent = seconds;
+
+      function tick() {
+        seconds--;
+        if (seconds < 0) {
+          clearInterval(intervalId);
+          // redirection finale
+          window.location.href = redirectUrl;
+        } else {
+          secsEl.textContent = seconds;
+        }
+      }
+
+      // démarre le compte à rebours après un petit délai pour que l'utilisateur voie le message
+      intervalId = setInterval(tick, 1000);
+
+      // bouton pour rediriger tout de suite
+      goNowBtn.addEventListener('click', function(){
+        clearInterval(intervalId);
+        window.location.href = redirectUrl;
+      });
+
+      // bouton pour annuler la redirection et rester sur la page
+      var cancelled = false;
+      stayBtn.addEventListener('click', function(){
+        if(!cancelled){
+          clearInterval(intervalId);
+          countdownEl.textContent = 'Redirection annulée — restez ici.';
+          stayBtn.textContent = 'Relancer la redirection';
+          cancelled = true;
+        } else {
+          // relancer
+          seconds = 2;
+          secsEl.textContent = seconds;
+          intervalId = setInterval(tick, 1000);
+          stayBtn.textContent = 'Rester sur cette page';
+          cancelled = false;
+        }
+      });
+
+      // accès clavier: Enter sur Se reconnecter maintenant déclenche le clic
+      goNowBtn.addEventListener('keyup', function(e){
+        if(e.key === 'Enter') goNowBtn.click();
+      });
+
+      // si l'utilisateur change d'onglet avant la redirection, le compteur continue (pas de pause)
+      // (comportement volontaire)
+    })();
+  </script>
+</body>
+</html>

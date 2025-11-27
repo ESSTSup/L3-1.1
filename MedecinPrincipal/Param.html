@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres Cabinet</title>
+    <link rel="stylesheet" href="Profil-medp.css">
+</head>
+<body>
+
+<div class="profile-container">
+    <h2>Paramètres du Cabinet</h2>
+
+    <form id="cabinetForm">
+
+        <label for="doctors">Number of doctor members :</label>
+        <input type="number" id="doctors" name="doctors" min="0">
+
+        <label for="patients">Number of patients accepted daily :</label>
+        <input type="number" id="patients" name="patients" min="0">
+
+        <label for="workdays">Work days :</label>
+        <input type="text" id="workdays" name="workdays" placeholder="e.g. Monday - Friday">
+
+        <button type="submit" class="modify-btn">Modify</button>
+    </form>
+
+    <a href="Profil-medp.html" class="back-link">← Back</a>
+</div>
+
+<script>
+document.getElementById("cabinetForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const data = {
+        doctors: document.getElementById("doctors").value,
+        patients: document.getElementById("patients").value,
+        workdays: document.getElementById("workdays").value
+    };
+
+    localStorage.setItem("cabinetInfo", JSON.stringify(data));
+
+    alert("Paramètres enregistrés ✔️");
+});
+</script>
+
+</body>
+</html>

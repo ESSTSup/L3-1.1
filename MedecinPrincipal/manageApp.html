@@ -41,9 +41,14 @@
         </tbody>
       </table>
     </section>
+    </div>
+
+    <a href="Dash.html" class="back-button">← Back to Dashboard</a>
+  </div>
   </main>
 
   <script>
+    
     const sampleAppointments = {
       patient: [
         { id: 1, patient: "Moi", doctor: "Dr. Karim", date: "2025-11-05", time: "10:30", status: "Confirmé" },
@@ -60,26 +65,253 @@
       ]
     };
 
+    
     function showAppointments() {
       const role = document.getElementById("role").value;
       const tableBody = document.querySelector("#appointments-table tbody");
       tableBody.innerHTML = "";
 
       const data = sampleAppointments[role];
-      data.forEach(app => {
-        const row = `
+      
+    
+      if (!data || data.length === 0) {
+        tableBody.innerHTML = `
           <tr>
-            <td>${app.id}</td>
-            <td>${app.patient}</td>
-            <td>${app.doctor}</td>
-            <td>${app.date}</td>
-            <td>${app.time}</td>
-            <td class="${app.status.toLowerCase()}">${app.status}</td>
+            <td colspan="6" style="text-align: center; padding: 1rem;">
+              Aucun rendez-vous trouvé pour ce rôle.
+            </td>
           </tr>
         `;
-        tableBody.innerHTML += row;
+        return;
+      }
+      
+      
+      data.forEach(app => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${app.id}</td>
+          <td>${app.patient}</td>
+          <td>${app.doctor}</td>
+          <td>${formatDate(app.date)}</td>
+          <td>${app.time}</td>
+          <td class="${app.status.toLowerCase()}">${app.status}</td>
+        `;
+        tableBody.appendChild(row);
       });
     }
+
+    
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    
+    function filterAppointmentsByStatus(status) {
+      const role = document.getElementById("role").value;
+      const tableBody = document.querySelector("#appointments-table tbody");
+      tableBody.innerHTML = "";
+
+      const data = sampleAppointments[role];
+      const filteredData = data.filter(app => app.status.toLowerCase() === status.toLowerCase());
+      
+      if (filteredData.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 1rem;">
+              Aucun rendez-vous avec le statut "${status}".
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      filteredData.forEach(app => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${app.id}</td>
+          <td>${app.patient}</td>
+          <td>${app.doctor}</td>
+          <td>${formatDate(app.date)}</td>
+          <td>${app.time}</td>
+          <td class="${app.status.toLowerCase()}">${app.status}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    
+    function sortAppointmentsByDate(order = 'asc') {
+      const role = document.getElementById("role").value;
+      const tableBody = document.querySelector("#appointments-table tbody");
+      tableBody.innerHTML = "";
+
+      const data = [...sampleAppointments[role]];
+      
+      data.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return order === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+      
+      data.forEach(app => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${app.id}</td>
+          <td>${app.patient}</td>
+          <td>${app.doctor}</td>
+          <td>${formatDate(app.date)}</td>
+          <td>${app.time}</td>
+          <td class="${app.status.toLowerCase()}">${app.status}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    
+    function searchAppointments(query) {
+      const role = document.getElementById("role").value;
+      const tableBody = document.querySelector("#appointments-table tbody");
+      tableBody.innerHTML = "";
+
+      const data = sampleAppointments[role];
+      const searchResults = data.filter(app => 
+        app.patient.toLowerCase().includes(query.toLowerCase()) ||
+        app.doctor.toLowerCase().includes(query.toLowerCase()) ||
+        app.date.includes(query) ||
+        app.status.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      if (searchResults.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 1rem;">
+              Aucun rendez-vous trouvé pour "${query}".
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      searchResults.forEach(app => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${app.id}</td>
+          <td>${app.patient}</td>
+          <td>${app.doctor}</td>
+          <td>${formatDate(app.date)}</td>
+          <td>${app.time}</td>
+          <td class="${app.status.toLowerCase()}">${app.status}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    
+    function exportToCSV() {
+      const role = document.getElementById("role").value;
+      const data = sampleAppointments[role];
+      
+      if (!data || data.length === 0) {
+        alert("Aucune donnée à exporter.");
+        return;
+      }
+      
+      const headers = ["ID", "Patient", "Docteur", "Date", "Heure", "Statut"];
+      const csvContent = [
+        headers.join(","),
+        ...data.map(row => [
+          row.id,
+          `"${row.patient}"`,
+          `"${row.doctor}"`,
+          row.date,
+          row.time,
+          `"${row.status}"`
+        ].join(","))
+      ].join("\n");
+      
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rendez-vous-${role}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    
+    function getAppointmentStats() {
+      const role = document.getElementById("role").value;
+      const data = sampleAppointments[role];
+      
+      const stats = {
+        total: data.length,
+        confirmed: data.filter(app => app.status === "Confirmé").length,
+        pending: data.filter(app => app.status === "En attente").length,
+        cancelled: data.filter(app => app.status === "Annulé").length
+      };
+      
+      alert(`Statistiques des rendez-vous (${role}):\n
+      Total: ${stats.total}
+      Confirmés: ${stats.confirmed}
+      En attente: ${stats.pending}
+      Annulés: ${stats.cancelled}`);
+    }
+
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      showAppointments();
+      
+      
+      const searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Rechercher...';
+      searchInput.style.marginLeft = '10px';
+      searchInput.style.padding = '5px';
+      
+      searchInput.addEventListener('input', function(e) {
+        if (e.target.value.length >= 2 || e.target.value.length === 0) {
+          searchAppointments(e.target.value);
+        }
+      });
+      
+      document.querySelector('.role-selector').appendChild(searchInput);
+      
+      
+      const actionButtons = document.createElement('div');
+      actionButtons.style.marginTop = '10px';
+      actionButtons.style.display = 'flex';
+      actionButtons.style.gap = '5px';
+      actionButtons.style.flexWrap = 'wrap';
+      
+      const sortAscBtn = document.createElement('button');
+      sortAscBtn.textContent = 'Trier par date (↑)';
+      sortAscBtn.onclick = () => sortAppointmentsByDate('asc');
+      
+      const sortDescBtn = document.createElement('button');
+      sortDescBtn.textContent = 'Trier par date (↓)';
+      sortDescBtn.onclick = () => sortAppointmentsByDate('desc');
+      
+      const exportBtn = document.createElement('button');
+      exportBtn.textContent = 'Exporter CSV';
+      exportBtn.onclick = exportToCSV;
+      
+      const statsBtn = document.createElement('button');
+      statsBtn.textContent = 'Statistiques';
+      statsBtn.onclick = getAppointmentStats;
+      
+      actionButtons.appendChild(sortAscBtn);
+      actionButtons.appendChild(sortDescBtn);
+      actionButtons.appendChild(exportBtn);
+      actionButtons.appendChild(statsBtn);
+      
+      document.querySelector('.appointments').insertBefore(actionButtons, document.querySelector('#appointments-table'));
+    });
   </script>
 
 </body>

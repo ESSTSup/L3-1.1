@@ -11,7 +11,7 @@
 <div class="profile-container">
     <h2>Profile Med-principale</h2>
 
-    <form>
+    <form id="profileForm">
         <label for="name">Name :</label>
         <input type="text" id="name" name="name">
 
@@ -24,22 +24,29 @@
         <label for="email">Email :</label>
         <input type="email" id="email" name="email">
 
-        <hr>
-
-        <label for="doctors">Number of doctor members :</label>
-        <input type="number" id="doctors" name="doctors" min="0">
-
-        <label for="patients">Number of patients accepted daily :</label>
-        <input type="number" id="patients" name="patients" min="0">
-
-        <label for="workdays">Work days :</label>
-        <input type="text" id="workdays" name="workdays" placeholder="e.g. Monday - Friday">
-
-        <button type="submit" class="modify-btn">Modify</button>
+        <button type="button" class="modify-btn" onclick="goToCabinet()">Next</button>
     </form>
 
     <a href="Dash.html" class="back-link">← Retour au Dashboard</a>
 </div>
 
+<script>
+function goToCabinet() {
+   
+    const data = {
+        name: document.getElementById("name").value,
+        password: document.getElementById("password").value,
+        contact: document.getElementById("contact").value,
+        email: document.getElementById("email").value
+    };
+
+    localStorage.setItem("doctorProfile", JSON.stringify(data));
+
+    
+    window.location.href = "Param.html";
+}
+</script>
+
 </body>
 </html>
+

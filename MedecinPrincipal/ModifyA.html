@@ -12,24 +12,201 @@
   </header>
 
   <main>
-    <form class="form-box">
+    <form class="form-box" id="assistantForm">
       <label>Name:</label>
-      <input type="text" value="Sarah Ahmed">
+      <input type="text" id="name" value="Sarah Ahmed" required>
 
       <label>Supervising Doctor:</label>
-      <input type="text" value="Dr. Yasmine">
+      <input type="text" id="doctor" value="Dr. Yasmine" required>
 
       <label>Phone Number:</label>
-      <input type="text" value="+213 540 112 334">
+      <input type="tel" id="phone" value="+213 540 112 334" required>
 
       <label>Email:</label>
-      <input type="email" value="sarah@clinic.com">
+      <input type="email" id="email" value="sarah@clinic.com" required>
 
       <label>Status:</label>
-      <input type="text" value="Active">
+      <select id="status">
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+        <option value="On Leave">On Leave</option>
+      </select>
 
       <button type="submit" class="ok-btn">OK</button>
+      <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
     </form>
   </main>
+
+  <script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedData = localStorage.getItem('assistantData');
+      
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        document.getElementById('name').value = data.name || 'Sarah Ahmed';
+        document.getElementById('doctor').value = data.doctor || 'Dr. Yasmine';
+        document.getElementById('phone').value = data.phone || '+213 540 112 334';
+        document.getElementById('email').value = data.email || 'sarah@clinic.com';
+        document.getElementById('status').value = data.status || 'Active';
+      }
+      
+      
+      document.getElementById('status').value = 'Active';
+    });
+
+    
+    const form = document.getElementById('assistantForm');
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      
+      const formData = {
+        name: document.getElementById('name').value.trim(),
+        doctor: document.getElementById('doctor').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        status: document.getElementById('status').value
+      };
+      
+      
+      if (!validateForm(formData)) {
+        return;
+      }
+      
+     
+      localStorage.setItem('assistantData', JSON.stringify(formData));
+      
+      
+      showNotification('Assistant information updated successfully!', 'success');
+      
+      
+      setTimeout(() => {
+        window.location.href = 'assistants-list.html'; 
+      }, 1500);
+    });
+
+    
+    function validateForm(data) {
+    
+      if (data.name.length < 2) {
+        showNotification('Name must be at least 2 characters long', 'error');
+        return false;
+      }
+      
+      
+      if (data.doctor.length < 2) {
+        showNotification('Doctor name must be at least 2 characters long', 'error');
+        return false;
+      }
+      
+     
+      const phoneRegex = /^\+213\s[5-7]\d{2}\s\d{3}\s\d{3}$/;
+      if (!phoneRegex.test(data.phone)) {
+        showNotification('Please enter a valid Algerian phone number (+213 XXX XXX XXX)', 'error');
+        return false;
+      }
+      
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        showNotification('Please enter a valid email address', 'error');
+        return false;
+      }
+      
+      return true;
+    }
+
+    
+    function showNotification(message, type) {
+     
+      const existingNotification = document.querySelector('.notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      
+      
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        border-radius: 5px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 4000);
+    }
+
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+
+   
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+        window.location.href = 'assistants-list.html'; 
+      }
+    });
+
+    
+    let formModified = false;
+    
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        formModified = true;
+      });
+    });
+    
+    window.addEventListener('beforeunload', function(e) {
+      if (formModified) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      }
+    });
+
+    
+    form.addEventListener('reset', function() {
+      formModified = false;
+    });
+
+    
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    
+    console.log('Current Assistant Data:', {
+      name: 'Sarah Ahmed',
+      doctor: 'Dr. Yasmine',
+      phone: '+213 540 112 334',
+      email: 'sarah@clinic.com',
+      status: 'Active'
+    });
+  </script>
 </body>
 </html>

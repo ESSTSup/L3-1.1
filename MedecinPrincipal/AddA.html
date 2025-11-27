@@ -39,29 +39,70 @@
   </main>
 
   <script>
-    document.getElementById("addAssistantForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
+    document.getElementById('addAssistantForm').addEventListener('submit', function(event) {
+      event.preventDefault(); 
+      
+      
+      const name = document.getElementById('name').value;
+      const doctor = document.getElementById('doctor').value;
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('email').value;
+      const status = document.getElementById('status').value;
+      
+     
+      if (!name || !doctor || !phone || !email) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      
+      
+      const phoneRegex = /^\+213[5-7][0-9]{8}$/;
+      if (!phoneRegex.test(phone)) {
+        alert('Please enter a valid Algerian phone number (format: +213XXXXXXXXX)');
+        return;
+      }
+      
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      
       
       const assistant = {
-        name: document.getElementById("name").value,
-        doctor: document.getElementById("doctor").value,
-        phone: document.getElementById("phone").value,
-        email: document.getElementById("email").value,
-        status: document.getElementById("status").value
+        id: Date.now(), 
+        name: name,
+        doctor: doctor,
+        phone: phone,
+        email: email,
+        status: status,
+        createdAt: new Date().toISOString()
       };
-
       
-      let assistants = JSON.parse(localStorage.getItem("assistants")) || [];
-
+      
+      saveAssistant(assistant);
+      
+     
+      alert('Assistant added successfully!');
+      window.location.href = 'ListofA.html';
+    });
+    
+    function saveAssistant(assistant) {
+      
+      let assistants = JSON.parse(localStorage.getItem('assistants')) || [];
+      
       
       assistants.push(assistant);
-
       
-      localStorage.setItem("assistants", JSON.stringify(assistants));
-
       
-      window.location.href = "ListofA.html";
+      localStorage.setItem('assistants', JSON.stringify(assistants));
+    }
+    
+    document.getElementById('status').addEventListener('change', function() {
+      const status = this.value;
+    
+      console.log('Status changed to:', status);
     });
   </script>
 </body>

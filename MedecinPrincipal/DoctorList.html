@@ -10,73 +10,137 @@
   <div class="doctors-container">
     <h1>Liste des Docteurs</h1>
 
-   
     <button id="addDoctorBtn" class="add-btn"> Add Doctor</button>
 
-  
     <div id="addDoctorForm" class="form-container hidden">
       <input type="text" id="doctorName" placeholder="Nom du docteur" required />
       <input type="text" id="doctorSpecialty" placeholder="Spécialité" required />
       <button id="saveDoctor" class="save-btn">Save</button>
     </div>
 
-   
     <ul id="doctorsList" class="DoctorList"></ul>
   </div>
 
   <script>
-   
-    let doctors = [
-      { id: 1, name: "Dr. Ahmed B.", specialty: "Cardiologue" },
-      { id: 2, name: "Dr. Sofia M.", specialty: "Dermatologue" }
-    ];
+    document.addEventListener('DOMContentLoaded', function() {
+      const list = document.getElementById("doctorsList");
+      const addBtn = document.getElementById("addDoctorBtn");
+      const form = document.getElementById("addDoctorForm");
+      const saveBtn = document.getElementById("saveDoctor");
 
-    const list = document.getElementById("doctorsList");
-    const addBtn = document.getElementById("addDoctorBtn");
-    const form = document.getElementById("addDoctorForm");
-    const saveBtn = document.getElementById("saveDoctor");
+      
+      let doctors = JSON.parse(localStorage.getItem("doctors")) || [
+        { id: 1, name: "Dr. Ahmed B.", specialty: "Cardiologue" },
+        { id: 2, name: "Dr. Sofia M.", specialty: "Dermatologue" }
+      ];
 
-   
-    function renderList() {
-      list.innerHTML = "";
-      doctors.forEach((doc) => {
-        const li = document.createElement("li");
-        li.className = "doctor-card";
-        li.innerHTML = `<h3>${doc.name}</h3><p>🩺 ${doc.specialty}</p>`;
-        list.appendChild(li);
-      });
-    }
-
-    
-    addBtn.addEventListener("click", () => {
-      form.classList.toggle("hidden");
-    });
-
-   
-    saveBtn.addEventListener("click", () => {
-      const name = document.getElementById("doctorName").value.trim();
-      const specialty = document.getElementById("doctorSpecialty").value.trim();
-
-      if (!name || !specialty) {
-        alert("Veuillez remplir tous les champs !");
-        return;
+     
+      if (JSON.parse(localStorage.getItem("doctors")) === null) {
+        localStorage.setItem("doctors", JSON.stringify(doctors));
       }
 
-      doctors.push({
-        id: doctors.length + 1,
-        name,
-        specialty
+      function renderList() {
+        list.innerHTML = "";
+        doctors.forEach((doc) => {
+          const li = document.createElement("li");
+          li.className = "doctor-card";
+          li.innerHTML = `
+            <div class="doctor-info">
+              <h3>${doc.name}</h3>
+              <p>🩺 ${doc.specialty}</p>
+            </div>
+            <div class="doctor-actions">
+              <button class="edit-btn" data-id="${doc.id}">Edit</button>
+              <button class="delete-btn" data-id="${doc.id}">Delete</button>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+
+        
+        attachEventListeners();
+      }
+
+      function attachEventListeners() {
+       
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const doctorId = this.getAttribute('data-id');
+            editDoctor(doctorId);
+          });
+        });
+
+        
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const doctorId = this.getAttribute('data-id');
+            deleteDoctor(doctorId);
+          });
+        });
+      }
+
+      function editDoctor(doctorId) {
+        const doctor = doctors.find(d => d.id == doctorId);
+        if (doctor) {
+          const newName = prompt("Modifier le nom:", doctor.name);
+          const newSpecialty = prompt("Modifier la spécialité:", doctor.specialty);
+          
+          if (newName && newSpecialty) {
+            doctor.name = newName;
+            doctor.specialty = newSpecialty;
+            saveDoctors();
+            renderList();
+          }
+        }
+      }
+
+      function deleteDoctor(doctorId) {
+        const doctor = doctors.find(d => d.id == doctorId);
+        if (doctor && confirm(`Êtes-vous sûr de vouloir supprimer ${doctor.name} ?`)) {
+          doctors = doctors.filter(d => d.id != doctorId);
+          saveDoctors();
+          renderList();
+        }
+      }
+
+      function saveDoctors() {
+        localStorage.setItem("doctors", JSON.stringify(doctors));
+      }
+
+      
+      addBtn.addEventListener("click", () => {
+        form.classList.toggle("hidden");
       });
 
-      document.getElementById("doctorName").value = "";
-      document.getElementById("doctorSpecialty").value = "";
-      form.classList.add("hidden");
+      
+      saveBtn.addEventListener("click", () => {
+        const name = document.getElementById("doctorName").value.trim();
+        const specialty = document.getElementById("doctorSpecialty").value.trim();
 
+        if (!name || !specialty) {
+          alert("Veuillez remplir tous les champs !");
+          return;
+        }
+
+        const newDoctor = {
+          id: Date.now(), 
+          name,
+          specialty
+        };
+
+        doctors.push(newDoctor);
+        saveDoctors();
+        
+        document.getElementById("doctorName").value = "";
+        document.getElementById("doctorSpecialty").value = "";
+        form.classList.add("hidden");
+
+        renderList();
+      });
+
+      
       renderList();
     });
-
-    
-    renderList();
   </script>
 </body>
 </html>

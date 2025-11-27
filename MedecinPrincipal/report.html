@@ -81,5 +81,27 @@
 
     </div>
 
+     <a href="Dash.html" class="back-link">← Back to Dashboard</a>
+    <script>
+        console.log("Reports page loaded.");
+
+       
+        document.getElementById("period").addEventListener("change", function () {
+            console.log("Period selected:", this.value);
+            alert("You selected: " + this.value);
+        });
+
+       
+        const viewButtons = document.querySelectorAll(".report-card button");
+
+        viewButtons.forEach((btn, index) => {
+            btn.addEventListener("click", function () {
+                const title = this.parentElement.querySelector("h3").textContent;
+                alert("Opening report: " + title);
+                console.log("VIEW clicked for:", title);
+            });
+        });
+    </script>
+
 </body>
 </html>

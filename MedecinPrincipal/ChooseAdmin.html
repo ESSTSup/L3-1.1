@@ -11,37 +11,63 @@
     <h2>Choisir un nouvel administrateur</h2>
     <p>Pour changer l'administrateur, veuillez en sélectionner un autre :</p>
 
-    <ul class="doctor-list">
-      <li>
-        <input type="radio" name="doctor" id="doctor1" value="Doctor 1" />
-        <label for="doctor1">Doctor 1</label>
-      </li>
-      <li>
-        <input type="radio" name="doctor" id="doctor2" value="Doctor 2" />
-        <label for="doctor2">Doctor 2</label>
-      </li>
-      <li>
-        <input type="radio" name="doctor" id="doctor3" value="Doctor 3" />
-        <label for="doctor3">Doctor 3</label>
-      </li>
+    <ul class="doctor-list" id="doctorList">
+      
     </ul>
 
     <button id="confirmBtn">OK</button>
   </div>
 
   <script>
-    document.getElementById("confirmBtn").addEventListener("click", () => {
-      const selected = document.querySelector('input[name="doctor"]:checked');
-      if (!selected) {
-        alert("Veuillez choisir un docteur avant de continuer !");
-        return;
+    document.addEventListener('DOMContentLoaded', function() {
+      const doctorList = document.getElementById('doctorList');
+      const confirmBtn = document.getElementById('confirmBtn');
+
+      
+      let doctors = JSON.parse(localStorage.getItem('doctors')) || [];
+      
+      
+      if (doctors.length === 0) {
+        doctors = [
+          { name: 'Doctor 1', speciality: 'Cardiologue' },
+          { name: 'Doctor 2', speciality: 'Dentiste' },
+          { name: 'Doctor 3', speciality: 'Généraliste' }
+        ];
       }
 
       
-      localStorage.setItem("selectedAdmin", selected.value);
+      doctors.forEach((doctor, index) => {
+        const listItem = document.createElement('li');
+        
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'doctor';
+        radio.id = `doctor${index + 1}`;
+        radio.value = doctor.name;
+        
+        const label = document.createElement('label');
+        label.htmlFor = `doctor${index + 1}`;
+        label.textContent = `${doctor.name} - ${doctor.speciality}`;
+        
+        listItem.appendChild(radio);
+        listItem.appendChild(label);
+        doctorList.appendChild(listItem);
+      });
 
-    
-      window.location.href = "ConfirmAdmin.html";
+      
+      confirmBtn.addEventListener('click', () => {
+        const selected = document.querySelector('input[name="doctor"]:checked');
+        if (!selected) {
+          alert("Veuillez choisir un docteur avant de continuer !");
+          return;
+        }
+
+        
+        localStorage.setItem("selectedAdmin", selected.value);
+
+        
+        window.location.href = "ConfirmAdmin.html";
+      });
     });
   </script>
 </body>

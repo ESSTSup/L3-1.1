@@ -13,19 +13,22 @@
       <h2>My Clinic App</h2>
       <nav>
         <ul>
+          <li><a href="Login.html">Connexion</a></li>
           <li><a href="Profil-medp.html">Profile Medecin Principale</a></li>
+          <li><a href="manageApp.html">Manage Appointments</a></li>
+          <li><a href="ManageSubscription.html">Manage Subscription</a></li>
+          <li><a href="ListofD.html">Manage Doctors</a></li>
+          <li><a href="ListofA.html">Manage Assistants</a></li>
+          <li><a href="doctor_appointment.html">Manage Appointment</a></li>
+          <li><a href="ordonnance.html">Ordonnance</a></li>
+          <li><a href="medicalhistory.html">Patient Management System</a></li>
+          <li><a href="Consultation Management.html">Consultation Management</a></li>
           <li><a href="request.html">Requests</a></li>
           <li><a href="calender.html">Calender</a></li>
           <li><a href="patientrefferal.html">patientrefferal</a></li>
           <li><a href="finance.html">Finance</a></li>
           <li><a href="report.html">Report</a></li>
-          <li><a href="ListofD.html">Manage Doctors</a></li>
-          <li><a href="ListofA.html">Manage Assistants</a></li>
-          <li><a href="ManageSubscription.html">Manage Subscription</a></li>
-          <li><a href="manageApp.html">Manage Appointments</a></li>
           <li><a href="logout.html" class="logout"> Disconnect</a></li>
-
-
         </ul>
       </nav>
     </aside>
@@ -41,15 +44,15 @@
       <section class="stats">
         <div class="card">
           <h3>Doctors</h3>
-          <p>12 Registered</p>
+          <p id="doctorsCount">12 Registered</p>
         </div>
         <div class="card">
           <h3>Patients</h3>
-          <p>84 Today</p>
+          <p id="patientsCount">84 Today</p>
         </div>
         <div class="card">
           <h3>Appointments</h3>
-          <p>22 Scheduled</p>
+          <p id="appointmentsCount">22 Scheduled</p>
         </div>
       </section>
 
@@ -63,5 +66,100 @@
       </section>
     </main>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    
+      updateStatistics();
+      
+    
+      displayCurrentAdmin();
+      
+      
+      addCardInteractions();
+      
+      
+      setupLogoutHandler();
+    });
+
+    function updateStatistics() {
+      
+      const doctors = JSON.parse(localStorage.getItem('doctors')) || [];
+      const assistants = JSON.parse(localStorage.getItem('assistants')) || [];
+      
+     
+      const doctorsCount = doctors.length;
+      document.getElementById('doctorsCount').textContent = `${doctorsCount} Registered`;
+      
+      
+      const assistantsCount = assistants.length;
+      document.getElementById('patientsCount').textContent = `${assistantsCount + 84} Today`;
+      
+      
+      const appointmentsCount = 22; 
+      document.getElementById('appointmentsCount').textContent = `${appointmentsCount} Scheduled`;
+    }
+
+    function displayCurrentAdmin() {
+      const currentAdmin = localStorage.getItem('currentAdmin');
+      const welcomeMessage = document.querySelector('.content header p');
+      
+      if (currentAdmin) {
+        welcomeMessage.textContent = `Welcome Dr. ${currentAdmin} to your clinic management dashboard.`;
+      }
+    }
+
+    function addCardInteractions() {
+      const cards = document.querySelectorAll('.stats .card');
+      
+      cards.forEach(card => {
+      
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-5px)';
+          this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+        
+        
+        card.addEventListener('click', function() {
+          const cardTitle = this.querySelector('h3').textContent;
+          alert(`You clicked on ${cardTitle} statistics`);
+        });
+      });
+    }
+
+    function setupLogoutHandler() {
+      const logoutLink = document.querySelector('.logout');
+      
+      logoutLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const confirmLogout = confirm('Are you sure you want to disconnect?');
+        
+        if (confirmLogout) {
+          
+          alert('You have been disconnected successfully!');
+          window.location.href = 'login.html'; 
+        }
+      });
+    }
+
+   
+    function updateCurrentTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      const dateString = now.toLocaleDateString();
+      
+      
+      console.log(`Current time: ${timeString} - ${dateString}`);
+    }
+
+    
+    setInterval(updateCurrentTime, 60000);
+    updateCurrentTime(); 
+  </script>
 </body>
 </html>

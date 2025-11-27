@@ -25,5 +25,27 @@
       </div>
     </div>
   </main>
+
+  
+  <script>
+    console.log("Profile loaded successfully.");
+
+   
+    document.querySelector(".delete").addEventListener("click", function () {
+      const confirmDelete = confirm("Are you sure you want to delete this assistant?");
+      if (confirmDelete) {
+        alert("Assistant deleted successfully ✔️");
+        console.log("Assistant deleted.");
+      } else {
+        console.log("Deletion canceled.");
+      }
+    });
+
+    
+    document.querySelector(".edit").addEventListener("click", function () {
+      console.log("Redirecting to ModifyA.html...");
+    });
+  </script>
+
 </body>
 </html>

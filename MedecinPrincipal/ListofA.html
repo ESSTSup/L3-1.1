@@ -34,68 +34,205 @@
   </main>
 
   <script>
-   
-    const defaultAssistants = [
-      { name: "Sarah Benali", doctor: "Dr. Karim", phone: "+213 654 321 987", email: "sarah.benali@clinic.com", status: "Active" },
-      { name: "Amine Haddad", doctor: "Dr. Yasmine", phone: "+213 665 111 234", email: "amine.haddad@clinic.com", status: "Inactive" },
-      { name: "Lina Bouchama", doctor: "Dr. Mehdi", phone: "+213 779 888 111", email: "lina.bouchama@clinic.com", status: "Active" }
-    ];
+    document.addEventListener('DOMContentLoaded', function() {
+     
+      const defaultAssistants = [
+        { 
+          id: 1,
+          name: "Sarah Benali", 
+          doctor: "Dr. Karim", 
+          phone: "+213 654 321 987", 
+          email: "sarah.benali@clinic.com", 
+          status: "Active" 
+        },
+        { 
+          id: 2,
+          name: "Amine Haddad", 
+          doctor: "Dr. Yasmine", 
+          phone: "+213 665 111 234", 
+          email: "amine.haddad@clinic.com", 
+          status: "Inactive" 
+        },
+        { 
+          id: 3,
+          name: "Lina Bouchama", 
+          doctor: "Dr. Mehdi", 
+          phone: "+213 779 888 111", 
+          email: "lina.bouchama@clinic.com", 
+          status: "Active" 
+        }
+      ];
 
-    
-    let assistants = JSON.parse(localStorage.getItem("assistants")) || defaultAssistants;
-
-    const tbody = document.querySelector("#assistantsTable tbody");
-
-    
-    function displayAssistants() {
-      tbody.innerHTML = "";
-
-      assistants.forEach((a, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${a.name}</td>
-          <td>${a.doctor}</td>
-          <td>${a.phone}</td>
-          <td>${a.email}</td>
-          <td>${a.status}</td>
-          <td class="actions">
-            <button class="view" onclick="viewAssistant(${index})">View</button>
-            <button class="delete" onclick="deleteAssistant(${index})">Delete</button>
-            <button class="report" onclick="reportAssistant(${index})">Report</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-
-    displayAssistants();
-
-   
-    function saveAssistants() {
-      localStorage.setItem("assistants", JSON.stringify(assistants));
-    }
-
-   
-    function deleteAssistant(index) {
-      if (confirm("Are you sure you want to delete this assistant?")) {
-        assistants.splice(index, 1);
-        saveAssistants();
-        displayAssistants();
+      
+      let assistants = JSON.parse(localStorage.getItem("assistants")) || defaultAssistants;
+      
+      
+      if (JSON.parse(localStorage.getItem("assistants")) === null) {
+        localStorage.setItem("assistants", JSON.stringify(assistants));
       }
-    }
 
-    function viewAssistant(index) {
-      const a = assistants[index];
-      alert(`Assistant Info:\n\nName: ${a.name}\nDoctor: ${a.doctor}\nPhone: ${a.phone}\nEmail: ${a.email}\nStatus: ${a.status}`);
-    }
+      const tbody = document.querySelector("#assistantsTable tbody");
 
-   
-    function reportAssistant(index) {
-      const a = assistants[index];
-      alert(`Report sent for ${a.name}`);
-    }
+     
+      function displayAssistants() {
+        tbody.innerHTML = "";
+
+        assistants.forEach((assistant) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${assistant.name}</td>
+            <td>${assistant.doctor}</td>
+            <td>${assistant.phone}</td>
+            <td>${assistant.email}</td>
+            <td>
+              <span class="status ${assistant.status.toLowerCase()}">${assistant.status}</span>
+            </td>
+            <td class="actions">
+              <button class="view" onclick="viewAssistant(${assistant.id})">View</button>
+              <button class="edit" onclick="editAssistant(${assistant.id})">Edit</button>
+              <button class="delete" onclick="deleteAssistant(${assistant.id})">Delete</button>
+              <button class="report" onclick="reportAssistant(${assistant.id})">Report</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      
+      function saveAssistants() {
+        localStorage.setItem("assistants", JSON.stringify(assistants));
+      }
+
+      
+      window.viewAssistant = function(id) {
+        const assistant = assistants.find(a => a.id === id);
+        if (assistant) {
+          alert(`Assistant Info:\n\nName: ${assistant.name}\nDoctor: ${assistant.doctor}\nPhone: ${assistant.phone}\nEmail: ${assistant.email}\nStatus: ${assistant.status}`);
+        }
+      };
+
+      
+      window.editAssistant = function(id) {
+        const assistant = assistants.find(a => a.id === id);
+        if (assistant) {
+          const newName = prompt("Edit name:", assistant.name);
+          const newDoctor = prompt("Edit supervising doctor:", assistant.doctor);
+          const newPhone = prompt("Edit phone:", assistant.phone);
+          const newEmail = prompt("Edit email:", assistant.email);
+          const newStatus = prompt("Edit status (Active/Inactive):", assistant.status);
+
+          if (newName && newDoctor && newPhone && newEmail && newStatus) {
+            assistant.name = newName;
+            assistant.doctor = newDoctor;
+            assistant.phone = newPhone;
+            assistant.email = newEmail;
+            assistant.status = newStatus;
+            
+            saveAssistants();
+            displayAssistants();
+            alert("Assistant updated successfully!");
+          }
+        }
+      };
+
+      window.deleteAssistant = function(id) {
+        const assistant = assistants.find(a => a.id === id);
+        if (assistant && confirm(`Are you sure you want to delete ${assistant.name}?`)) {
+          
+          localStorage.setItem('assistantToDelete', id);
+          
+          
+          window.location.href = 'DeletA.html';
+        }
+      };
+
+      
+      window.reportAssistant = function(id) {
+        const assistant = assistants.find(a => a.id === id);
+        if (assistant) {
+          const reportData = {
+            assistant: assistant.name,
+            doctor: assistant.doctor,
+            status: assistant.status,
+            date: new Date().toLocaleDateString(),
+            type: 'Performance Report'
+          };
+          
+          
+          let reports = JSON.parse(localStorage.getItem('assistantReports')) || [];
+          reports.push(reportData);
+          localStorage.setItem('assistantReports', JSON.stringify(reports));
+          
+          alert(`Report generated for ${assistant.name}\nReport saved to system.`);
+        }
+      };
+
+     
+      function filterByStatus(status) {
+        if (status === 'all') {
+          displayAssistants();
+        } else {
+          const filteredAssistants = assistants.filter(a => a.status === status);
+          tbody.innerHTML = "";
+          filteredAssistants.forEach(assistant => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${assistant.name}</td>
+              <td>${assistant.doctor}</td>
+              <td>${assistant.phone}</td>
+              <td>${assistant.email}</td>
+              <td>
+                <span class="status ${assistant.status.toLowerCase()}">${assistant.status}</span>
+              </td>
+              <td class="actions">
+                <button class="view" onclick="viewAssistant(${assistant.id})">View</button>
+                <button class="edit" onclick="editAssistant(${assistant.id})">Edit</button>
+                <button class="delete" onclick="deleteAssistant(${assistant.id})">Delete</button>
+                <button class="report" onclick="reportAssistant(${assistant.id})">Report</button>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        }
+      }
+
+     
+      function searchAssistants(query) {
+        const filteredAssistants = assistants.filter(a => 
+          a.name.toLowerCase().includes(query.toLowerCase()) ||
+          a.doctor.toLowerCase().includes(query.toLowerCase()) ||
+          a.email.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        tbody.innerHTML = "";
+        filteredAssistants.forEach(assistant => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${assistant.name}</td>
+            <td>${assistant.doctor}</td>
+            <td>${assistant.phone}</td>
+            <td>${assistant.email}</td>
+            <td>
+              <span class="status ${assistant.status.toLowerCase()}">${assistant.status}</span>
+            </td>
+            <td class="actions">
+              <button class="view" onclick="viewAssistant(${assistant.id})">View</button>
+              <button class="edit" onclick="editAssistant(${assistant.id})">Edit</button>
+              <button class="delete" onclick="deleteAssistant(${assistant.id})">Delete</button>
+              <button class="report" onclick="reportAssistant(${assistant.id})">Report</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      
+      displayAssistants();
+
+     
+      window.filterByStatus = filterByStatus;
+      window.searchAssistants = searchAssistants;
+    });
   </script>
 </body>
 </html>
-

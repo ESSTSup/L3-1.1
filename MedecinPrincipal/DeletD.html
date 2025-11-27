@@ -19,26 +19,48 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const doctor = localStorage.getItem("doctorToDelete");
+      const doctorName = document.getElementById("doctorName");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const confirmBtn = document.getElementById("confirmBtn");
+
+      
+      if (doctor) {
+        doctorName.textContent = "Docteur sélectionné : " + doctor;
+      } else {
+        doctorName.textContent = "Aucun docteur sélectionné.";
+        confirmBtn.disabled = true;
+      }
+
+      
+      cancelBtn.addEventListener("click", () => {
+        window.location.href = "modify.html";
+      });
+
+      
+      confirmBtn.addEventListener("click", () => {
+        if (!doctor) {
+          alert("Aucun docteur sélectionné !");
+          return;
+        }
+
+        
+        let doctors = JSON.parse(localStorage.getItem("doctors")) || [];
+        
+        
+        doctors = doctors.filter(d => d.name !== doctor);
+        
     
-    const doctor = localStorage.getItem("doctorToDelete");
-    const doctorName = document.getElementById("doctorName");
+        localStorage.setItem("doctors", JSON.stringify(doctors));
+        
+        
+        localStorage.removeItem("doctorToDelete");
 
-    if (doctor) {
-      doctorName.textContent = "Docteur sélectionné : " + doctor;
-    } else {
-      doctorName.textContent = "Aucun docteur sélectionné.";
-    }
-
-   
-    document.getElementById("cancelBtn").addEventListener("click", () => {
-      
-      window.location.href = "modify.html";
-    });
-
-    document.getElementById("confirmBtn").addEventListener("click", () => {
-      alert(doctor + " a été supprimé avec succès !");
-      
-      window.location.href = "ConfirmAdmin.html";
+        alert(doctor + " a été supprimé avec succès !");
+        
+        window.location.href = "ListofD.html";
+      });
     });
   </script>
 </body>

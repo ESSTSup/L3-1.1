@@ -25,5 +25,33 @@
       <a href="Dash.html" class="btn back">⬅ Retour au Dashboard</a>
     </div>
   </div>
+
+ 
+  <script>
+    console.log("Doctor profile loaded.");
+
+    
+    document.querySelector(".edit").addEventListener("click", function() {
+      console.log("Redirecting to ModifyD.html...");
+    });
+
+    
+    document.querySelector(".delete").addEventListener("click", function(e) {
+      const confirmDelete = confirm("Voulez-vous vraiment supprimer ce docteur ?");
+      if (!confirmDelete) {
+        e.preventDefault(); 
+        console.log("Suppression annulée.");
+      } else {
+        alert("Docteur supprimé avec succès ✔️");
+        console.log("Doctor deleted.");
+      }
+    });
+
+    
+    document.querySelector(".back").addEventListener("click", function() {
+      console.log("Retour vers le Dashboard...");
+    });
+  </script>
+
 </body>
 </html>

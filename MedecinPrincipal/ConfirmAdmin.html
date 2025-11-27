@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="card">
-    <h2>Confirmer le changement d’administrateur</h2>
+    <h2>Confirmer le changement d'administrateur</h2>
     <p id="selectedDoctor"></p>
     <p>Voulez-vous vraiment rendre ce docteur administrateur ?</p>
 
@@ -19,27 +19,57 @@
   </div>
 
   <script>
-    
-    const selected = localStorage.getItem("selectedAdmin");
-    const display = document.getElementById("selectedDoctor");
+    document.addEventListener('DOMContentLoaded', function() {
+      const selected = localStorage.getItem("selectedAdmin");
+      const display = document.getElementById("selectedDoctor");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const confirmBtn = document.getElementById("confirmBtn");
 
-    if (selected) {
-      display.textContent = "Docteur sélectionné : " + selected;
-    } else {
-      display.textContent = "Aucun docteur sélectionné.";
-    }
+      
+      if (selected) {
+        display.textContent = "Docteur sélectionné : " + selected;
+      } else {
+        display.textContent = "Aucun docteur sélectionné.";
+        confirmBtn.disabled = true;
+      }
 
-    
-    document.getElementById("cancelBtn").addEventListener("click", () => {
-      window.location.href = "ChooseAdmin.html";
-    });
+      
+      cancelBtn.addEventListener("click", () => {
+        window.location.href = "ChooseAdmin.html";
+      });
 
-    document.getElementById("confirmBtn").addEventListener("click", () => {
+     
+      confirmBtn.addEventListener("click", () => {
+        if (!selected) {
+          alert("Aucun docteur sélectionné !");
+          return;
+        }
+
+       
+        localStorage.setItem("currentAdmin", selected);
         localStorage.removeItem("selectedAdmin");
 
-      alert(selected + " est maintenant le nouvel administrateur !");
-      
-      window.location.href = "ModifyD.html";
+        
+        updateDoctorAdminStatus(selected);
+
+        alert(selected + " est maintenant le nouvel administrateur !");
+        
+        window.location.href = "ModifyD.html";
+      });
+
+      function updateDoctorAdminStatus(adminName) {
+        let doctors = JSON.parse(localStorage.getItem('doctors')) || [];
+        
+        
+        doctors = doctors.map(doctor => {
+          return {
+            ...doctor,
+            isAdmin: doctor.name === adminName
+          };
+        });
+        
+        localStorage.setItem('doctors', JSON.stringify(doctors));
+      }
     });
   </script>
 </body>
