@@ -1,5 +1,5 @@
 /* ============================
-   🔥 EMAIL VALIDATION
+    EMAIL VALIDATION
    ============================ */
 function validateEmail(email) {
     const pattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -7,7 +7,7 @@ function validateEmail(email) {
 }
 
 // ==========main page ==========
-// ======================= MOCK DATA =======================
+// ====================== DATA =====
 const mockDoctors = [
   {
     id: 1,
@@ -56,14 +56,14 @@ const mockDoctors = [
 const selectedCriteria = new Set();
 
 
-// ======================= CHOOSE METHOD =======================
+//  CHOOSE METHOD ==========
 function getSelectedMethod() {
   const m = document.querySelector("input[name='searchMethod']:checked");
   return m ? m.value : "method1";
 }
 
 
-// ======================= ACTIVATE / DEACTIVATE CARDS =======================
+//  ACTIVATE / DEACTIVATE CARDS =====
 document.querySelectorAll(".criteria-checkbox").forEach(cb => {
   cb.addEventListener("change", () => {
     const card = cb.closest(".criteria-card");
@@ -82,7 +82,7 @@ document.querySelectorAll(".criteria-checkbox").forEach(cb => {
 });
 
 
-// ======================= FILTER DOCTORS =======================
+// ======== FILTER DOCTORS =======================
 function filterDoctors() {
   const method = getSelectedMethod();
 
@@ -179,7 +179,7 @@ function displayDoctors(list) {
 }
 
 
-// ======================= SEARCH DOCTOR BY NAME =======================
+// ======= SEARCH DOCTOR BY NAME =======================
 document.getElementById("findBtn").addEventListener("click", filterDoctors);
 
 document.getElementById("doctorSearchBtn")?.addEventListener("click", () => {
@@ -219,7 +219,7 @@ function detectLocation() {
 
 
 /* ============================
-   🔥 ROLE SELECTION (login + profil)
+   ROLE SELECTION (login + profil)
    ============================ */
 function selectRole(role, page) {
     localStorage.setItem("userRole", role);
@@ -237,8 +237,8 @@ function selectRoleFromProfile(role) {
 }
 
 /* ============================
-   🔥 CLINIC LOGIN (doctor + assistant)
-   ⚠️ ID/PASSWORD REMOVED
+ CLINIC LOGIN (doctor + assistant)
+   ID/PASSWORD REMOVED
    ============================ */
 function handleLogin(event) {
     event.preventDefault();
@@ -268,7 +268,7 @@ function handleLogin(event) {
 }
 
 /* ============================
-   🔥 SIGN IN PATIENT
+    SIGN IN PATIENT
    ============================ */
 function loginUser() {
     const email = document.getElementById("email").value.trim();
@@ -289,7 +289,7 @@ function loginUser() {
 }
 
 /* ============================
-   🔥 PERSONAL INFORMATION
+    PERSONAL INFORMATION
    ============================ */
 function validatePersonalInfo() {
     const first = document.querySelector("input[name='firstName']").value.trim();
@@ -304,10 +304,10 @@ function validatePersonalInfo() {
 
 
 /* ============================
-   🔥 CLINICLOGIN
+   CLINICLOGIN
    ============================ */
   /* ============================
-   🔥 CLINIC LOGIN AVEC ID + PASSWORD
+ CLINIC LOGIN AVEC ID + PASSWORD
    ============================ */
 function handleClinicIDLogin(event) {
     event.preventDefault();
@@ -321,13 +321,7 @@ function handleClinicIDLogin(event) {
         return false;
     }
 
-    // Si tu veux un format spécial pour l'ID, enlève ce commentaire et adapte :
-    // const idPattern = /^[A-Za-z]{3}\d{3}$/; // Exemple : DOC001, AST123
-    // if (!idPattern.test(id)) {
-    //     alert("Format ID invalide. Exemple : DOC001");
-    //     return false;
-    // }
-
+  
     // Vérification mot de passe vide
     if (pass === "") {
         alert("Veuillez saisir votre mot de passe.");
@@ -365,7 +359,7 @@ function handleClinicIDLogin(event) {
 
 
 /* ============================
-   🔥 CONTACT
+    CONTACT
    ============================ */
 function validateContact() {
     const email = document.querySelector("input[name='email']").value.trim();
@@ -374,32 +368,32 @@ function validateContact() {
     const city = document.querySelector("input[name='city']").value.trim();
     const postal = document.querySelector("input[name='postalCode']").value.trim();
 
-    // 1️⃣ Vérifier si un champ est vide
+    // 1️ Vérifier si un champ est vide
     if (!email || !phone || !address || !city || !postal) {
         alert("Veuillez remplir tous les champs.");
         return false;
     }
 
-    // 2️⃣ Vérifier l’email
+    
     if (!validateEmail(email)) {
         alert("Email invalide. Veuillez ajouter @ et un domaine (ex: gmail.com).");
         return false;
     }
 
-    // 3️⃣ Vérifier numéro
+   
     if (phone.length < 10) {
         alert("Numéro de téléphone trop court.");
         return false;
     }
 
-    // 4️⃣ OK → suivant
-    window.location.href = "security.html";
+  
+    window.location.href = "securitypassword.html";
     return false;
 }
 
 
 /* ============================
-   🔥 SECURITY (patient only)
+    SECURITY (patient only)
    ============================ */
 function validateSecurity() {
     const pass = document.getElementById("password").value.trim();
@@ -419,7 +413,7 @@ function validateSecurity() {
 }
 
 /* ============================
-   🔥 MEDICAL INFO
+    MEDICAL INFO
    ============================ */
 function validateMedical() {
     const name = document.querySelector("input[name='emergencyName']").value.trim();
@@ -434,9 +428,10 @@ function validateMedical() {
 }
 
 /* ============================
-   🔥 LOGOUT
+    LOGOUT
    ============================ */
 function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
+
