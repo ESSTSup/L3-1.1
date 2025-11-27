@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File d'Attente - Cabinet Médical</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e0f2fe 0%, #ddd6fe 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 48px;
+        color: #4338ca;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #6b7280;
+        font-size: 18px;
+      }
+
+      .current-patient {
+        background: linear-gradient(135deg, #9e9ea2 0%, #636364 100%);
+        padding: 60px;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        margin-bottom: 30px;
+        color: white;
+      }
+
+      .current-patient .label {
+        font-size: 20px;
+        opacity: 0.9;
+        margin-bottom: 20px;
+      }
+
+      .current-patient .numero {
+        font-size: 100px;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+
+      .current-patient .name {
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 40px;
+      }
+
+      .next-btn {
+        background: white;
+        color: #4f46e5;
+        border: none;
+        padding: 20px 50px;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 15px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .next-btn:hover {
+        background: #f3f4f6;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .next-btn:active {
+        transform: translateY(0);
+      }
+
+      .waiting-list {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .waiting-list h2 {
+        font-size: 28px;
+        color: #1f2937;
+        margin-bottom: 25px;
+      }
+
+      .patient-card {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 25px;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 15px;
+        margin-bottom: 15px;
+      }
+
+      .patient-card .numero {
+        font-size: 40px;
+        font-weight: bold;
+        color: #9ca3af;
+        width: 120px;
+        text-align: center;
+      }
+
+      .patient-card .name {
+        font-size: 24px;
+        color: #374151;
+      }
+
+      .empty-state {
+        background: white;
+        padding: 80px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .empty-state .icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+      }
+
+      .empty-state p {
+        font-size: 28px;
+        color: #6b7280;
+      }
+
+      .add-patient {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+      }
+
+      .add-patient h3 {
+        font-size: 24px;
+        color: #1f2937;
+        margin-bottom: 20px;
+      }
+
+      .add-patient-form {
+        display: flex;
+        gap: 15px;
+      }
+
+      .add-patient-form input {
+        flex: 1;
+        padding: 15px 20px;
+        font-size: 18px;
+        border: 2px solid #d1d5db;
+        border-radius: 12px;
+        outline: none;
+      }
+
+      .add-patient-form input:focus {
+        border-color: #4f46e5;
+      }
+
+      .add-btn {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .add-btn:hover {
+        background: #4338ca;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>File d'Attente</h1>
+        <p>Cabinet Médical</p>
+      </div>
+
+      <div id="content"></div>
+
+      <div class="add-patient">
+        <h3>Ajouter un Patient</h3>
+        <div class="add-patient-form">
+          <input type="text" id="patientName" placeholder="Nom du patient" />
+          <button class="add-btn" onclick="addPatient()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let patients = [
+        { id: "1", name: "Ahmed Benali", numero: 1 },
+        { id: "2", name: "Fatima Zohra", numero: 2 },
+        { id: "3", name: "Karim Mansouri", numero: 3 },
+        { id: "4", name: "Amira Boudiaf", numero: 4 },
+        { id: "5", name: "Mohamed Cherif", numero: 5 },
+      ];
+
+      function loadPatients() {
+        const saved = localStorage.getItem("patients");
+        if (saved) {
+          patients = JSON.parse(saved);
+        }
+      }
+
+      function savePatients() {
+        localStorage.setItem("patients", JSON.stringify(patients));
+      }
+
+      function render() {
+        const content = document.getElementById("content");
+
+        if (patients.length === 0) {
+          content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">✓</div>
+                        <p>Aucun patient en attente</p>
+                    </div>
+                `;
+          return;
+        }
+
+        let html = `
+                <div class="current-patient">
+                    <div class="label">Patient Actuel</div>
+                    <div class="numero">N° ${patients[0].numero}</div>
+                    <div class="name">${patients[0].name}</div>
+                    <button class="next-btn" onclick="nextPatient()">
+                        Patient Suivant
+                        <span>→</span>
+                    </button>
+                </div>
+            `;
+
+        if (patients.length > 1) {
+          html += `
+                    <div class="waiting-list">
+                        <h2>Patients Suivants (${patients.length - 1})</h2>
+                `;
+
+          for (let i = 1; i < patients.length; i++) {
+            html += `
+                        <div class="patient-card">
+                            <div class="numero">N° ${patients[i].numero}</div>
+                            <div class="name">${patients[i].name}</div>
+                        </div>
+                    `;
+          }
+
+          html += `</div>`;
+        }
+
+        content.innerHTML = html;
+      }
+
+      function nextPatient() {
+        if (patients.length === 0) return;
+        patients.shift();
+        savePatients();
+        render();
+      }
+
+      function addPatient() {
+        const input = document.getElementById("patientName");
+        const name = input.value.trim();
+
+        if (!name) return;
+
+        const newPatient = {
+          id: Date.now().toString(),
+          name: name,
+          numero:
+            patients.length > 0
+              ? Math.max(...patients.map((p) => p.numero)) + 1
+              : 1,
+        };
+
+        patients.push(newPatient);
+        savePatients();
+        input.value = "";
+        render();
+      }
+
+      document
+        .getElementById("patientName")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            addPatient();
+          }
+        });
+
+      loadPatients();
+      render();
+    </script>
+  </body>
+</html>
