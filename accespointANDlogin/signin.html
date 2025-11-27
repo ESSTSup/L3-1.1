@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connexion - Clinique</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 
   <style>
     body {
@@ -68,90 +69,14 @@
     .connect-btn:hover {
       background-color: #8d524d;
     }
-
-    .role-info {
-      margin-bottom: 20px;
-      padding: 10px;
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      font-size: 14px;
-    }
   </style>
 
-  <script>
-    function loginUser() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (email === "" || password === "") {
-        alert("Veuillez remplir tous les champs !");
-        return;
-      }
-
-      // Récupère le rôle choisi
-      const role = localStorage.getItem("userRole");
-
-      // Redirige selon le rôle
-      if (role === "principal") {
-        window.location.href = "../Medecinprincipal/Dash.html"; 
-      } 
-      else if (role === "doctor") {
-        window.location.href = "../doctor/dashboard.html"; 
-      } 
-      else if (role === "assistant") {
-        window.location.href = "../assistant/assistantdash.html";
-      } 
-      else if (role === "patient") {
-        window.location.href = "../patient/dashboard.html";
-      } 
-      else {
-        alert("Aucun rôle sélectionné. Retournez à la page des profils.");
-        window.location.href = "profil.html";
-      }
-    }
-
-    // Afficher le rôle actuel
-    function displayRole() {
-      const role = localStorage.getItem("userRole");
-      const roleInfo = document.getElementById("roleInfo");
-      
-      if (role) {
-        let roleText = "";
-        switch(role) {
-          case "principal":
-            roleText = "Médecin Principal";
-            break;
-          case "doctor":
-            roleText = "Médecin";
-            break;
-          case "assistant":
-            roleText = "Assistant";
-            break;
-          case "patient":
-            roleText = "Patient";
-            break;
-          default:
-            roleText = "Utilisateur";
-        }
-        roleInfo.textContent = `Connexion en tant que : ${roleText}`;
-      } else {
-        roleInfo.textContent = "Aucun rôle sélectionné";
-        roleInfo.style.backgroundColor = "#ffe5e5";
-      }
-    }
-
-    // Afficher le rôle au chargement de la page
-    window.onload = displayRole;
-  </script>
+  
 </head>
 <body class="login-page">
 
   <div class="login-container">
     <h1>Connexion</h1>
-
-    <div class="role-info" id="roleInfo">
-      <!-- Role information will be displayed here -->
-    </div>
 
     <form onsubmit="return false;">
       <div class="form-group">
