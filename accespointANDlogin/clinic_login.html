@@ -5,177 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connexion - Clinique</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body.login-page {
-      background-color: #cce6ff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .login-container {
-      background: white;
-      width: 320px;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .login-container h1 {
-      color: #004080;
-      margin-bottom: 25px;
-    }
-
-    .form-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      color: #555;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .connect-btn {
-      width: 100%;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background-color 0.3s;
-    }
-
-    .connect-btn:hover {
-      background-color: #0056b3;
-    }
-
-    .role-info {
-      margin-top: 15px;
-      padding: 10px;
-      background-color: #f8f9fa;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    
-    .back-link {
-      display: block;
-      margin-top: 15px;
-      color: #007bff;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    
-    .back-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <script defer src="script.js"></script>
 </head>
-<body class="login-page">
+
+<body class="login-page" >
 
   <div class="login-container">
-    <h1>Connexion Clinique</h1>
-    
-    <div class="role-info" id="roleInfo">
-    
-    </div>
+    <h1>Connexion</h1>
 
-    <form id="loginForm" onsubmit="loginUser(event)">
+    <form id="clinicLoginForm" onsubmit="return handleClinicIDLogin(event)">
+
       <div class="form-group">
         <label for="clinic-id">ID Clinique :</label>
         <input type="text" id="clinic-id" name="clinic-id" required>
       </div>
 
       <div class="form-group">
-        <label for="password">Mot de passe :</label>
-        <input type="password" id="password" name="password" required>
+        <label for="clinic-password">Mot de passe :</label>
+        <input type="password" id="clinic-password" name="clinic-password" required>
       </div>
 
       <button type="submit" class="connect-btn">Se connecter</button>
     </form>
-    
-    <a href="profil.html" class="back-link">← Retour à la sélection de profil</a>
   </div>
-
-  <script>
-  
-    function displayRoleInfo() {
-      const role = localStorage.getItem("userRole");
-      const roleInfo = document.getElementById("roleInfo");
-      
-      if (role) {
-        let roleText = "";
-        switch(role) {
-          case "doctor":
-            roleText = "Médecin";
-            break;
-          case "assistant":
-            roleText = "Assistant";
-            break;
-          default:
-            roleText = "Utilisateur";
-        }
-        roleInfo.textContent = `Connexion en tant que : ${roleText}`;
-      } else {
-        roleInfo.textContent = "Aucun rôle sélectionné. Veuillez sélectionner un rôle.";
-        roleInfo.style.backgroundColor = "#ffe5e5";
-      }
-    }
-
-   
-    function loginUser(event) {
-      event.preventDefault();
-      
-      const clinicId = document.getElementById("clinic-id").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (clinicId === "" || password === "") {
-        alert("Veuillez remplir tous les champs !");
-        return;
-      }
-
-   
-      const role = localStorage.getItem("userRole");
-
-  
-      switch(role) {
-        case "doctor":
-        case "assistant":
-       
-          localStorage.setItem("isLoggedIn", "true");
-          window.location.href = "profil.html";
-          break;
-        case "patient":
-         
-          alert("Les patients doivent utiliser la page de connexion patient.");
-          window.location.href = "signin.html";
-          break;
-        default:
-          alert("Aucun rôle sélectionné. Veuillez sélectionner un rôle.");
-          window.location.href = "profil.html";
-      }
-    }
-
-  
-    window.onload = displayRoleInfo;
-  </script>
 
 </body>
 </html>
