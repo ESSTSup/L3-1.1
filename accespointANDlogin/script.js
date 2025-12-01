@@ -285,7 +285,7 @@ function loginUser() {
     }
 
     localStorage.setItem("loggedIn", "true");
-    window.location.href = "../patient/dashboard.html";
+    window.location.href = "../patient/dashbroad.html";
 }
 
 /* ============================
@@ -344,7 +344,7 @@ function handleClinicIDLogin(event) {
     }
 
     if (role === "doctor") {
-        window.location.href = "../doctor/dashbroad.html";
+        window.location.href = "../doctor/dashboard.html";
         return false;
     }
 
@@ -434,6 +434,7 @@ function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
+
 
 
 
