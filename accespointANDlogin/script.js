@@ -253,7 +253,7 @@ function handleLogin(event) {
     const role = localStorage.getItem("userRole");
 
     if (role === "doctor") {
-        window.location.href = "../Doctor/dash.html";
+        window.location.href = "../doctor/dash.html";
         return false;
     }
 
@@ -434,5 +434,6 @@ function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
+
 
 
