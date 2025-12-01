@@ -258,7 +258,7 @@ function handleLogin(event) {
     }
 
     if (role === "assistant") {
-        window.location.href = "../assistant/assdash.html";
+        window.location.href = "../assistant/assistandeshb.html";
         return false;
     }
 
@@ -349,7 +349,7 @@ function handleClinicIDLogin(event) {
     }
 
     if (role === "assistant") {
-        window.location.href = "../assistant/assdash.html";
+        window.location.href = "../assistant/assistandeshb.html";
         return false;
     }
 
@@ -434,6 +434,7 @@ function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
+
 
 
 
