@@ -344,7 +344,7 @@ function handleClinicIDLogin(event) {
     }
 
     if (role === "doctor") {
-        window.location.href = "../doctor/dashboard.html";
+        window.location.href = "../doctor/dashbroad.html";
         return false;
     }
 
@@ -434,6 +434,7 @@ function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
+
 
 
 
