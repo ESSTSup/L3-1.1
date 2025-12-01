@@ -253,12 +253,12 @@ function handleLogin(event) {
     const role = localStorage.getItem("userRole");
 
     if (role === "doctor") {
-        window.location.href = "dash.html";
+        window.location.href = "../Doctor/dash.html";
         return false;
     }
 
     if (role === "assistant") {
-        window.location.href = "assdash.html";
+        window.location.href = "../assistant/assdash.html";
         return false;
     }
 
@@ -285,7 +285,7 @@ function loginUser() {
     }
 
     localStorage.setItem("loggedIn", "true");
-    window.location.href = "dashboard.html";
+    window.location.href = "../patient/dashboard.html";
 }
 
 /* ============================
@@ -434,4 +434,5 @@ function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
+
 
