@@ -1,310 +1,852 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Consultation Management</title>
+    <title>Gestion des Consultations Médicales</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f4f6f8;
+      * {
         margin: 0;
-        padding: 30px;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      h1 {
-        text-align: center;
-        color: #2b3a67;
-        margin-bottom: 20px;
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: white;
+        min-height: 100vh;
+        padding: 20px;
       }
 
       .container {
-        max-width: 900px;
+        max-width: 1200px;
         margin: 0 auto;
-        background: #fff;
-        padding: 20px 25px;
-        border-radius: 12px;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
       }
 
-      form {
+      .header {
+        background: linear-gradient(135deg, #a5a6aa 0%, #29282b 100%);
+        color: white;
+        padding: 30px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .search-bar {
         display: flex;
-        flex-direction: column;
-        gap: 15px;
+        gap: 10px;
+        margin-bottom: 30px;
       }
 
-      label {
+      .search-bar input {
+        flex: 1;
+        padding: 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: border 0.3s;
+      }
+
+      .search-bar input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .patients-list {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .patient-card {
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .patient-card:hover {
+        border-color: #e4e6da;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+      }
+
+      .patient-card.active {
+        border-color: #d5d8ba;
+        background: #f0f4ff;
+      }
+
+      .patient-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .patient-name {
+        font-size: 20px;
         font-weight: bold;
         color: #333;
       }
 
-      input,
-      textarea,
-      select {
-        padding: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
+      .patient-id {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
         font-size: 14px;
-        width: 100%;
       }
 
-      textarea {
+      .patient-info {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .consultation-badge {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin-top: 8px;
+      }
+
+      .consultation-section {
+        display: none;
+        margin-top: 30px;
+        border-top: 2px solid #e0e0e0;
+        padding-top: 30px;
+      }
+
+      .consultation-section.active {
+        display: block;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #218838;
+      }
+
+      .btn-warning {
+        background: #ffc107;
+        color: #333;
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .btn-warning:hover {
+        background: #e0a800;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+      }
+
+      .consultations-list {
+        display: grid;
+        gap: 20px;
+      }
+
+      .consultation-card {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+      }
+
+      .consultation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+      }
+
+      .consultation-date {
+        font-size: 18px;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .consultation-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .consultation-details {
+        color: #666;
+        line-height: 1.8;
+      }
+
+      .consultation-details strong {
+        color: #333;
+        display: block;
+        margin-top: 10px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .modal-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 30px;
+        cursor: pointer;
+        color: #999;
+      }
+
+      .close-btn:hover {
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        font-family: inherit;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .form-group textarea {
         resize: vertical;
         min-height: 80px;
       }
 
-      .checkbox-group {
+      .modal-actions {
         display: flex;
-        flex-wrap: wrap;
         gap: 10px;
+        justify-content: flex-end;
+        margin-top: 30px;
       }
 
-      .checkbox-group label {
-        font-weight: normal;
-      }
-
-      button {
-        padding: 10px 15px;
-        border: none;
-        border-radius: 8px;
-        background: #3e4148;
-        color: white;
-        cursor: pointer;
-        font-size: 15px;
-        transition: background 0.3s;
-      }
-
-      button:hover {
-        background: #4056a1;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 25px;
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 10px;
+      .empty-state {
         text-align: center;
+        padding: 60px 20px;
+        color: #999;
       }
 
-      th {
-        background: #62646b;
+      .empty-state-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+      }
+
+      .back-btn {
+        background: #6c757d;
         color: white;
+        margin-bottom: 20px;
       }
 
-      .action-btn {
-        padding: 5px 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+      .back-btn:hover {
+        background: #5a6268;
+      }
+
+      .patient-detail-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
       }
 
-      .edit {
-        background: #f4b400;
+      .patient-detail-card h2 {
+        font-size: 28px;
+        margin-bottom: 15px;
       }
 
-      .delete {
-        background: #d9534f;
+      .patient-detail-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        font-size: 14px;
       }
     </style>
   </head>
   <body>
-    <h1>Consultation Management</h1>
-
     <div class="container">
-      <form id="consultationForm">
-        <div>
-          <label for="patient">Patient Name:</label>
-          <input type="text" id="patient" required />
-        </div>
+      <div class="header">
+        <h1>🏥 Gestion des Consultations Médicales</h1>
+        <p>Système de gestion pour les consultations des patients</p>
+      </div>
 
-        <div>
-          <label for="doctor">Doctor:</label>
-          <input type="text" id="doctor" required />
-        </div>
-
-        <div>
-          <label for="date">Date:</label>
-          <input type="date" id="date" required />
-        </div>
-
-        <div>
-          <label for="time">Time:</label>
-          <input type="time" id="time" required />
-        </div>
-
-        <div>
-          <label for="notes">Notes:</label>
-          <textarea
-            id="notes"
-            placeholder="Add doctor notes..."
-            required
-          ></textarea>
-        </div>
-
-        <div>
-          <label>Further Exams:</label>
-          <div class="checkbox-group">
-            <label
-              ><input type="checkbox" value="Blood Test" /> Blood Test</label
-            >
-            <label><input type="checkbox" value="Echo" /> Echo</label>
-            <label><input type="checkbox" value="X-Ray" /> X-Ray</label>
-            <label
-              ><input type="checkbox" value="Urine Test" /> Urine Test</label
-            >
-          </div>
-        </div>
-
-        <div>
-          <label for="certificate">Medical Certificate:</label>
-          <textarea
-            id="certificate"
-            placeholder="Write the medical certificate here..."
-          ></textarea>
-        </div>
-
-        <div>
-          <label for="signature">Doctor’s Signature:</label>
+      <div class="content">
+        <div class="search-bar">
           <input
             type="text"
-            id="signature"
-            placeholder="_________________________"
+            id="searchInput"
+            placeholder="🔍 Rechercher par ID ou Email du patient..."
           />
         </div>
 
-        <button type="submit">Add Consultation</button>
-      </form>
+        <div id="patientsView">
+          <h2 style="margin-bottom: 20px; color: #333">Liste des Patients</h2>
+          <div class="patients-list" id="patientsList"></div>
+        </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Patient</th>
-            <th>Doctor</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Notes</th>
-            <th>Exams</th>
-            <th>Certificate</th>
-            <th>Signature</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="consultationTable"></tbody>
-      </table>
+        <div id="consultationView" class="consultation-section">
+          <button class="btn back-btn" onclick="backToPatients()">
+            ← Retour à la liste
+          </button>
+
+          <div id="patientDetailCard"></div>
+
+          <div class="section-header">
+            <h2 class="section-title">Consultations</h2>
+            <button class="btn btn-success" onclick="openConsultationModal()">
+              + Nouvelle Consultation
+            </button>
+          </div>
+
+          <div class="consultations-list" id="consultationsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="consultationModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">Nouvelle Consultation</h2>
+          <button class="close-btn" onclick="closeConsultationModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="consultationForm">
+          <div class="form-group">
+            <label>Date de consultation *</label>
+            <input type="date" id="consultationDate" required />
+          </div>
+
+          <div class="form-group">
+            <label>Motif de consultation *</label>
+            <textarea
+              id="consultationMotif"
+              required
+              placeholder="Raison de la visite..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Diagnostic *</label>
+            <textarea
+              id="consultationDiagnostic"
+              required
+              placeholder="Diagnostic médical..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Traitement prescrit *</label>
+            <textarea
+              id="consultationTraitement"
+              required
+              placeholder="Prescription et traitement..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Notes additionnelles</label>
+            <textarea
+              id="consultationNotes"
+              placeholder="Notes supplémentaires (optionnel)..."
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn"
+              style="background: #6c757d; color: white"
+              onclick="closeConsultationModal()"
+            >
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <script>
-      const form = document.getElementById("consultationForm");
-      const tableBody = document.getElementById("consultationTable");
-      let editIndex = null;
+      var patients = [
+        {
+          id: 1,
+          nom: "Dupont",
+          prenom: "Jean",
+          email: "jean.dupont@email.com",
+          telephone: "0123456789",
+          dateNaissance: "1980-05-15",
+          consultations: [
+            {
+              id: 1,
+              date: "2024-12-01",
+              motif: "Consultation de routine",
+              diagnostic: "Bonne santé générale",
+              traitement: "Aucun traitement nécessaire",
+              notes: "Patient en bonne forme physique",
+            },
+            {
+              id: 2,
+              date: "2024-11-15",
+              motif: "Grippe saisonnière",
+              diagnostic: "Infection virale des voies respiratoires",
+              traitement: "Paracétamol 1g 3x/jour, repos",
+              notes: "Revoir dans 7 jours si symptômes persistent",
+            },
+          ],
+        },
+        {
+          id: 2,
+          nom: "Martin",
+          prenom: "Sophie",
+          email: "sophie.martin@email.com",
+          telephone: "0234567890",
+          dateNaissance: "1992-08-22",
+          consultations: [],
+        },
+        {
+          id: 3,
+          nom: "Benali",
+          prenom: "Ahmed",
+          email: "ahmed.benali@email.com",
+          telephone: "0345678901",
+          dateNaissance: "1975-03-10",
+          consultations: [
+            {
+              id: 1,
+              date: "2024-12-05",
+              motif: "Douleurs lombaires",
+              diagnostic: "Lombalgie aiguë",
+              traitement: "Anti-inflammatoires, kinésithérapie recommandée",
+              notes: "Éviter les charges lourdes",
+            },
+          ],
+        },
+        {
+          id: 4,
+          nom: "Lefebvre",
+          prenom: "Marie",
+          email: "marie.lefebvre@email.com",
+          telephone: "0456789012",
+          dateNaissance: "1988-11-30",
+          consultations: [],
+        },
+        {
+          id: 5,
+          nom: "Garcia",
+          prenom: "Carlos",
+          email: "carlos.garcia@email.com",
+          telephone: "0567890123",
+          dateNaissance: "1995-07-18",
+          consultations: [
+            {
+              id: 1,
+              date: "2024-11-28",
+              motif: "Allergie cutanée",
+              diagnostic: "Dermatite de contact",
+              traitement: "Crème corticoïde locale, antihistaminique",
+              notes: "Éviter le contact avec les allergènes identifiés",
+            },
+            {
+              id: 2,
+              date: "2024-10-20",
+              motif: "Contrôle allergie",
+              diagnostic: "Amélioration significative",
+              traitement: "Continuer traitement actuel",
+              notes: "Revoir dans 2 mois",
+            },
+          ],
+        },
+      ];
 
-      function loadData() {
-        const data = JSON.parse(localStorage.getItem("consultations")) || [];
-        tableBody.innerHTML = "";
-        data.forEach((c, index) => {
-          const row = `
-          <tr>
-            <td>${c.patient}</td>
-            <td>${c.doctor}</td>
-            <td>${c.date}</td>
-            <td>${c.time}</td>
-            <td>${c.notes}</td>
-            <td>${c.exams.join(", ")}</td>
-            <td>${c.certificate}</td>
-            <td>${c.signature}</td>
-            <td>
-              <button class="action-btn edit" onclick="editConsultation(${index})">Edit</button>
-              <button class="action-btn delete" onclick="deleteConsultation(${index})">Delete</button>
-            </td>
-          </tr>
-        `;
-          tableBody.innerHTML += row;
+      var currentPatient = null;
+      var editingConsultation = null;
+
+      function displayPatients(searchTerm) {
+        if (!searchTerm) searchTerm = "";
+        var patientsList = document.getElementById("patientsList");
+        var filteredPatients = patients.filter(function (p) {
+          return (
+            p.id.toString().includes(searchTerm) ||
+            p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.prenom.toLowerCase().includes(searchTerm.toLowerCase())
+          );
         });
-      }
 
-      function saveData(data) {
-        localStorage.setItem("consultations", JSON.stringify(data));
-        loadData();
-      }
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const patient = document.getElementById("patient").value;
-        const doctor = document.getElementById("doctor").value;
-        const date = document.getElementById("date").value;
-        const time = document.getElementById("time").value;
-        const notes = document.getElementById("notes").value;
-        const certificate = document.getElementById("certificate").value;
-        const signature = document.getElementById("signature").value;
-        const exams = Array.from(
-          document.querySelectorAll(".checkbox-group input:checked")
-        ).map((i) => i.value);
-
-        const data = JSON.parse(localStorage.getItem("consultations")) || [];
-
-        if (editIndex !== null) {
-          data[editIndex] = {
-            patient,
-            doctor,
-            date,
-            time,
-            notes,
-            exams,
-            certificate,
-            signature,
-          };
-          editIndex = null;
-        } else {
-          data.push({
-            patient,
-            doctor,
-            date,
-            time,
-            notes,
-            exams,
-            certificate,
-            signature,
-          });
+        if (filteredPatients.length === 0) {
+          patientsList.innerHTML =
+            '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>Aucun patient trouvé</p></div>';
+          return;
         }
 
-        saveData(data);
-        form.reset();
-      });
+        patientsList.innerHTML = filteredPatients
+          .map(function (patient) {
+            return (
+              '<div class="patient-card" onclick="viewPatientConsultations(' +
+              patient.id +
+              ')">' +
+              '<div class="patient-header">' +
+              '<div class="patient-name">' +
+              patient.prenom +
+              " " +
+              patient.nom +
+              "</div>" +
+              '<div class="patient-id">ID: ' +
+              patient.id +
+              "</div>" +
+              "</div>" +
+              '<div class="patient-info">' +
+              "<div>📧 " +
+              patient.email +
+              "</div>" +
+              "<div>📞 " +
+              patient.telephone +
+              "</div>" +
+              "<div>🎂 " +
+              new Date(patient.dateNaissance).toLocaleDateString("fr-FR") +
+              "</div>" +
+              '<span class="consultation-badge">' +
+              patient.consultations.length +
+              " consultation(s)</span>" +
+              "</div>" +
+              "</div>"
+            );
+          })
+          .join("");
+      }
 
-      function editConsultation(index) {
-        const data = JSON.parse(localStorage.getItem("consultations")) || [];
-        const c = data[index];
-        document.getElementById("patient").value = c.patient;
-        document.getElementById("doctor").value = c.doctor;
-        document.getElementById("date").value = c.date;
-        document.getElementById("time").value = c.time;
-        document.getElementById("notes").value = c.notes;
-        document.getElementById("certificate").value = c.certificate;
-        document.getElementById("signature").value = c.signature;
+      function viewPatientConsultations(patientId) {
+        currentPatient = patients.find(function (p) {
+          return p.id === patientId;
+        });
+        if (!currentPatient) return;
 
-        document.querySelectorAll(".checkbox-group input").forEach((chk) => {
-          chk.checked = c.exams.includes(chk.value);
+        document.getElementById("patientsView").style.display = "none";
+        document.getElementById("consultationView").classList.add("active");
+
+        document.getElementById("patientDetailCard").innerHTML =
+          '<div class="patient-detail-card">' +
+          "<h2>" +
+          currentPatient.prenom +
+          " " +
+          currentPatient.nom +
+          "</h2>" +
+          '<div class="patient-detail-info">' +
+          "<div><strong>ID Patient:</strong> #" +
+          currentPatient.id +
+          "</div>" +
+          "<div><strong>Email:</strong> " +
+          currentPatient.email +
+          "</div>" +
+          "<div><strong>Téléphone:</strong> " +
+          currentPatient.telephone +
+          "</div>" +
+          "<div><strong>Date de naissance:</strong> " +
+          new Date(currentPatient.dateNaissance).toLocaleDateString("fr-FR") +
+          "</div>" +
+          "</div>" +
+          "</div>";
+
+        displayConsultations();
+      }
+
+      function displayConsultations() {
+        var consultationsList = document.getElementById("consultationsList");
+
+        if (currentPatient.consultations.length === 0) {
+          consultationsList.innerHTML =
+            '<div class="empty-state">' +
+            '<div class="empty-state-icon">📋</div>' +
+            "<p>Aucune consultation enregistrée pour ce patient</p>" +
+            "</div>";
+          return;
+        }
+
+        consultationsList.innerHTML = currentPatient.consultations
+          .map(function (consultation) {
+            var notesHtml = consultation.notes
+              ? "<strong>Notes:</strong><p>" + consultation.notes + "</p>"
+              : "";
+            return (
+              '<div class="consultation-card">' +
+              '<div class="consultation-header">' +
+              "<div>" +
+              '<div class="consultation-date">📅 ' +
+              new Date(consultation.date).toLocaleDateString("fr-FR") +
+              "</div>" +
+              '<small style="color: #999;">ID Consultation: #' +
+              consultation.id +
+              "</small>" +
+              "</div>" +
+              '<div class="consultation-actions">' +
+              '<button class="btn btn-warning" onclick="editConsultation(' +
+              consultation.id +
+              ')">✏️ Modifier</button>' +
+              '<button class="btn btn-danger" onclick="deleteConsultation(' +
+              consultation.id +
+              ')">🗑️ Supprimer</button>' +
+              "</div>" +
+              "</div>" +
+              '<div class="consultation-details">' +
+              "<strong>Motif:</strong>" +
+              "<p>" +
+              consultation.motif +
+              "</p>" +
+              "<strong>Diagnostic:</strong>" +
+              "<p>" +
+              consultation.diagnostic +
+              "</p>" +
+              "<strong>Traitement:</strong>" +
+              "<p>" +
+              consultation.traitement +
+              "</p>" +
+              notesHtml +
+              "</div>" +
+              "</div>"
+            );
+          })
+          .join("");
+      }
+
+      function backToPatients() {
+        document.getElementById("patientsView").style.display = "block";
+        document.getElementById("consultationView").classList.remove("active");
+        currentPatient = null;
+      }
+
+      function openConsultationModal() {
+        editingConsultation = null;
+        document.getElementById("modalTitle").textContent =
+          "Nouvelle Consultation";
+        document.getElementById("consultationForm").reset();
+        document.getElementById("consultationDate").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("consultationModal").classList.add("active");
+      }
+
+      function closeConsultationModal() {
+        document.getElementById("consultationModal").classList.remove("active");
+        editingConsultation = null;
+      }
+
+      function editConsultation(consultationId) {
+        editingConsultation = currentPatient.consultations.find(function (c) {
+          return c.id === consultationId;
+        });
+        if (!editingConsultation) return;
+
+        document.getElementById("modalTitle").textContent =
+          "Modifier la Consultation";
+        document.getElementById("consultationDate").value =
+          editingConsultation.date;
+        document.getElementById("consultationMotif").value =
+          editingConsultation.motif;
+        document.getElementById("consultationDiagnostic").value =
+          editingConsultation.diagnostic;
+        document.getElementById("consultationTraitement").value =
+          editingConsultation.traitement;
+        document.getElementById("consultationNotes").value =
+          editingConsultation.notes || "";
+        document.getElementById("consultationModal").classList.add("active");
+      }
+
+      function deleteConsultation(consultationId) {
+        if (!confirm("Êtes-vous sûr de vouloir supprimer cette consultation ?"))
+          return;
+
+        var patientIndex = patients.findIndex(function (p) {
+          return p.id === currentPatient.id;
+        });
+        patients[patientIndex].consultations = patients[
+          patientIndex
+        ].consultations.filter(function (c) {
+          return c.id !== consultationId;
+        });
+        currentPatient = patients[patientIndex];
+        displayConsultations();
+      }
+
+      document
+        .getElementById("consultationForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          var consultationData = {
+            date: document.getElementById("consultationDate").value,
+            motif: document.getElementById("consultationMotif").value,
+            diagnostic: document.getElementById("consultationDiagnostic").value,
+            traitement: document.getElementById("consultationTraitement").value,
+            notes: document.getElementById("consultationNotes").value,
+          };
+
+          var patientIndex = patients.findIndex(function (p) {
+            return p.id === currentPatient.id;
+          });
+
+          if (editingConsultation) {
+            var consultationIndex = patients[
+              patientIndex
+            ].consultations.findIndex(function (c) {
+              return c.id === editingConsultation.id;
+            });
+            patients[patientIndex].consultations[consultationIndex] =
+              Object.assign(
+                {},
+                patients[patientIndex].consultations[consultationIndex],
+                consultationData
+              );
+          } else {
+            var newId =
+              patients[patientIndex].consultations.length > 0
+                ? Math.max.apply(
+                    null,
+                    patients[patientIndex].consultations.map(function (c) {
+                      return c.id;
+                    })
+                  ) + 1
+                : 1;
+            var newConsultation = Object.assign(
+              { id: newId },
+              consultationData
+            );
+            patients[patientIndex].consultations.push(newConsultation);
+          }
+
+          currentPatient = patients[patientIndex];
+          displayConsultations();
+          closeConsultationModal();
         });
 
-        editIndex = index;
-      }
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function (e) {
+          displayPatients(e.target.value);
+        });
 
-      function deleteConsultation(index) {
-        const data = JSON.parse(localStorage.getItem("consultations")) || [];
-        data.splice(index, 1);
-        saveData(data);
-      }
+      document
+        .getElementById("consultationModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeConsultationModal();
+          }
+        });
 
-      loadData();
+      displayPatients();
     </script>
-    <button type="submit">
-      <a href="dashboard.html  ">back </a>
-    </button>
   </body>
 </html>
