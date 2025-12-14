@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>File d'Attente - Cabinet Médical</title>
+    <title>Docteur - File d'Attente</title>
     <style>
       * {
         margin: 0;
@@ -13,315 +13,676 @@
 
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #e0f2fe 0%, #ddd6fe 100%);
+        background: linear-gradient(
+          135deg,
+          #0f2027 0%,
+          #203a43 50%,
+          #2c5364 100%
+        );
         min-height: 100vh;
         padding: 20px;
       }
 
       .container {
-        max-width: 900px;
+        max-width: 1400px;
         margin: 0 auto;
       }
 
-      .header {
-        background: white;
+      header {
+        background: linear-gradient(135deg, #bbbbbe 0%, #616161 100%);
         padding: 40px;
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        margin-bottom: 30px;
-      }
-
-      .header h1 {
-        font-size: 48px;
-        color: #4338ca;
-        margin-bottom: 10px;
-      }
-
-      .header p {
-        color: #6b7280;
-        font-size: 18px;
-      }
-
-      .current-patient {
-        background: linear-gradient(135deg, #9e9ea2 0%, #636364 100%);
-        padding: 60px;
-        border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         margin-bottom: 30px;
         color: white;
       }
 
-      .current-patient .label {
-        font-size: 20px;
+      h1 {
+        font-size: 42px;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .subtitle {
+        font-size: 18px;
         opacity: 0.9;
-        margin-bottom: 20px;
       }
 
-      .current-patient .numero {
-        font-size: 100px;
-        font-weight: bold;
-        margin-bottom: 30px;
-      }
-
-      .current-patient .name {
-        font-size: 40px;
-        font-weight: bold;
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
         margin-bottom: 40px;
       }
 
-      .next-btn {
+      .stat-card {
         background: white;
-        color: #4f46e5;
-        border: none;
-        padding: 20px 50px;
-        font-size: 24px;
-        font-weight: bold;
-        border-radius: 15px;
-        cursor: pointer;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 15px;
-      }
-
-      .next-btn:hover {
-        background: #f3f4f6;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      }
-
-      .next-btn:active {
-        transform: translateY(0);
-      }
-
-      .waiting-list {
-        background: white;
-        padding: 40px;
+        padding: 30px;
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s;
       }
 
-      .waiting-list h2 {
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+      }
+
+      .stat-card.waiting::before {
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      }
+
+      .stat-card.pending::before {
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+      }
+
+      .stat-card.complete::before {
+        background: linear-gradient(90deg, #10b981, #059669);
+      }
+
+      .stat-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .stat-info h3 {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .stat-info .number {
+        font-size: 48px;
+        font-weight: bold;
+        line-height: 1;
+      }
+
+      .waiting .number {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .pending .number {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .complete .number {
+        background: linear-gradient(135deg, #10b981, #059669);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .stat-icon {
+        font-size: 60px;
+        opacity: 0.15;
+      }
+
+      .section-title {
+        color: white;
         font-size: 28px;
-        color: #1f2937;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .filter-tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+
+      .filter-tab {
+        background: white;
+        color: #666;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .filter-tab:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .filter-tab.active {
+        color: white;
+      }
+
+      .filter-tab.all.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+
+      .filter-tab.waiting.active {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      }
+
+      .filter-tab.pending.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+      }
+
+      .filter-tab.complete.active {
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+
+      .patients-queue {
+        display: grid;
+        gap: 20px;
       }
 
       .patient-card {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .patient-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 8px;
+      }
+
+      .patient-card.waiting::before {
+        background: linear-gradient(180deg, #fbbf24, #f59e0b);
+      }
+
+      .patient-card.pending::before {
+        background: linear-gradient(180deg, #3b82f6, #2563eb);
+      }
+
+      .patient-card.complete::before {
+        background: linear-gradient(180deg, #10b981, #059669);
+      }
+
+      .patient-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .patient-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-left: 15px;
+      }
+
+      .patient-number {
+        font-size: 16px;
+        font-weight: bold;
+        color: #999;
+        margin-bottom: 5px;
+      }
+
+      .patient-name {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1a1a1a;
+        margin-bottom: 5px;
+      }
+
+      .status-badge {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .badge-waiting {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+      }
+
+      .badge-pending {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+      }
+
+      .badge-complete {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+      }
+
+      .patient-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+        border-radius: 15px;
+        margin-left: 15px;
+      }
+
+      .info-item {
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 25px;
-        background: #f9fafb;
-        border: 2px solid #e5e7eb;
-        border-radius: 15px;
-        margin-bottom: 15px;
+        gap: 10px;
       }
 
-      .patient-card .numero {
-        font-size: 40px;
-        font-weight: bold;
-        color: #9ca3af;
-        width: 120px;
-        text-align: center;
-      }
-
-      .patient-card .name {
+      .info-icon {
         font-size: 24px;
-        color: #374151;
+      }
+
+      .info-content {
+        flex: 1;
+      }
+
+      .info-label {
+        font-size: 12px;
+        color: #666;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .info-value {
+        font-size: 16px;
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+
+      .patient-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        padding-left: 15px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-start {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+      }
+
+      .btn-complete {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+      }
+
+      .btn-completed {
+        background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+        color: #6b7280;
+        cursor: default;
+      }
+
+      .btn-completed:hover {
+        transform: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       }
 
       .empty-state {
         background: white;
-        padding: 80px;
+        padding: 80px 20px;
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         text-align: center;
+        color: #666;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       }
 
-      .empty-state .icon {
+      .empty-state-icon {
         font-size: 80px;
         margin-bottom: 20px;
+        opacity: 0.3;
       }
 
-      .empty-state p {
+      .empty-state h2 {
         font-size: 28px;
-        color: #6b7280;
+        color: #333;
+        margin-bottom: 10px;
       }
 
-      .add-patient {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        margin-top: 30px;
-      }
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 32px;
+        }
 
-      .add-patient h3 {
-        font-size: 24px;
-        color: #1f2937;
-        margin-bottom: 20px;
-      }
+        .patient-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
 
-      .add-patient-form {
-        display: flex;
-        gap: 15px;
-      }
+        .patient-info {
+          grid-template-columns: 1fr;
+        }
 
-      .add-patient-form input {
-        flex: 1;
-        padding: 15px 20px;
-        font-size: 18px;
-        border: 2px solid #d1d5db;
-        border-radius: 12px;
-        outline: none;
-      }
-
-      .add-patient-form input:focus {
-        border-color: #4f46e5;
-      }
-
-      .add-btn {
-        background: #4f46e5;
-        color: white;
-        border: none;
-        padding: 15px 35px;
-        font-size: 18px;
-        font-weight: bold;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .add-btn:hover {
-        background: #4338ca;
+        .patient-actions {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <h1>File d'Attente</h1>
-        <p>Cabinet Médical</p>
-      </div>
+      <header>
+        <h1>🏥 Dr. Interface - File d'Attente</h1>
+        <p class="subtitle">Gestion des consultations médicales</p>
+      </header>
 
-      <div id="content"></div>
-
-      <div class="add-patient">
-        <h3>Ajouter un Patient</h3>
-        <div class="add-patient-form">
-          <input type="text" id="patientName" placeholder="Nom du patient" />
-          <button class="add-btn" onclick="addPatient()">+ Ajouter</button>
+      <div class="stats">
+        <div class="stat-card waiting">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3>En Attente</h3>
+              <div class="number" id="waitingCount">0</div>
+            </div>
+            <div class="stat-icon">⏰</div>
+          </div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3>En Cours</h3>
+              <div class="number" id="pendingCount">0</div>
+            </div>
+            <div class="stat-icon">👨‍⚕️</div>
+          </div>
+        </div>
+        <div class="stat-card complete">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3>Complété</h3>
+              <div class="number" id="completeCount">0</div>
+            </div>
+            <div class="stat-icon">✅</div>
+          </div>
         </div>
       </div>
+
+      <h2 class="section-title">📋 Liste des Patients</h2>
+
+      <div class="filter-tabs">
+        <button class="filter-tab all active" onclick="filterPatients('all')">
+          📋 Tous
+        </button>
+        <button class="filter-tab waiting" onclick="filterPatients('waiting')">
+          ⏰ En Attente
+        </button>
+        <button class="filter-tab pending" onclick="filterPatients('pending')">
+          👨‍⚕️ En Cours
+        </button>
+        <button
+          class="filter-tab complete"
+          onclick="filterPatients('complete')"
+        >
+          ✅ Complété
+        </button>
+      </div>
+
+      <div class="patients-queue" id="patientsQueue"></div>
     </div>
 
     <script>
       let patients = [
-        { id: "1", name: "Ahmed Benali", numero: 1 },
-        { id: "2", name: "Fatima Zohra", numero: 2 },
-        { id: "3", name: "Karim Mansouri", numero: 3 },
-        { id: "4", name: "Amira Boudiaf", numero: 4 },
-        { id: "5", name: "Mohamed Cherif", numero: 5 },
+        {
+          id: 1,
+          name: "Ahmed Benali",
+          age: 45,
+          time: "09:00",
+          reason: "Consultation générale",
+          status: "waiting",
+        },
+        {
+          id: 2,
+          name: "Fatima Zohra",
+          age: 32,
+          time: "09:30",
+          reason: "Contrôle de routine",
+          status: "waiting",
+        },
+        {
+          id: 3,
+          name: "Mohamed Kaci",
+          age: 58,
+          time: "10:00",
+          reason: "Suivi traitement",
+          status: "pending",
+        },
+        {
+          id: 4,
+          name: "Leila Mansour",
+          age: 28,
+          time: "10:30",
+          reason: "Vaccination",
+          status: "waiting",
+        },
+        {
+          id: 5,
+          name: "Karim Hadj",
+          age: 52,
+          time: "11:00",
+          reason: "Examen cardiaque",
+          status: "complete",
+        },
+        {
+          id: 6,
+          name: "Nadia Amrani",
+          age: 39,
+          time: "11:30",
+          reason: "Consultation dermatologique",
+          status: "waiting",
+        },
       ];
 
-      function loadPatients() {
-        const saved = localStorage.getItem("patients");
-        if (saved) {
-          patients = JSON.parse(saved);
-        }
+      let currentFilter = "all";
+
+      function filterPatients(status) {
+        currentFilter = status;
+
+        // Update active tab
+        document.querySelectorAll(".filter-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        document.querySelector(`.filter-tab.${status}`).classList.add("active");
+
+        render();
       }
 
-      function savePatients() {
-        localStorage.setItem("patients", JSON.stringify(patients));
+      function sortPatients() {
+        // Ordre: waiting -> pending -> complete, puis par heure
+        const statusOrder = { waiting: 1, pending: 2, complete: 3 };
+        return patients.sort((a, b) => {
+          if (a.status !== b.status) {
+            return statusOrder[a.status] - statusOrder[b.status];
+          }
+          return a.time.localeCompare(b.time);
+        });
       }
 
       function render() {
-        const content = document.getElementById("content");
+        const queue = document.getElementById("patientsQueue");
+        const sortedPatients = sortPatients();
 
-        if (patients.length === 0) {
-          content.innerHTML = `
+        // Filter patients based on current filter
+        const filteredPatients =
+          currentFilter === "all"
+            ? sortedPatients
+            : sortedPatients.filter((p) => p.status === currentFilter);
+
+        if (filteredPatients.length === 0) {
+          const emptyMessage =
+            currentFilter === "all"
+              ? "La file d'attente est vide pour le moment"
+              : `Aucun patient ${
+                  currentFilter === "waiting"
+                    ? "en attente"
+                    : currentFilter === "pending"
+                    ? "en cours"
+                    : "complété"
+                }`;
+
+          queue.innerHTML = `
                     <div class="empty-state">
-                        <div class="icon">✓</div>
-                        <p>Aucun patient en attente</p>
+                        <div class="empty-state-icon">📋</div>
+                        <h2>Aucun Patient</h2>
+                        <p>${emptyMessage}</p>
                     </div>
                 `;
+          updateStats();
           return;
         }
 
-        let html = `
-                <div class="current-patient">
-                    <div class="label">Patient Actuel</div>
-                    <div class="numero">N° ${patients[0].numero}</div>
-                    <div class="name">${patients[0].name}</div>
-                    <button class="next-btn" onclick="nextPatient()">
-                        Patient Suivant
-                        <span>→</span>
-                    </button>
-                </div>
-            `;
+        queue.innerHTML = filteredPatients
+          .map((patient, index) => {
+            const statusClass = patient.status;
+            const badgeClass = `badge-${patient.status}`;
+            const statusText = {
+              waiting: "⏰ En Attente",
+              pending: "👨‍⚕️ En Cours",
+              complete: "✅ Complété",
+            }[patient.status];
 
-        if (patients.length > 1) {
-          html += `
-                    <div class="waiting-list">
-                        <h2>Patients Suivants (${patients.length - 1})</h2>
-                `;
+            let actionButton = "";
 
-          for (let i = 1; i < patients.length; i++) {
-            html += `
-                        <div class="patient-card">
-                            <div class="numero">N° ${patients[i].numero}</div>
-                            <div class="name">${patients[i].name}</div>
-                        </div>
+            if (patient.status === "waiting") {
+              actionButton = `
+                        <button class="btn btn-start" onclick="changeStatus(${patient.id}, 'pending')">
+                            ▶️ Démarrer Consultation
+                        </button>
                     `;
-          }
+            } else if (patient.status === "pending") {
+              actionButton = `
+                        <button class="btn btn-complete" onclick="changeStatus(${patient.id}, 'complete')">
+                            ✅ Marquer Complété
+                        </button>
+                    `;
+            } else {
+              actionButton = `
+                        <button class="btn btn-completed" disabled>
+                            ✓ Consultation Terminée
+                        </button>
+                    `;
+            }
 
-          html += `</div>`;
-        }
+            return `
+                    <div class="patient-card ${statusClass}">
+                        <div class="patient-header">
+                            <div>
+                                <div class="patient-number">Patient #${
+                                  index + 1
+                                }</div>
+                                <div class="patient-name">${patient.name}</div>
+                            </div>
+                            <span class="status-badge ${badgeClass}">${statusText}</span>
+                        </div>
+                        <div class="patient-info">
+                            <div class="info-item">
+                                <div class="info-icon">⏰</div>
+                                <div class="info-content">
+                                    <div class="info-label">Heure</div>
+                                    <div class="info-value">${
+                                      patient.time
+                                    }</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">👤</div>
+                                <div class="info-content">
+                                    <div class="info-label">Âge</div>
+                                    <div class="info-value">${
+                                      patient.age
+                                    } ans</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">📋</div>
+                                <div class="info-content">
+                                    <div class="info-label">Motif</div>
+                                    <div class="info-value">${
+                                      patient.reason
+                                    }</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="patient-actions">
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
 
-        content.innerHTML = html;
+        updateStats();
       }
 
-      function nextPatient() {
-        if (patients.length === 0) return;
-        patients.shift();
-        savePatients();
+      function updateStats() {
+        document.getElementById("waitingCount").textContent = patients.filter(
+          (p) => p.status === "waiting"
+        ).length;
+        document.getElementById("pendingCount").textContent = patients.filter(
+          (p) => p.status === "pending"
+        ).length;
+        document.getElementById("completeCount").textContent = patients.filter(
+          (p) => p.status === "complete"
+        ).length;
+      }
+
+      function changeStatus(id, newStatus) {
+        patients = patients.map((p) =>
+          p.id === id ? { ...p, status: newStatus } : p
+        );
         render();
       }
 
-      function addPatient() {
-        const input = document.getElementById("patientName");
-        const name = input.value.trim();
-
-        if (!name) return;
-
-        const newPatient = {
-          id: Date.now().toString(),
-          name: name,
-          numero:
-            patients.length > 0
-              ? Math.max(...patients.map((p) => p.numero)) + 1
-              : 1,
-        };
-
-        patients.push(newPatient);
-        savePatients();
-        input.value = "";
-        render();
-      }
-
-      document
-        .getElementById("patientName")
-        .addEventListener("keypress", function (e) {
-          if (e.key === "Enter") {
-            addPatient();
-          }
-        });
-
-      loadPatients();
+      // Initial render
       render();
     </script>
   </body>
