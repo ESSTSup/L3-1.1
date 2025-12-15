@@ -1,0 +1,2749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-section h1 {
+            color: #667eea;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logo-section p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-details h3 {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            height: fit-content;
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #555;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-item.disconnect {
+            color: #e74c3c;
+            margin-top: 20px;
+        }
+
+        .nav-item.disconnect:hover {
+            background: #ffe5e5;
+        }
+
+        .content-area {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .profile-form {
+            max-width: 600px;
+        }
+
+        /* Rating System Styles */
+        .rate-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .rate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .rate-btn.rated {
+            background: #28a745;
+            cursor: default;
+        }
+
+        .rate-btn.rated:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .rating-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rating-summary {
+            margin: 25px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            text-align: center;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        #submitRating {
+            margin-top: 20px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding-top: 20px;
+            z-index: 10;
+        }
+
+        @media (max-height: 700px) {
+            .modal-content {
+                margin: 2% auto;
+                max-height: 96vh;
+            }
+            
+            .rating-category {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+        }
+
+        .rating-category label {
+            font-weight: 600;
+            color: #333;
+            width: 150px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .star {
+            font-size: 28px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+
+        .star.zero-star {
+            color: #aaa;
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .star.zero-star.active {
+            color: #ff6b6b;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffc107;
+        }
+
+        .rating-value {
+            width: 80px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .skip-btn {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .skip-btn:hover {
+            background: #e9ecef;
+        }
+
+        .skip-btn.skipped {
+            background: #6c757d;
+            color: white;
+        }
+
+        .rating-summary {
+            margin: 25px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .rating-summary p {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        #averageRating {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        #ratedCriteriaCount {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .note {
+            font-size: 14px;
+            color: #888;
+            font-style: italic;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: block;
+                background: white;
+                padding: 15px;
+                border-radius: 15px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+                margin-bottom: 20px;
+            }
+
+            .mobile-nav select {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 15px;
+                background: white;
+            }
+        }
+
+        @media (min-width: 969px) {
+            .mobile-nav {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .logo-section h1 {
+                font-size: 22px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .rating-category {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .rating-category label {
+                width: 100%;
+            }
+            
+            .rating-value {
+                align-self: flex-end;
+            }
+            
+            .stars {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin: 10px 0;
+            }
+            
+            .skip-btn {
+                order: 3;
+                align-self: flex-end;
+            }
+        }
+
+        /* Method Selection Styles */
+        .method-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .method-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .method-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .method-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .method-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .method-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .method-option label {
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* WSM Weight Section Styles */
+        .weight-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 20px;
+        }
+
+        .weight-section h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .weight-inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .weight-input-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .weight-input-item label {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .weight-input {
+            width: 70px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .weight-input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .weight-total {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #dee2e6;
+            text-align: center;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .method-score {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        /* Search Section Styles */
+        .search-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .search-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .search-bar-container {
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar-container input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .search-bar-container input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Find Your Doctor Section Styles */
+        .recommendation-intro {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .recommendation-intro p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .criteria-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .criteria-section h3 {
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .criteria-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .criteria-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .criteria-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f8f9ff, #ffffff);
+        }
+
+        .criteria-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .criteria-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .criteria-label {
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .criteria-icon {
+            font-size: 20px;
+        }
+
+        .criteria-options {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: none;
+        }
+
+        .criteria-card.selected .criteria-options {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .criteria-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-container label {
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider-container span {
+            font-weight: 600;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .location-input {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .location-input input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn-location {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-location:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .location-icon {
+            font-size: 16px;
+        }
+
+        .selection-counter {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .selection-counter span {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        #find-doctors-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #find-doctors-btn:disabled:hover {
+            transform: none;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 40px;
+        }
+
+        .results-info {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .results-info p {
+            margin: 0;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .doctor-recommendation-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .doctor-recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .doctor-recommendation-card.featured {
+            border-left-color: #ffc107;
+            background: linear-gradient(135deg, #fffbf0, #ffffff);
+        }
+
+        .doctor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .doctor-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .doctor-specialty {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .doctor-rating {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 3px;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+        }
+
+        .doctor-details {
+            margin: 15px 0;
+        }
+
+        .doctor-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .doctor-detail:last-child {
+            border-bottom: none;
+        }
+
+        .detail-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: #333;
+        }
+
+        .criteria-match {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .match-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .match-badge {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .doctor-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-book {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-profile {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-profile:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .method-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .weight-inputs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .criteria-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .doctors-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .doctor-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .doctor-rating {
+                align-items: flex-start;
+            }
+            
+            .doctor-actions {
+                flex-direction: column;
+            }
+            
+            .search-bar-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .criteria-section {
+                padding: 20px;
+            }
+            
+            .criteria-card {
+                padding: 15px;
+            }
+            
+            .doctor-recommendation-card {
+                padding: 20px;
+            }
+            
+            .method-section {
+                padding: 20px;
+            }
+            
+            .search-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div class="logo-section">
+                <h1> HealthCare Portal</h1>
+                <p>Your Health, Our Priority</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">HY</div>
+                <div class="user-details">
+                    <h3>hallel yacine</h3>
+                    <p>Patient ID: #12345</p>
+                </div>
+            </div>
+        </div>
+       
+        <div class="mobile-nav">
+            <select id="mobileNavSelect" onchange="handleMobileNav(this.value)">
+                <option value="history">Consultation History</option>
+                <option value="requests">Requests & Appointments</option>
+                <option value="book">Book New Appointment</option>
+                <option value="find-doctor">Find Your Doctor</option>
+                <option value="about">About Us</option>
+                <option value="profile">Profile</option>
+                <option value="disconnect">Disconnect</option>
+            </select>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="nav-item active" onclick="showSection('history')">
+                    Consultation History
+                </div>
+                <div class="nav-item" onclick="showSection('requests')">
+                    Requests & Appointments
+                </div>
+                <div class="nav-item" onclick="showSection('book')">
+                    Book New Appointment
+                </div>
+                <div class="nav-item" onclick="showSection('find-doctor')">
+                    Find Your Doctor
+                </div>
+                <div class="nav-item" onclick="showSection('about')">
+                    About Us
+                </div>
+                <div class="nav-item" onclick="showSection('profile')">
+                    Profile
+                </div>
+                <div class="nav-item disconnect" onclick="disconnect()">
+                     Disconnect
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Consultation History Section -->
+                <div class="content-section active" id="history">
+                    <h2 class="section-title">Consultation History</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Total Consultations</h4>
+                            <div class="number">24</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>This Year</h4>
+                            <div class="number">8</div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-consultation-id="1">
+                        <h3>Dr. hallel sara sofia- Cardiology</h3>
+                        <p><strong>Date:</strong> October 28, 2025</p>
+                        <p><strong>Diagnosis:</strong> Routine cardiac checkup - All parameters normal</p>
+                        <p><strong>Prescription:</strong> Continue current medication, follow-up in 3 months</p>
+                        <div class="card-meta">
+                            <span class="meta-item">45 mins</span>
+                            <span class="status-badge status-completed">Completed</span>
+                            <button class="rate-btn" onclick="openRatingModal('1')">Rate Us</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-consultation-id="2">
+                        <h3>Dr. lachi maram - General Physician</h3>
+                        <p><strong>Date:</strong> September 15, 2025</p>
+                        <p><strong>Diagnosis:</strong> Seasonal flu - Prescribed antibiotics and rest</p>
+                        <p><strong>Prescription:</strong> Amoxicillin 500mg (3x daily for 7 days), Paracetamol as needed</p>
+                        <div class="card-meta">
+                            <span class="meta-item">30 mins</span>
+                            <span class="status-badge status-completed">Completed</span>
+                            <button class="rate-btn" onclick="openRatingModal('2')">Rate Us</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-consultation-id="3">
+                        <h3>Dr. hallel lina - Dermatology</h3>
+                        <p><strong>Date:</strong> August 22, 2025</p>
+                        <p><strong>Diagnosis:</strong> Skin allergy - Allergic reaction to new detergent</p>
+                        <p><strong>Prescription:</strong> Topical corticosteroid cream, antihistamine tablets</p>
+                        <div class="card-meta">
+                            <span class="meta-item">25 mins</span>
+                            <span class="status-badge status-completed">Completed</span>
+                            <button class="rate-btn" onclick="openRatingModal('3')">Rate Us</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requests & Appointments Section -->
+                <div class="content-section" id="requests">
+                    <h2 class="section-title">Requests & Appointments</h2>
+
+                    <div class="card">
+                        <h3>Upcoming: Dr. meklati kenza- Cardiology</h3>
+                        <p><strong>Date:</strong> November 15, 2025</p>
+                        <p><strong>Time:</strong> 10:30 AM</p>
+                        <p><strong>Location:</strong> Main Hospital - Cardiology Wing, Room 305</p>
+                        <p><strong>Type:</strong> Follow-up consultation</p>
+                        <div class="card-meta">
+                            <span class="status-badge status-confirmed">Confirmed</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Pending: Laboratory Tests</h3>
+                        <p><strong>Requested Date:</strong> November 1, 2025</p>
+                        <p><strong>Tests:</strong> Complete Blood Count, Lipid Profile</p>
+                        <p><strong>Status:</strong> Waiting for appointment slot confirmation</p>
+                        <div class="card-meta">
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Upcoming: Dr. lachi maram - General Checkup</h3>
+                        <p><strong>Date:</strong> November 20, 2025</p>
+                        <p><strong>Time:</strong> 2:00 PM</p>
+                        <p><strong>Location:</strong> Clinic B, 2nd Floor</p>
+                        <p><strong>Type:</strong> Annual physical examination</p>
+                        <div class="card-meta">
+                            <span class="status-badge status-confirmed">Confirmed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book New Appointment Section -->
+                <div class="content-section" id="book">
+                    <h2 class="section-title">Book New Appointment</h2>
+
+                    <form onsubmit="bookAppointment(event)">
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department" required>
+                                <option value="">Select Department</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="dermatology">Dermatology</option>
+                                <option value="general">General Physician</option>
+                                <option value="orthopedics">Orthopedics</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="neurology">Neurology</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="doctor">Doctor</label>
+                            <select id="doctor" required>
+                                <option value="">Select Doctor</option>
+                                <option value="sarah">Dr. hallel sara sofia</option>
+                                <option value="maram">Dr. lachi maram</option>
+                                <option value="lina">Dr. hallel lina</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Preferred Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="time">Preferred Time</label>
+                            <input type="time" id="time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reason">Reason for Visit</label>
+                            <textarea id="reason" rows="4" placeholder="Please describe your symptoms or reason for appointment" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Book Appointment</button>
+                    </form>
+                </div>
+
+               <!-- Find Your Doctor Section -->
+<div class="content-section" id="find-doctor">
+    <h2 class="section-title">Find Your Doctor</h2>
+    
+    <div class="recommendation-intro">
+        <p>Select at least 2 criteria to get personalized doctor recommendations based on your preferences.</p>
+    </div>
+
+    <!-- Method Selection Section -->
+    <div class="method-section">
+        <h3>Choose Your Search Method</h3>
+        <div class="method-options">
+            <div class="method-option">
+                <input type="radio" id="methodWSM" name="search-method" value="WSM" checked>
+                <label for="methodWSM">WSM (Weighted Sum Model)</label>
+            </div>
+            <div class="method-option">
+                <input type="radio" id="methodTOPSIS" name="search-method" value="TOPSIS">
+                <label for="methodTOPSIS">TOPSIS</label>
+            </div>
+            <div class="method-option">
+                <input type="radio" id="method3" name="search-method" value="method3">
+                <label for="method3">Method 3</label>
+            </div>
+        </div>
+        
+        <!-- WSM Weight Section (visible only when WSM is selected) -->
+        <div id="wsm-weight-section" class="weight-section" style="display: none; margin-top: 20px;">
+            <h4>Assign Weights to Selected Criteria</h4>
+            <p class="note">Total must equal 100%. Weights will be automatically adjusted based on your selections.</p>
+            <div id="weight-inputs-container">
+                <!-- Weight inputs will be dynamically generated here -->
+            </div>
+            <div class="weight-total">
+                <strong>Total: <span id="weight-total">0</span>%</strong>
+                <button type="button" class="btn btn-secondary" onclick="normalizeWeights()" style="margin-left: 15px;">Normalize Weights</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Name Search Section -->
+    <div class="search-section">
+        <h3>Search by Doctor Name</h3>
+        <div class="search-bar-container">
+            <input type="text" id="doctor-search" placeholder="Enter doctor's name...">
+            <button class="btn btn-primary" onclick="searchDoctorByName()">Search</button>
+        </div>
+    </div>
+
+    <!-- Criteria Selection Section -->
+    <div class="criteria-section">
+        <h3>Select Your Preferences (Choose at least 2)</h3>
+        
+        <div class="criteria-grid">
+            <!-- Specialty -->
+            <div class="criteria-card" data-criteria="specialty">
+                <div class="criteria-header">
+                    <input type="checkbox" id="specialty-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="specialty-criteria" class="criteria-label">
+                        <span class="criteria-icon">🎯</span>
+                        Specialty
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <select class="criteria-select" id="specialty-select">
+                        <option value="">Select Specialty</option>
+                        <option value="cardiology">Cardiology</option>
+                        <option value="dermatology">Dermatology</option>
+                        <option value="general">General Physician</option>
+                        <option value="orthopedics">Orthopedics</option>
+                        <option value="pediatrics">Pediatrics</option>
+                        <option value="neurology">Neurology</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="criteria-card" data-criteria="availability">
+                <div class="criteria-header">
+                    <input type="checkbox" id="availability-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="availability-criteria" class="criteria-label">
+                        <span class="criteria-icon">⏰</span>
+                        Availability
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="availability" value="24/7"> 24/7 Availability
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="availability" value="weekends"> Weekend Availability
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Handicap Friendly -->
+            <div class="criteria-card" data-criteria="handicap">
+                <div class="criteria-header">
+                    <input type="checkbox" id="handicap-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="handicap-criteria" class="criteria-label">
+                        <span class="criteria-icon">♿</span>
+                        Handicap Friendly Clinic
+                    </label>
+                </div>
+            </div>
+
+            <!-- Competence -->
+            <div class="criteria-card" data-criteria="competence">
+                <div class="criteria-header">
+                    <input type="checkbox" id="competence-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="competence-criteria" class="criteria-label">
+                        <span class="criteria-icon">⭐</span>
+                        High Competence
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="slider-container">
+                        <label>Minimum Competence Rating:</label>
+                        <input type="range" id="competence-slider" min="3" max="5" step="0.1" value="4.0">
+                        <span id="competence-value">4.0/5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="criteria-card" data-criteria="location">
+                <div class="criteria-header">
+                    <input type="checkbox" id="location-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="location-criteria" class="criteria-label">
+                        <span class="criteria-icon">📍</span>
+                        Location
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="location-input">
+                        <input type="text" id="gps-input" placeholder="Enter your address or location">
+                        <button type="button" class="btn-location" onclick="getCurrentLocation()">
+                            <span class="location-icon">🎯</span> Use Current Location
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome -->
+            <div class="criteria-card" data-criteria="welcome">
+                <div class="criteria-header">
+                    <input type="checkbox" id="welcome-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="welcome-criteria" class="criteria-label">
+                        <span class="criteria-icon">👋</span>
+                        Quality of Welcome
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="slider-container">
+                        <label>Minimum Welcome Rating:</label>
+                        <input type="range" id="welcome-slider" min="3" max="5" step="0.1" value="4.0">
+                        <span id="welcome-value">4.0/5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Punctuality -->
+            <div class="criteria-card" data-criteria="punctuality">
+                <div class="criteria-header">
+                    <input type="checkbox" id="punctuality-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="punctuality-criteria" class="criteria-label">
+                        <span class="criteria-icon">⏱️</span>
+                        Punctuality
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="slider-container">
+                        <label>Minimum Punctuality Rating:</label>
+                        <input type="range" id="punctuality-slider" min="3" max="5" step="0.1" value="4.0">
+                        <span id="punctuality-value">4.0/5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical Equipment -->
+            <div class="criteria-card" data-criteria="equipment">
+                <div class="criteria-header">
+                    <input type="checkbox" id="equipment-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="equipment-criteria" class="criteria-label">
+                        <span class="criteria-icon">🏥</span>
+                        Medical Equipment Quality
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <select class="criteria-select" id="equipment-select">
+                        <option value="any">Any Equipment Level</option>
+                        <option value="advanced">Advanced Equipment</option>
+                        <option value="specialized">Specialized Equipment</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Hygiene -->
+            <div class="criteria-card" data-criteria="hygiene">
+                <div class="criteria-header">
+                    <input type="checkbox" id="hygiene-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="hygiene-criteria" class="criteria-label">
+                        <span class="criteria-icon">🧼</span>
+                        Hygiene Standards
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="slider-container">
+                        <label>Minimum Hygiene Rating:</label>
+                        <input type="range" id="hygiene-slider" min="3" max="5" step="0.1" value="4.0">
+                        <span id="hygiene-value">4.0/5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Proximity -->
+            <div class="criteria-card" data-criteria="proximity">
+                <div class="criteria-header">
+                    <input type="checkbox" id="proximity-criteria" class="criteria-checkbox" data-weight="0">
+                    <label for="proximity-criteria" class="criteria-label">
+                        <span class="criteria-icon">📅</span>
+                        Appointment Availability
+                    </label>
+                </div>
+                <div class="criteria-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="proximity" value="same-day"> Same Day Appointments
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="proximity" value="within-week"> Within This Week
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="proximity" value="next-week"> Next Week Available
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selection Counter -->
+        <div class="selection-counter">
+            <span id="selected-count">0</span> criteria selected (minimum 2 required)
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="clearAllCriteria()">Clear All</button>
+            <button class="btn btn-primary" id="find-doctors-btn" onclick="findRecommendedDoctors()" disabled>
+                Find Recommended Doctors
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" id="recommendation-results">
+        <h3>Recommended Doctors</h3>
+        <div class="results-info" id="results-info">
+            <p>Select at least 2 criteria above to see doctor recommendations.</p>
+        </div>
+        <div class="doctors-grid" id="doctors-grid">
+            <!-- Doctors will be populated here by JavaScript -->
+        </div>
+    </div>
+</div>
+                <!-- About Us Section -->
+                <div class="content-section" id="about">
+                    <h2 class="section-title">About Us</h2>
+
+                    <div class="card">
+                        <h3> Our Mission</h3>
+                        <p>We are dedicated to providing exceptional healthcare services with compassion and excellence. Our state-of-the-art facility combines cutting-edge medical technology with a patient-centered approach to ensure the best possible outcomes for all our patients.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Our Team</h3>
+                        <p>Our medical staff consists of over 150 highly qualified doctors and specialists across 20+ departments. Each member of our team is committed to continuous learning and implementing the latest medical advancements.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3> Our Services</h3>
+                        <p>We offer comprehensive medical services including emergency care, specialized consultations, diagnostic imaging, laboratory services, surgical procedures, and rehabilitation programs. </p>
+                    </div>
+
+                    <div class="card">
+                        <h3> Contact Information</h3>
+                        <p><strong>Address:</strong> kolea,rue 120,tipaza</p>
+                        <p><strong>Phone:</strong> +213 20 123 4567</p>
+                        <p><strong>Emergency:</strong> + 213 10 200 3000</p>
+                        <p><strong>Email:</strong> info@healthcareportal.com</p>
+                    </div>
+
+                    <div class="card">
+                        <h3> Operating Hours</h3>
+                        <p><strong>Outpatient Services:</strong> Monday - Friday: 8:00 AM - 8:00 PM</p>
+                        <p><strong>Saturday - Sunday:</strong> 9:00 AM - 5:00 PM</p>
+                        <p><strong>Emergency Services:</strong> 24/7 - Always available</p>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div class="content-section" id="profile">
+                    <h2 class="section-title">My Profile</h2>
+
+                    <form class="profile-form" onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input type="text" id="fullname" value="halle yacine" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" value="halle.yacine@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" value="+213 20 123 4567" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" value="2000-10-16" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" required>
+                                <option value="male" selected>Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea id="address" rows="3" required>kolea,rue 120,tipaza</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="insurance">Insurance Provider</label>
+                            <input type="text" id="insurance" value="HealthPlus Insurance">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="allergies">Known Allergies</label>
+                            <textarea id="allergies" rows="2" placeholder="List any known allergies">Penicillin, Pollen</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Rate Your Consultation</h2>
+            <div class="rating-form">
+                <div class="rating-category">
+                    <label>Competence</label>
+                    <div class="stars" data-category="competence">
+                        <span class="star zero-star" data-value="0">☆</span>
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <span class="rating-value">Not rated</span>
+                    <button class="skip-btn" data-category="competence">Skip this criteria</button>
+                </div>
+                
+                <div class="rating-category">
+                    <label>Emplacement</label>
+                    <div class="stars" data-category="communication">
+                        <span class="star zero-star" data-value="0">☆</span>
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <span class="rating-value">Not rated</span>
+                    <button class="skip-btn" data-category="communication">Skip this criteria</button>
+                </div>
+                
+                <div class="rating-category">
+                    <label>Accueil</label>
+                    <div class="stars" data-category="accueil">
+                        <span class="star zero-star" data-value="0">☆</span>
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <span class="rating-value">Not rated</span>
+                    <button class="skip-btn" data-category="accueil">Skip this criteria</button>
+                </div>
+                
+                <div class="rating-category">
+                    <label>Ponctualité</label>
+                    <div class="stars" data-category="ponctualite">
+                        <span class="star zero-star" data-value="0">☆</span>
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <span class="rating-value">Not rated</span>
+                    <button class="skip-btn" data-category="ponctualite">Skip this criteria</button>
+                </div>
+                
+                <div class="rating-category">
+                    <label>Matériel Médical</label>
+                    <div class="stars" data-category="material">
+                        <span class="star zero-star" data-value="0">☆</span>
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <span class="rating-value">Not rated</span>
+                    <button class="skip-btn" data-category="material">Skip this criteria</button>
+                </div>
+                
+                <div class="rating-category">
+                    <label>Hygiène</label>
+                    <div class="stars" data-category="hygiene">
+                        <span class="star zero-star" data-value="0">☆</span>
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <span class="rating-value">Not rated</span>
+                    <button class="skip-btn" data-category="hygiene">Skip this criteria</button>
+                </div>
+                
+                <div class="rating-summary">
+                    <p>Average Rating: <span id="averageRating">0</span>/5</p>
+                    <p>Based on <span id="ratedCriteriaCount">0</span> criteria</p>
+                    <p class="note">Note: You can rate 0-5 stars or skip criteria entirely</p>
+                </div>
+                
+                <button id="submitRating" class="btn btn-primary">Submit Rating</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard navigation functions
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update active nav item
+            const navItems = document.querySelectorAll('.nav-item:not(.disconnect)');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update mobile nav
+            document.getElementById('mobileNavSelect').value = sectionId;
+        }
+
+        function handleMobileNav(value) {
+            if (value === 'disconnect') {
+                disconnect();
+            } else {
+                showSection(value);
+            }
+        }
+
+        function bookAppointment(e) {
+            e.preventDefault();
+            alert('Appointment request submitted successfully! You will receive a confirmation email shortly.');
+            e.target.reset();
+        }
+
+        function updateProfile(e) {
+            e.preventDefault();
+            alert('Profile updated successfully!');
+        }
+
+        function disconnect() {
+            if (confirm('Are you sure you want to disconnect?')) {
+                alert('You have been disconnected. Redirecting to login page...');
+                // In a real application, you would redirect to login page
+            }
+        }
+
+        // Set minimum date for appointment booking
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // Rating System JavaScript
+        let currentConsultationId = null;
+        let ratings = {
+            competence: {value: null, skipped: false},
+            communication: {value: null, skipped: false},
+            accueil: {value: null, skipped: false},
+            ponctualite: {value: null, skipped: false},
+            material: {value: null, skipped: false},
+            hygiene: {value: null, skipped: false}
+        };
+
+        function openRatingModal(consultationId) {
+            currentConsultationId = consultationId;
+            resetRatings();
+            document.getElementById('ratingModal').style.display = 'block';
+        }
+
+        function closeRatingModal() {
+            document.getElementById('ratingModal').style.display = 'none';
+            resetRatings();
+        }
+
+        function resetRatings() {
+            // Reset all ratings
+            for (let category in ratings) {
+                ratings[category] = {value: null, skipped: false};
+            }
+            
+            // Reset UI
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.classList.remove('active');
+            });
+            
+            const ratingValues = document.querySelectorAll('.rating-value');
+            ratingValues.forEach(value => {
+                value.textContent = 'Not rated';
+                value.style.color = '#667eea';
+            });
+            
+            const skipButtons = document.querySelectorAll('.skip-btn');
+            skipButtons.forEach(button => {
+                button.classList.remove('skipped');
+                button.textContent = 'Skip this criteria';
+            });
+            
+            document.getElementById('averageRating').textContent = '0';
+            document.getElementById('ratedCriteriaCount').textContent = '0';
+        }
+
+        function handleStarClick(event) {
+            const star = event.target;
+            const category = star.parentElement.dataset.category;
+            const value = parseInt(star.dataset.value);
+            
+            // Remove skip if this category was skipped
+            if (ratings[category].skipped) {
+                ratings[category].skipped = false;
+                const skipBtn = document.querySelector(`.skip-btn[data-category="${category}"]`);
+                skipBtn.classList.remove('skipped');
+                skipBtn.textContent = 'Skip this criteria';
+            }
+            
+            // Set rating for this category
+            ratings[category].value = value;
+            
+            // Update UI for this category
+            const starsInCategory = star.parentElement.querySelectorAll('.star');
+            starsInCategory.forEach(s => {
+                const starValue = parseInt(s.dataset.value);
+                
+                if (starValue === 0) {
+                    // Handle zero star separately
+                    if (value === 0) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                } else {
+                    // Handle regular stars (1-5)
+                    if (starValue <= value && value > 0) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                }
+            });
+            
+            // Update rating value display
+            const ratingValue = star.parentElement.nextElementSibling;
+            if (value === 0) {
+                ratingValue.textContent = '0/5';
+                ratingValue.style.color = '#ff6b6b';
+            } else {
+                ratingValue.textContent = `${value}/5`;
+                ratingValue.style.color = '#667eea';
+            }
+            
+            // Update average
+            updateAverageRating();
+        }
+
+        function handleSkipClick(event) {
+            const skipBtn = event.target;
+            const category = skipBtn.dataset.category;
+            
+            if (ratings[category].skipped) {
+                // Unskip this category
+                ratings[category].skipped = false;
+                skipBtn.classList.remove('skipped');
+                skipBtn.textContent = 'Skip this criteria';
+                
+                // Reset stars for this category
+                const starsInCategory = document.querySelectorAll(`.stars[data-category="${category}"] .star`);
+                starsInCategory.forEach(star => {
+                    star.classList.remove('active');
+                });
+                
+                const ratingValue = skipBtn.previousElementSibling;
+                ratingValue.textContent = 'Not rated';
+                ratingValue.style.color = '#667eea';
+                
+                ratings[category].value = null;
+            } else {
+                // Skip this category
+                ratings[category].skipped = true;
+                skipBtn.classList.add('skipped');
+                skipBtn.textContent = 'Skipped';
+                
+                // Clear any star selection
+                const starsInCategory = document.querySelectorAll(`.stars[data-category="${category}"] .star`);
+                starsInCategory.forEach(star => {
+                    star.classList.remove('active');
+                });
+                
+                const ratingValue = skipBtn.previousElementSibling;
+                ratingValue.textContent = 'Skipped';
+                ratingValue.style.color = '#6c757d';
+                
+                ratings[category].value = null;
+            }
+            
+            // Update average
+            updateAverageRating();
+        }
+
+        function updateAverageRating() {
+            let total = 0;
+            let ratedCriteriaCount = 0;
+            
+            for (let category in ratings) {
+                if (ratings[category].value !== null && !ratings[category].skipped) {
+                    total += ratings[category].value;
+                    ratedCriteriaCount++;
+                }
+            }
+            
+            const average = ratedCriteriaCount > 0 ? (total / ratedCriteriaCount).toFixed(1) : 0;
+            document.getElementById('averageRating').textContent = average;
+            document.getElementById('ratedCriteriaCount').textContent = ratedCriteriaCount;
+        }
+
+        function submitRating() {
+            const average = document.getElementById('averageRating').textContent;
+            const ratedCriteriaCount = document.getElementById('ratedCriteriaCount').textContent;
+            
+            // Check if at least one criteria is rated
+            if (ratedCriteriaCount === '0') {
+                alert('Please rate at least one criteria or close the rating window.');
+                return;
+            }
+            
+            // In a real application, you would send this data to a server
+            alert(`Thank you for your rating! Average: ${average}/5 (based on ${ratedCriteriaCount} criteria)`);
+            
+            // Update the consultation card to show it's been rated
+            if (currentConsultationId) {
+                const consultationCard = document.querySelector(`[data-consultation-id="${currentConsultationId}"]`);
+                if (consultationCard) {
+                    const rateBtn = consultationCard.querySelector('.rate-btn');
+                    rateBtn.textContent = `Rated: ${average}/5`;
+                    rateBtn.classList.add('rated');
+                    rateBtn.disabled = true;
+                }
+            }
+            
+            closeRatingModal();
+        }
+
+        // Find Your Doctor Functionality
+        let selectedCriteria = new Set();
+        let criteriaWeights = {};
+
+        function updateSelectedCount() {
+            const count = selectedCriteria.size;
+            document.getElementById('selected-count').textContent = count;
+            document.getElementById('find-doctors-btn').disabled = count < 2;
+            
+            // Update weight section if WSM is selected
+            if (getSelectedMethod() === 'WSM') {
+                updateWeightInputs();
+            }
+        }
+
+        function toggleCriteria(criteriaCard, checkbox) {
+            const criteria = criteriaCard.dataset.criteria;
+            
+            if (checkbox.checked) {
+                criteriaCard.classList.add('selected');
+                selectedCriteria.add(criteria);
+                
+                // Initialize weight to 0 for new criteria
+                if (!criteriaWeights[criteria]) {
+                    criteriaWeights[criteria] = 0;
+                }
+            } else {
+                criteriaCard.classList.remove('selected');
+                selectedCriteria.delete(criteria);
+                
+                // Remove weight if criteria is deselected
+                delete criteriaWeights[criteria];
+            }
+            updateSelectedCount();
+        }
+
+        function clearAllCriteria() {
+            const checkboxes = document.querySelectorAll('.criteria-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const criteriaCard = checkbox.closest('.criteria-card');
+                criteriaCard.classList.remove('selected');
+            });
+            selectedCriteria.clear();
+            criteriaWeights = {};
+            updateSelectedCount();
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                document.getElementById('gps-input').placeholder = "Getting your location...";
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        document.getElementById('gps-input').value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    },
+                    error => {
+                        console.error("Error getting location:", error);
+                        document.getElementById('gps-input').placeholder = "Enter your address or location";
+                        alert("Could not get your current location. Please enter it manually.");
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser. Please enter your location manually.");
+            }
+        }
+
+        // Method selection handling
+        function getSelectedMethod() {
+            const selectedMethod = document.querySelector('input[name="search-method"]:checked').value;
+            return selectedMethod;
+        }
+
+        // WSM Weight Management Functions
+        function handleMethodChange() {
+            const selectedMethod = getSelectedMethod();
+            const weightSection = document.getElementById('wsm-weight-section');
+            
+            if (selectedMethod === 'WSM') {
+                weightSection.style.display = 'block';
+                updateWeightInputs();
+            } else {
+                weightSection.style.display = 'none';
+            }
+        }
+
+        function updateWeightInputs() {
+            const weightContainer = document.getElementById('weight-inputs-container');
+            const selectedCriteria = Array.from(document.querySelectorAll('.criteria-checkbox:checked'));
+            
+            if (selectedCriteria.length < 2) {
+                weightContainer.innerHTML = '<p class="note">Please select at least 2 criteria to assign weights.</p>';
+                document.getElementById('weight-total').textContent = '0';
+                return;
+            }
+            
+            let html = '<div class="weight-inputs-grid">';
+            selectedCriteria.forEach(checkbox => {
+                const criteria = checkbox.closest('.criteria-card').dataset.criteria;
+                const criteriaName = getCriteriaDisplayName(criteria);
+                const currentWeight = criteriaWeights[criteria] || 0;
+                
+                html += `
+                    <div class="weight-input-item">
+                        <label for="weight-${criteria}">${criteriaName}:</label>
+                        <input type="number" 
+                               id="weight-${criteria}" 
+                               class="weight-input" 
+                               min="0" 
+                               max="100" 
+                               step="1" 
+                               value="${currentWeight}"
+                               onchange="updateWeight('${criteria}', this.value)">
+                        <span>%</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            weightContainer.innerHTML = html;
+            updateWeightTotal();
+        }
+
+        function getCriteriaDisplayName(criteria) {
+            const names = {
+                'specialty': 'Specialty',
+                'availability': 'Availability',
+                'handicap': 'Handicap Friendly',
+                'competence': 'Competence',
+                'location': 'Location',
+                'welcome': 'Welcome',
+                'punctuality': 'Punctuality',
+                'equipment': 'Medical Equipment',
+                'hygiene': 'Hygiene',
+                'proximity': 'Appointment Proximity'
+            };
+            return names[criteria] || criteria;
+        }
+
+        function updateWeight(criteria, value) {
+            const numValue = parseInt(value) || 0;
+            criteriaWeights[criteria] = Math.min(100, Math.max(0, numValue));
+            updateWeightTotal();
+        }
+
+        function updateWeightTotal() {
+            let total = 0;
+            const selectedCriteria = Array.from(document.querySelectorAll('.criteria-checkbox:checked'));
+            
+            selectedCriteria.forEach(checkbox => {
+                const criteria = checkbox.closest('.criteria-card').dataset.criteria;
+                total += criteriaWeights[criteria] || 0;
+            });
+            
+            document.getElementById('weight-total').textContent = total;
+            
+            // If total exceeds 100%, normalize weights
+            if (total > 100) {
+                normalizeWeights();
+            }
+        }
+
+        function normalizeWeights() {
+            const selectedCriteria = Array.from(document.querySelectorAll('.criteria-checkbox:checked'));
+            let total = 0;
+            
+            // Calculate current total
+            selectedCriteria.forEach(checkbox => {
+                const criteria = checkbox.closest('.criteria-card').dataset.criteria;
+                total += criteriaWeights[criteria] || 0;
+            });
+            
+            // If total is 0, assign equal weights
+            if (total === 0) {
+                const equalWeight = Math.round(100 / selectedCriteria.length);
+                selectedCriteria.forEach((checkbox, index) => {
+                    const criteria = checkbox.closest('.criteria-card').dataset.criteria;
+                    // For the last criterion, adjust to make total exactly 100
+                    const weight = (index === selectedCriteria.length - 1) 
+                        ? 100 - (equalWeight * (selectedCriteria.length - 1))
+                        : equalWeight;
+                    criteriaWeights[criteria] = weight;
+                });
+            } else {
+                // Normalize proportionally
+                selectedCriteria.forEach(checkbox => {
+                    const criteria = checkbox.closest('.criteria-card').dataset.criteria;
+                    const currentWeight = criteriaWeights[criteria] || 0;
+                    criteriaWeights[criteria] = Math.round((currentWeight / total) * 100);
+                });
+                
+                // Adjust to make total exactly 100
+                let adjustedTotal = 0;
+                selectedCriteria.forEach(checkbox => {
+                    const criteria = checkbox.closest('.criteria-card').dataset.criteria;
+                    adjustedTotal += criteriaWeights[criteria];
+                });
+                
+                // Adjust the last criterion if necessary
+                if (adjustedTotal !== 100 && selectedCriteria.length > 0) {
+                    const lastCriteria = selectedCriteria[selectedCriteria.length - 1].closest('.criteria-card').dataset.criteria;
+                    criteriaWeights[lastCriteria] += (100 - adjustedTotal);
+                }
+            }
+            
+            // Update inputs
+            updateWeightInputs();
+        }
+
+        // Doctor name search function
+        function searchDoctorByName() {
+            const searchTerm = document.getElementById('doctor-search').value.trim().toLowerCase();
+            
+            if (!searchTerm) {
+                alert('Please enter a doctor name to search.');
+                return;
+            }
+            
+            // In a real application, this would be an API call
+            const mockDoctors = [
+                {
+                    id: 1,
+                    name: "Dr. hallel sara sofia",
+                    specialty: "Cardiology",
+                    rating: 4.8,
+                    availability: "24/7",
+                    handicapFriendly: true,
+                    competence: 4.9,
+                    location: "2.5 km away",
+                    welcomeRating: 4.7,
+                    punctuality: 4.6,
+                    equipment: "Advanced",
+                    hygiene: 4.9,
+                    appointmentAvailability: "Same Day",
+                    matches: ["Name Match"]
+                },
+                {
+                    id: 2,
+                    name: "Dr. lachi maram",
+                    specialty: "General Physician",
+                    rating: 4.5,
+                    availability: "Weekends",
+                    handicapFriendly: true,
+                    competence: 4.4,
+                    location: "1.2 km away",
+                    welcomeRating: 4.8,
+                    punctuality: 4.7,
+                    equipment: "Specialized",
+                    hygiene: 4.6,
+                    appointmentAvailability: "Within This Week",
+                    matches: ["Name Match"]
+                },
+                {
+                    id: 3,
+                    name: "Dr. hallel lina",
+                    specialty: "Dermatology",
+                    rating: 4.7,
+                    availability: "24/7",
+                    handicapFriendly: false,
+                    competence: 4.8,
+                    location: "3.1 km away",
+                    welcomeRating: 4.5,
+                    punctuality: 4.9,
+                    equipment: "Advanced",
+                    hygiene: 4.8,
+                    appointmentAvailability: "Same Day",
+                    matches: ["Name Match"]
+                }
+            ];
+            
+            // Filter doctors by name
+            const filteredDoctors = mockDoctors.filter(doctor => 
+                doctor.name.toLowerCase().includes(searchTerm)
+            );
+            
+            // Display results
+            displayDoctors(filteredDoctors);
+            
+            // Update results info
+            const resultsInfo = document.getElementById('results-info');
+            if (filteredDoctors.length === 0) {
+                resultsInfo.innerHTML = `<p>No doctors found with the name "${searchTerm}".</p>`;
+            } else {
+                resultsInfo.innerHTML = `<p>Found ${filteredDoctors.length} doctor${filteredDoctors.length > 1 ? 's' : ''} with name containing "${searchTerm}"</p>`;
+            }
+        }
+
+        function findRecommendedDoctors() {
+            const selectedMethod = getSelectedMethod();
+            
+            if (selectedCriteria.size < 2) {
+                alert("Please select at least 2 criteria to find doctors.");
+                return;
+            }
+
+            // Mock data doctors
+            const mockDoctors = [
+                {
+                    id: 1,
+                    name: "Dr. hallel sara sofia",
+                    specialty: "Cardiology",
+                    rating: 4.8,
+                    availability: "24/7",
+                    handicapFriendly: true,
+                    competence: 4.9,
+                    location: "2.5 km away",
+                    welcomeRating: 4.7,
+                    punctuality: 4.6,
+                    equipment: "Advanced",
+                    hygiene: 4.9,
+                    appointmentAvailability: "Same Day",
+                    matches: ["Specialty", "Competence", "Hygiene"]
+                },
+                {
+                    id: 2,
+                    name: "Dr. lachi maram",
+                    specialty: "General Physician",
+                    rating: 4.5,
+                    availability: "Weekends",
+                    handicapFriendly: true,
+                    competence: 4.4,
+                    location: "1.2 km away",
+                    welcomeRating: 4.8,
+                    punctuality: 4.7,
+                    equipment: "Specialized",
+                    hygiene: 4.6,
+                    appointmentAvailability: "Within This Week",
+                    matches: ["Availability", "Location", "Welcome"]
+                },
+                {
+                    id: 3,
+                    name: "Dr. hallel lina",
+                    specialty: "Dermatology",
+                    rating: 4.7,
+                    availability: "24/7",
+                    handicapFriendly: false,
+                    competence: 4.8,
+                    location: "3.1 km away",
+                    welcomeRating: 4.5,
+                    punctuality: 4.9,
+                    equipment: "Advanced",
+                    hygiene: 4.8,
+                    appointmentAvailability: "Same Day",
+                    matches: ["Punctuality", "Equipment", "Appointment Availability"]
+                }
+            ];
+
+            let filteredDoctors = [];
+            
+            // Apply different logic based on method
+            switch(selectedMethod) {
+                case 'WSM':
+                    filteredDoctors = applyWSM(mockDoctors);
+                    break;
+                case 'TOPSIS':
+                    filteredDoctors = applyTOPSIS(mockDoctors);
+                    break;
+                case 'method3':
+                    filteredDoctors = applyMethod3(mockDoctors);
+                    break;
+                default:
+                    filteredDoctors = mockDoctors;
+            }
+
+            // Display results
+            displayDoctors(filteredDoctors);
+            
+            // Update results info
+            const resultsInfo = document.getElementById('results-info');
+            if (filteredDoctors.length === 0) {
+                resultsInfo.innerHTML = `<p>No doctors found matching your criteria using ${selectedMethod}.</p>`;
+            } else {
+                resultsInfo.innerHTML = `<p>Found ${filteredDoctors.length} doctor${filteredDoctors.length > 1 ? 's' : ''} matching your criteria using ${selectedMethod}</p>`;
+            }
+        }
+
+        // Function to apply WSM
+        function applyWSM(doctors) {
+            // If weights are not defined, use equal weights
+            if (Object.keys(criteriaWeights).length === 0) {
+                const equalWeight = 100 / selectedCriteria.size;
+                selectedCriteria.forEach(criteria => {
+                    criteriaWeights[criteria] = equalWeight;
+                });
+            }
+            
+            // Normalize weights to 1
+            const normalizedWeights = {};
+            let totalWeight = 0;
+            selectedCriteria.forEach(criteria => {
+                totalWeight += criteriaWeights[criteria] || 0;
+            });
+            
+            selectedCriteria.forEach(criteria => {
+                normalizedWeights[criteria] = (criteriaWeights[criteria] || 0) / totalWeight;
+            });
+            
+            // Calculate WSM score for each doctor
+            const doctorsWithScores = doctors.map(doctor => {
+                let score = 0;
+                let criteriaCount = 0;
+                
+                selectedCriteria.forEach(criteria => {
+                    const weight = normalizedWeights[criteria];
+                    const matchValue = calculateMatchValue(doctor, criteria);
+                    
+                    if (matchValue !== null) {
+                        score += matchValue * weight;
+                        criteriaCount++;
+                    }
+                });
+                
+                return {
+                    ...doctor,
+                    wsmScore: score,
+                    criteriaMatched: criteriaCount
+                };
+            });
+            
+            // Filter doctors with at least 2 matching criteria
+            // and sort by WSM score
+            return doctorsWithScores
+                .filter(d => d.criteriaMatched >= 2)
+                .sort((a, b) => b.wsmScore - a.wsmScore);
+        }
+
+        // Function to apply TOPSIS
+        function applyTOPSIS(doctors) {
+            // For this demo, TOPSIS uses the same logic as Method 1
+            // In a real application, you would implement the complete TOPSIS algorithm
+            
+            const filteredDoctors = doctors.filter(doctor => {
+                let matchCount = 0;
+                
+                selectedCriteria.forEach(criteria => {
+                    if (checkCriteriaMatch(doctor, criteria)) {
+                        matchCount++;
+                    }
+                });
+                
+                return matchCount >= 2;
+            });
+            
+            // Sort by number of matching criteria
+            return filteredDoctors.sort((a, b) => {
+                const aMatches = a.matches ? a.matches.length : 0;
+                const bMatches = b.matches ? b.matches.length : 0;
+                return bMatches - aMatches;
+            });
+        }
+
+        // Function to apply Method 3
+        function applyMethod3(doctors) {
+            return doctors.filter(doctor => {
+                let matchCount = 0;
+                
+                selectedCriteria.forEach(criteria => {
+                    if (checkCriteriaMatch(doctor, criteria)) {
+                        matchCount++;
+                    }
+                });
+                
+                return matchCount === selectedCriteria.size;
+            });
+        }
+
+        // Function to calculate match value
+        function calculateMatchValue(doctor, criteria) {
+            switch(criteria) {
+                case 'specialty':
+                    const selectedSpecialty = document.getElementById('specialty-select').value;
+                    return doctor.specialty.toLowerCase() === selectedSpecialty ? 1 : 0;
+                    
+                case 'availability':
+                    const selectedAvailability = document.querySelector('input[name="availability"]:checked')?.value;
+                    return doctor.availability.includes(selectedAvailability) ? 1 : 0;
+                    
+                case 'handicap':
+                    return doctor.handicapFriendly ? 1 : 0;
+                    
+                case 'competence':
+                    const minCompetence = parseFloat(document.getElementById('competence-slider').value);
+                    return doctor.competence >= minCompetence ? (doctor.competence / 5) : 0;
+                    
+                case 'location':
+                    // Simulate distance value (1 = very close, 0.5 = moderately close, etc.)
+                    return 0.8; // Simulated value
+                    
+                case 'welcome':
+                    const minWelcome = parseFloat(document.getElementById('welcome-slider').value);
+                    return doctor.welcomeRating >= minWelcome ? (doctor.welcomeRating / 5) : 0;
+                    
+                case 'punctuality':
+                    const minPunctuality = parseFloat(document.getElementById('punctuality-slider').value);
+                    return doctor.punctuality >= minPunctuality ? (doctor.punctuality / 5) : 0;
+                    
+                case 'equipment':
+                    const selectedEquipment = document.getElementById('equipment-select').value;
+                    if (selectedEquipment === 'any') return 0.5;
+                    return doctor.equipment.toLowerCase() === selectedEquipment ? 1 : 0;
+                    
+                case 'hygiene':
+                    const minHygiene = parseFloat(document.getElementById('hygiene-slider').value);
+                    return doctor.hygiene >= minHygiene ? (doctor.hygiene / 5) : 0;
+                    
+                case 'proximity':
+                    const selectedProximity = document.querySelector('input[name="proximity"]:checked')?.value;
+                    return doctor.appointmentAvailability.toLowerCase().includes(selectedProximity) ? 1 : 0;
+                    
+                default:
+                    return 0;
+            }
+        }
+
+        // Function to check criteria match
+        function checkCriteriaMatch(doctor, criteria) {
+            const matchValue = calculateMatchValue(doctor, criteria);
+            return matchValue > 0;
+        }
+
+        function displayDoctors(doctors) {
+            const doctorsGrid = document.getElementById('doctors-grid');
+            const selectedMethod = getSelectedMethod();
+            
+            if (doctors.length === 0) {
+                doctorsGrid.innerHTML = '<p class="no-results">No doctors found matching your criteria.</p>';
+                return;
+            }
+            
+            doctorsGrid.innerHTML = doctors.map(doctor => `
+                <div class="doctor-recommendation-card ${doctor.rating >= 4.7 ? 'featured' : ''}">
+                    <div class="doctor-header">
+                        <div>
+                            <div class="doctor-name">${doctor.name}</div>
+                            <div class="doctor-specialty">${doctor.specialty}</div>
+                        </div>
+                        <div class="doctor-rating">
+                            <span class="rating-stars">★★★★★</span>
+                            <span>${doctor.rating}/5</span>
+                            ${selectedMethod === 'WSM' && doctor.wsmScore ? 
+                                `<div class="method-score">WSM Score: ${doctor.wsmScore.toFixed(3)}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="doctor-details">
+                        <div class="doctor-detail">
+                            <span class="detail-icon">📍</span>
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value">${doctor.location}</span>
+                        </div>
+                        <div class="doctor-detail">
+                            <span class="detail-icon">⏰</span>
+                            <span class="detail-label">Availability:</span>
+                            <span class="detail-value">${doctor.availability}</span>
+                        </div>
+                        <div class="doctor-detail">
+                            <span class="detail-icon">📅</span>
+                            <span class="detail-label">Next Appointment:</span>
+                            <span class="detail-value">${doctor.appointmentAvailability}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-match">
+                        <strong>Matches your criteria:</strong>
+                        <div class="match-badges">
+                            ${doctor.matches ? doctor.matches.map(match => `<span class="match-badge">${match}</span>`).join('') : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="doctor-actions">
+                        <button class="btn-book" onclick="bookDoctor(${doctor.id})">Book Appointment</button>
+                        <button class="btn-profile" onclick="viewDoctorProfile(${doctor.id})">View Profile</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function bookDoctor(doctorId) {
+            alert(`Booking appointment with doctor ID: ${doctorId}. In a real application, this would redirect to the booking form.`);
+        }
+
+        function viewDoctorProfile(doctorId) {
+            alert(`Viewing profile of doctor ID: ${doctorId}. In a real application, this would show the doctor's detailed profile.`);
+        }
+
+        // Initialize slider values
+        function initializeSliders() {
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(slider => {
+                const valueDisplay = document.getElementById(`${slider.id}-value`);
+                if (valueDisplay) {
+                    valueDisplay.textContent = `${slider.value}/5`;
+                    slider.addEventListener('input', () => {
+                        valueDisplay.textContent = `${slider.value}/5`;
+                    });
+                }
+            });
+        }
+
+        // Add event listeners when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal when clicking the X
+            document.querySelector('.close').addEventListener('click', closeRatingModal);
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('ratingModal');
+                if (event.target === modal) {
+                    closeRatingModal();
+                }
+            });
+            
+            // Add star click listeners
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', handleStarClick);
+            });
+            
+            // Add skip button listeners
+            const skipButtons = document.querySelectorAll('.skip-btn');
+            skipButtons.forEach(button => {
+                button.addEventListener('click', handleSkipClick);
+            });
+            
+            // Submit rating button
+            document.getElementById('submitRating').addEventListener('click', submitRating);
+            
+            // Initialize criteria selection
+            const criteriaCheckboxes = document.querySelectorAll('.criteria-checkbox');
+            criteriaCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const criteriaCard = this.closest('.criteria-card');
+                    toggleCriteria(criteriaCard, this);
+                });
+            });
+            
+            // Initialize sliders
+            initializeSliders();
+            
+            // Method selection event listeners
+            const methodRadios = document.querySelectorAll('input[name="search-method"]');
+            methodRadios.forEach(radio => {
+                radio.addEventListener('change', handleMethodChange);
+            });
+            
+            // Initialize method display
+            handleMethodChange();
+        });
+    </script>
+</body>
+</html>
