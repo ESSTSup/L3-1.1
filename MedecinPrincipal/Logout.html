@@ -1,14 +1,15 @@
-<!-- logout.html -->
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <!-- garde la meta-refresh pour les navigateurs sans JS -->
-  <meta http-equiv="refresh" content="2;url=Login.html">
+ 
+  
+
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Déconnexion...</title>
 
-  <!-- CSS intégré -->
+  
   <style>
     :root{
       --bg:#0f1724;
@@ -111,7 +112,7 @@
       color:#9fb0cc;
     }
 
-    /* responsive */
+
     @media (max-width:420px){
       .card{ padding:18px; border-radius:12px; }
       h2{ font-size:1.25rem; }
@@ -124,12 +125,12 @@
       <h2>Déconnecté avec succès</h2>
       <p class="lead">Vous avez été déconnecté de votre session.</p>
 
-      <!-- Compte à rebours visuel -->
+      
       <div class="countdown" id="countdown" aria-hidden="false">
         Redirection dans <strong id="secs">2</strong>s
       </div>
 
-      <!-- Boutons -->
+      
       <div class="btns">
         <button class="btn btn-primary" id="goNow">Se reconnecter maintenant</button>
         <button class="btn btn-secondary" id="stay">Rester sur cette page</button>
@@ -137,7 +138,7 @@
 
       <div class="small">Si vous n'êtes pas redirigé automatiquement, <a href="Login.html" style="color:inherit; text-decoration:underline;">cliquez ici</a>.</div>
 
-      <!-- Fallback pour les navigateurs sans JS -->
+      
       <noscript>
         <div class="small" style="color:#ffcaca; margin-top:12px;">
           JavaScript est désactivé — vous serez redirigé par la meta-refresh.
@@ -146,46 +147,47 @@
     </div>
   </div>
 
-  <!-- JavaScript intégré -->
+ 
   <script>
     (function(){
-      // durée en secondes (doit correspondre à la meta-refresh)
+    
       var seconds = 2;
 
       var secsEl = document.getElementById('secs');
       var goNowBtn = document.getElementById('goNow');
       var stayBtn = document.getElementById('stay');
-      var redirectUrl = 'Login.html';
+      var redirectUrl = '../accespointANDlogin/index(1).html';
+
       var intervalId;
       var countdownEl = document.getElementById('countdown');
 
-      // sécurité: si l'élément n'existe pas on sort
+      
       if(!secsEl || !goNowBtn || !stayBtn) return;
 
-      // affiche la valeur initiale
+     
       secsEl.textContent = seconds;
 
       function tick() {
         seconds--;
         if (seconds < 0) {
           clearInterval(intervalId);
-          // redirection finale
+         
           window.location.href = redirectUrl;
         } else {
           secsEl.textContent = seconds;
         }
       }
 
-      // démarre le compte à rebours après un petit délai pour que l'utilisateur voie le message
+      
       intervalId = setInterval(tick, 1000);
 
-      // bouton pour rediriger tout de suite
+      
       goNowBtn.addEventListener('click', function(){
         clearInterval(intervalId);
         window.location.href = redirectUrl;
       });
 
-      // bouton pour annuler la redirection et rester sur la page
+    
       var cancelled = false;
       stayBtn.addEventListener('click', function(){
         if(!cancelled){
@@ -194,7 +196,7 @@
           stayBtn.textContent = 'Relancer la redirection';
           cancelled = true;
         } else {
-          // relancer
+        
           seconds = 2;
           secsEl.textContent = seconds;
           intervalId = setInterval(tick, 1000);
@@ -203,13 +205,12 @@
         }
       });
 
-      // accès clavier: Enter sur Se reconnecter maintenant déclenche le clic
+      
       goNowBtn.addEventListener('keyup', function(e){
         if(e.key === 'Enter') goNowBtn.click();
       });
 
-      // si l'utilisateur change d'onglet avant la redirection, le compteur continue (pas de pause)
-      // (comportement volontaire)
+     
     })();
   </script>
 </body>

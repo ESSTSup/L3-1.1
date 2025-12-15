@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Your Doctor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+  <h1>Find Your Medical Center </h1>
+  <nav>
+    <a href="mainpage.html">Home</a>
+    <a href="account.html">Create Account</a>
+    <a href="login.html">Login</a>
+  </nav>
+</header>
+
+<main class="container">
+  <!-- SEARCH METHOD + DOCTOR NAME -->
+  <section class="search-method">
+    <div class="method-banner">
+      Select at least <strong>2 criteria</strong> to get personalized doctor recommendations based on your preferences.
+    </div>
+
+    <div class="method-choices">
+      <label>
+        <input type="radio" name="searchMethod" value="method1" checked>
+        Method 1
+      </label>
+      <label>
+        <input type="radio" name="searchMethod" value="method2">
+        Method 2
+      </label>
+      <label>
+        <input type="radio" name="searchMethod" value="method3">
+        Method 3
+      </label>
+    </div>
+
+    <div class="doctor-search">
+      <input type="text" id="doctorSearchInput" placeholder="Search by doctor name...">
+      <button class="btn btn-primary" id="doctorSearchBtn">Search</button>
+    </div>
+  </section>
+
+  <h2 class="section-title">Select Your Preferences <span>(Choose at least 2)</span></h2>
+
+  <div class="criteria-grid">
+
+    <!-- SPECIALTY -->
+    <div class="criteria-card" data-criteria="specialty">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>🎯 Specialty</span>
+      </div>
+
+      <div class="criteria-content">
+        <select id="specialtySelect">
+          <option value="">Select Specialty</option>
+          <option value="cardiology">Cardiology</option>
+          <option value="dermatology">Dermatology</option>
+          <option value="pediatrics">Pediatrics</option>
+          <option value="general">General Medicine</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- AVAILABILITY -->
+    <div class="criteria-card" data-criteria="availability">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>⏰ Availability</span>
+      </div>
+
+      <div class="criteria-content">
+        <label><input type="checkbox" id="night"> Night Availability</label>
+        <label><input type="checkbox" id="weekend"> Weekend Availability</label>
+        <label><input type="checkbox" id="allday"> 24/7 Availability</label>
+      </div>
+    </div>
+
+    <!-- HANDICAP -->
+    <div class="criteria-card" data-criteria="handicap">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>♿ Handicap Friendly</span>
+      </div>
+      <div class="criteria-content">
+        <p>Clinics with wheelchair access.</p>
+      </div>
+    </div>
+
+    <!-- HIGH COMPETENCE -->
+    <div class="criteria-card" data-criteria="competence">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>⭐ High Competence</span>
+      </div>
+      <div class="criteria-content">
+        <label>Minimum Competence Rating:</label>
+        <input type="range" id="competenceRange" min="3" max="5" step="0.1" value="4">
+        <span id="competenceDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="criteria-card" data-criteria="location">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>📍 Location</span>
+      </div>
+
+      <div class="criteria-content">
+        <input type="text" id="locationInput" placeholder="Your address...">
+        <button class="btn-location" onclick="detectLocation()">Use My Location</button>
+      </div>
+    </div>
+
+    <!-- WELCOME -->
+    <div class="criteria-card" data-criteria="welcome">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>👋 Quality of Welcome</span>
+      </div>
+      <div class="criteria-content">
+        <label>Minimum Welcome Rating:</label>
+        <input type="range" id="welcomeRange" min="3" max="5" step="0.1" value="4">
+        <span id="welcomeDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- HYGIENE -->
+    <div class="criteria-card" data-criteria="hygiene">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>🧼 Hygiene Standards</span>
+      </div>
+
+      <div class="criteria-content">
+        <label>Minimum Hygiene Rating:</label>
+        <input type="range" id="hygieneRange" min="3" max="5" step="0.1" value="4">
+        <span id="hygieneDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- PUNCTUALITY -->
+    <div class="criteria-card" data-criteria="punctuality">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>⏱ Punctuality</span>
+      </div>
+
+      <div class="criteria-content">
+        <label>Minimum Punctuality Rating:</label>
+        <input type="range" id="punctualityRange" min="3" max="5" step="0.1" value="4">
+        <span id="punctualityDisplay">4.0/5</span>
+      </div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="criteria-card" data-criteria="equipment">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>📚 Medical Equipment Quality</span>
+      </div>
+
+      <div class="criteria-content">
+        <select id="equipmentSelect">
+          <option value="">Any level</option>
+          <option value="basic">Basic</option>
+          <option value="standard">Standard</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- APPOINTMENT AVAILABILITY -->
+    <div class="criteria-card" data-criteria="appointment">
+      <div class="criteria-header">
+        <input type="checkbox" class="criteria-checkbox">
+        <span>📅 Appointment Availability</span>
+      </div>
+
+      <div class="criteria-options">
+        <label><input type="radio" name="appoint" value="same-day"> Same Day</label>
+        <label><input type="radio" name="appoint" value="3-days"> Within 3 Days</label>
+        <label><input type="radio" name="appoint" value="7-days"> Within a Week</label>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn-clear" id="clearBtn">Clear All</button>
+    <button class="btn-main" id="findBtn" disabled>Find Recommended Doctors</button>
+  </div>
+
+  <section class="results">
+    <h2>Recommended Doctors</h2>
+    <div id="resultsInfo">Choose at least 2 criteria.</div>
+    <div id="resultsList"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  © 2025 Medical Appointment System — All rights reserved.
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
