@@ -1,13 +1,8 @@
-/* ============================
-    EMAIL VALIDATION
-   ============================ */
 function validateEmail(email) {
     const pattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     return pattern.test(email);
 }
 
-// ==========main page ==========
-// ====================== DATA =====
 const mockDoctors = [
   {
     id: 1,
@@ -55,15 +50,11 @@ const mockDoctors = [
 
 const selectedCriteria = new Set();
 
-
-//  CHOOSE METHOD ==========
 function getSelectedMethod() {
   const m = document.querySelector("input[name='searchMethod']:checked");
   return m ? m.value : "method1";
 }
 
-
-//  ACTIVATE / DEACTIVATE CARDS =====
 document.querySelectorAll(".criteria-checkbox").forEach(cb => {
   cb.addEventListener("change", () => {
     const card = cb.closest(".criteria-card");
@@ -81,76 +72,63 @@ document.querySelectorAll(".criteria-checkbox").forEach(cb => {
   });
 });
 
-
-// ======== FILTER DOCTORS =======================
 function filterDoctors() {
   const method = getSelectedMethod();
 
   const list = mockDoctors.filter(doc => {
     let match = 0;
 
-    // Specialty
     if (selectedCriteria.has("specialty")) {
       const sp = specialtySelect.value;
       if (sp && doc.specialty !== sp) return false;
       match++;
     }
 
-    // Availability
     if (selectedCriteria.has("availability")) {
       if (night.checked && !doc.night) return false;
       if (weekend.checked && !doc.weekend) return false;
       match++;
     }
 
-    // Handicap
     if (selectedCriteria.has("handicap")) {
       if (!doc.handicap) return false;
       match++;
     }
 
-    // Competence
     if (selectedCriteria.has("competence")) {
       if (doc.competence < competenceRange.value) return false;
       match++;
     }
 
-    // Welcome
     if (selectedCriteria.has("welcome")) {
       if (doc.welcome < welcomeRange.value) return false;
       match++;
     }
 
-    // Hygiene
     if (selectedCriteria.has("hygiene")) {
       if (doc.hygiene < hygieneRange.value) return false;
       match++;
     }
 
-    // Punctuality
     if (selectedCriteria.has("punctuality")) {
       if (doc.punctuality < punctualityRange.value) return false;
       match++;
     }
 
-    // Appointment
     if (selectedCriteria.has("appointment")) {
       const val = document.querySelector("input[name='appoint']:checked")?.value;
       if (val && doc.urgent !== val) return false;
       match++;
     }
 
-    // ================= METHOD LOGIC =================
     if (method === "method1") return match >= 2;
     if (method === "method2") return match >= 3;
-    return match === selectedCriteria.size; // method3 strict
+    return match === selectedCriteria.size;
   });
 
   displayDoctors(list);
 }
 
-
-// ======================= DISPLAY RESULTS =======================
 function displayDoctors(list) {
   const info = document.getElementById("resultsInfo");
   const out = document.getElementById("resultsList");
@@ -178,8 +156,6 @@ function displayDoctors(list) {
     .join("");
 }
 
-
-// ======= SEARCH DOCTOR BY NAME =======================
 document.getElementById("findBtn").addEventListener("click", filterDoctors);
 
 document.getElementById("doctorSearchBtn")?.addEventListener("click", () => {
@@ -188,8 +164,6 @@ document.getElementById("doctorSearchBtn")?.addEventListener("click", () => {
   displayDoctors(r);
 });
 
-
-// ======================= LOCATION API =======================
 function detectLocation() {
   if (!navigator.geolocation) {
     alert("Your browser does not support geolocation.");
@@ -217,10 +191,6 @@ function detectLocation() {
   });
 }
 
-
-/* ============================
-   ROLE SELECTION (login + profil)
-   ============================ */
 function selectRole(role, page) {
     localStorage.setItem("userRole", role);
     window.location.href = page;
@@ -232,14 +202,15 @@ function selectRoleLogin(role, page) {
 }
 
 function selectRoleFromProfile(role) {
-    localStorage.setItem("userRole", role);
-    window.location.href = "clinic_login.html"; 
+    const storedRole = localStorage.getItem("userRole");
+    
+    if (storedRole === "doctor") {
+        window.location.href = "../doctor/dashboard.html";
+    } else if (storedRole === "assistant") {
+        window.location.href = "../assistant/assistandeshb.html";
+    }
 }
 
-/* ============================
- CLINIC LOGIN (doctor + assistant)
-   ID/PASSWORD REMOVED
-   ============================ */
 function handleLogin(event) {
     event.preventDefault();
 
@@ -252,13 +223,8 @@ function handleLogin(event) {
 
     const role = localStorage.getItem("userRole");
 
-    if (role === "doctor") {
-        window.location.href = "../doctor/dashboard.html";
-        return false;
-    }
-
-    if (role === "assistant") {
-        window.location.href = "../assistant/assistandeshb.html";
+    if (role === "doctor" || role === "assistant") {
+        window.location.href = "profil.html";
         return false;
     }
 
@@ -267,9 +233,6 @@ function handleLogin(event) {
     return false;
 }
 
-/* ============================
-    SIGN IN PATIENT
-   ============================ */
 function loginUser() {
     const email = document.getElementById("email").value.trim();
     const pass = document.getElementById("password").value.trim();
@@ -285,12 +248,10 @@ function loginUser() {
     }
 
     localStorage.setItem("loggedIn", "true");
-    window.location.href = "../patient/dashbroad.html";
+    localStorage.setItem("userRole", "patient");
+    window.location.href = "../patient/dashboard.html";
 }
 
-/* ============================
-    PERSONAL INFORMATION
-   ============================ */
 function validatePersonalInfo() {
     const first = document.querySelector("input[name='firstName']").value.trim();
     const last = document.querySelector("input[name='lastName']").value.trim();
@@ -302,65 +263,39 @@ function validatePersonalInfo() {
     return true;
 }
 
-
-/* ============================
-   CLINICLOGIN
-   ============================ */
-  /* ============================
- CLINIC LOGIN AVEC ID + PASSWORD
-   ============================ */
 function handleClinicIDLogin(event) {
     event.preventDefault();
 
     const id = document.getElementById("clinic-id").value.trim();
     const pass = document.getElementById("clinic-password").value.trim();
 
-    // Vérification ID vide
     if (id === "") {
         alert("Veuillez saisir votre ID clinique.");
         return false;
     }
 
-  
-    // Vérification mot de passe vide
     if (pass === "") {
         alert("Veuillez saisir votre mot de passe.");
         return false;
     }
 
-    // Vérification longueur mot de passe
     if (pass.length < 6) {
         alert("Le mot de passe doit contenir au moins 6 caractères.");
         return false;
     }
 
-    // Récupérer le rôle (doctor/assistant) choisi dans profil.html
     const role = localStorage.getItem("userRole");
 
     if (!role) {
         alert("Rôle introuvable. Retournez au choix du compte.");
-        window.location.href = "login.html";
+        window.location.href = "Login.html";
         return false;
     }
 
-    if (role === "doctor") {
-        window.location.href = "../doctor/dashboard.html";
-        return false;
-    }
-
-    if (role === "assistant") {
-        window.location.href = "../assistant/assistandeshb.html";
-        return false;
-    }
-
-    alert("Erreur : rôle inconnu.");
+    window.location.href = "profil.html";
     return false;
 }
 
-
-/* ============================
-    CONTACT
-   ============================ */
 function validateContact() {
     const email = document.querySelector("input[name='email']").value.trim();
     const phone = document.querySelector("input[name='phone']").value.trim();
@@ -368,33 +303,25 @@ function validateContact() {
     const city = document.querySelector("input[name='city']").value.trim();
     const postal = document.querySelector("input[name='postalCode']").value.trim();
 
-    // 1️ Vérifier si un champ est vide
     if (!email || !phone || !address || !city || !postal) {
         alert("Veuillez remplir tous les champs.");
         return false;
     }
 
-    
     if (!validateEmail(email)) {
         alert("Email invalide. Veuillez ajouter @ et un domaine (ex: gmail.com).");
         return false;
     }
 
-   
     if (phone.length < 10) {
         alert("Numéro de téléphone trop court.");
         return false;
     }
 
-  
     window.location.href = "securitypassword.html";
     return false;
 }
 
-
-/* ============================
-    SECURITY (patient only)
-   ============================ */
 function validateSecurity() {
     const pass = document.getElementById("password").value.trim();
     const confirm = document.getElementById("confirm").value.trim();
@@ -412,9 +339,6 @@ function validateSecurity() {
     return true;
 }
 
-/* ============================
-    MEDICAL INFO
-   ============================ */
 function validateMedical() {
     const name = document.querySelector("input[name='emergencyName']").value.trim();
     const phone = document.querySelector("input[name='emergencyPhone']").value.trim();
@@ -427,19 +351,7 @@ function validateMedical() {
     return true;
 }
 
-/* ============================
-    LOGOUT
-   ============================ */
 function handleLogout() {
     localStorage.clear();
     window.location.href = "signin.html";
 }
-
-
-
-
-
-
-
-
-
