@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ================= ROLE ENTRY (doctor / assistant / patient) =================
-function goLogin(type) {
+ function goLogin(type) {
     fetch("Login.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -62,7 +62,8 @@ function goLogin(type) {
         if (type === "patient") {
             window.location.href = "signin.php";
         } else {
-            window.location.href = "profil.php";
+            // ✅ doctor & assistant MUST pass clinic login first
+            window.location.href = "clinic_login.php";
         }
     });
 }

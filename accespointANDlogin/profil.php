@@ -1,29 +1,19 @@
+<?php 
 <?php
 session_start();
 
-/*
-|--------------------------------------------------------------------------
-| Handle profile selection (AJAX from JS)
-|--------------------------------------------------------------------------
-| This MUST be first and MUST exit
-*/
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_user_id'])) {
     $_SESSION['selected_user_id'] = (int) $_POST['selected_user_id'];
-    echo "OK";
+    http_response_code(200);
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Determine access type
-|--------------------------------------------------------------------------
-*/
-$type = $_SESSION['login_type'] ?? $_SESSION['access_type'] ?? null;
-
-if (!$type) {
+if (!isset($_SESSION['login_type'])) {
     header("Location: Login.php");
     exit;
 }
+?>
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">

@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 require_once "../database/db_config.php";
 
@@ -36,32 +36,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
     |--------------------------------------------------------------------------
     | PATIENT LOGIN (NO PROFILE)
     |--------------------------------------------------------------------------
-    */
-    if (!isset($_SESSION['selected_user_id'])) {
+    */ // ======================
+// CASE: PATIENT
+// ======================
+// ======================
+// PATIENT LOGIN (CLEAN & FINAL)
+// ======================
+if (
+    isset($_SESSION['login_type']) &&
+    $_SESSION['login_type'] === 'patient'
+) {
+    $stmt = $db->prepare(
+        "SELECT * FROM patient 
+         WHERE pat_email = ? AND pat_password = ?"
+    );
+    $stmt->bind_param("ss", $email, $password);
+    $stmt->execute();
+    $res = $stmt->get_result();
 
-        $stmt = $db->prepare("SELECT * FROM patient WHERE pat_email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $res = $stmt->get_result();
+    if ($res->num_rows === 1) {
+        $pat = $res->fetch_assoc();
 
-        if ($res->num_rows === 1) {
-            $pat = $res->fetch_assoc();
+        $_SESSION['user_id'] = $pat['pat_id'];
+        $_SESSION['role']    = 'patient';
 
-            if ($password === $pat['pat_password']) {
-                $_SESSION['user_id'] = $pat['pat_id'];
-                $_SESSION['role']    = 'patient';
-
-                echo json_encode([
-                    "success"  => true,
-                    "redirect" => "../patient/dashboard.php"
-                ]);
-                exit;
-            }
-        }
-
-        echo json_encode(["success" => false, "message" => "Identifiants invalides"]);
+        echo json_encode([
+            "success"  => true,
+            "redirect" => "../patient/dashboard.html"
+        ]);
         exit;
     }
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Email ou mot de passe incorrect"
+    ]);
+    exit;
+}
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -112,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
 
             echo json_encode([
                 "success"  => true,
-                "redirect" => "../assistant/assistandeshb.php"
+                "redirect" => "../assistant/assistandeshb.html"
             ]);
             exit;
         }
