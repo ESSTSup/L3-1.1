@@ -17,6 +17,7 @@ if (
 ) {
     header("Location: profil.php");
     exit;
+
 }
 
 // ================= AJAX LOGIN =================
@@ -46,17 +47,37 @@ if (
     isset($_SESSION['login_type']) &&
     $_SESSION['login_type'] === 'patient'
 ) {
-    $stmt = $db->prepare(
-        "SELECT * FROM patient 
-         WHERE pat_email = ? AND pat_password = ?"
-    );
-    $stmt->bind_param("ss", $email, $password);
-    $stmt->execute();
-    $res = $stmt->get_result();
+ $stmt = $db->prepare(
+    "SELECT * FROM patient WHERE pat_email = ?"
+);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$res = $stmt->get_result();
 
-    if ($res->num_rows === 1) {
-        $pat = $res->fetch_assoc();
+  if ($res->num_rows === 1) {
+    $pat = $res->fetch_assoc();
 
+    // 1️⃣ If password already hashed
+    if (password_verify($password, $pat['pat_password'])) {
+        $loginOK = true;
+    }
+    // 2️⃣ If password still plain text (first login)
+    elseif ($password === $pat['pat_password']) {
+
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $upd = $db->prepare(
+            "UPDATE patient SET pat_password = ? WHERE pat_id = ?"
+        );
+        $upd->bind_param("si", $newHash, $pat['pat_id']);
+        $upd->execute();
+
+        $loginOK = true;
+    } else {
+        $loginOK = false;
+    }
+
+    if ($loginOK) {
         $_SESSION['user_id'] = $pat['pat_id'];
         $_SESSION['role']    = 'patient';
 
@@ -65,6 +86,9 @@ if (
             "redirect" => "../patient/dashboard.html"
         ]);
         exit;
+    }
+
+
     }
 
     echo json_encode([
@@ -91,22 +115,43 @@ if (
     $stmt->execute();
     $res = $stmt->get_result();
 
-    if ($res->num_rows === 1) {
-        $doc = $res->fetch_assoc();
+  if ($res->num_rows === 1) {
+    $doc = $res->fetch_assoc();
 
-        if ($password === $doc['doc_password']) {
-            $_SESSION['user_id'] = $doc['doc_id'];
-            $_SESSION['role']    = 'doctor';
-
-            echo json_encode([
-                "success"  => true,
-                "redirect" => ($doc['doc_role'] === 'admin')
-                    ? "../MedecinPrincipal/Dash.html"
-                    : "../doctor/dashboard.html"
-            ]);
-            exit;
-        }
+    // 1️⃣ If password already hashed
+    if (password_verify($password, $doc['doc_password'])) {
+        $loginOK = true;
     }
+    // 2️⃣ If password still plain (first login only)
+    elseif ($password === $doc['doc_password']) {
+
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $upd = $db->prepare(
+            "UPDATE doctor SET doc_password = ? WHERE doc_id = ?"
+        );
+        $upd->bind_param("si", $newHash, $doc['doc_id']);
+        $upd->execute();
+
+        $loginOK = true;
+    } else {
+        $loginOK = false;
+    }
+
+    if ($loginOK) {
+        $_SESSION['user_id'] = $doc['doc_id'];
+        $_SESSION['role']    = 'doctor';
+
+        echo json_encode([
+            "success"  => true,
+            "redirect" => ($doc['doc_role'] === 'admin')
+                ? "../MedecinPrincipal/Dash.html"
+                : "../doctor/dashboard.html"
+        ]);
+        exit;
+    }
+}
+
 
     // ---------- ASSISTANT ----------
     $stmt = $db->prepare(
@@ -116,20 +161,41 @@ if (
     $stmt->execute();
     $res = $stmt->get_result();
 
-    if ($res->num_rows === 1) {
-        $assis = $res->fetch_assoc();
+  if ($res->num_rows === 1) {
+    $assis = $res->fetch_assoc();
 
-        if ($password === $assis['assis_password']) {
-            $_SESSION['user_id'] = $assis['assis_id'];
-            $_SESSION['role']    = 'assistant';
-
-            echo json_encode([
-                "success"  => true,
-                "redirect" => "../assistant/assistandeshb.html"
-            ]);
-            exit;
-        }
+    // 1️⃣ If password already hashed
+    if (password_verify($password, $assis['assis_password'])) {
+        $loginOK = true;
     }
+    // 2️⃣ If password still plain (first login only)
+    elseif ($password === $assis['assis_password']) {
+
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $upd = $db->prepare(
+            "UPDATE assistant SET assis_password = ? WHERE assis_id = ?"
+        );
+        $upd->bind_param("si", $newHash, $assis['assis_id']);
+        $upd->execute();
+
+        $loginOK = true;
+    } else {
+        $loginOK = false;
+    }
+
+    if ($loginOK) {
+        $_SESSION['user_id'] = $assis['assis_id'];
+        $_SESSION['role']    = 'assistant';
+
+        echo json_encode([
+            "success"  => true,
+            "redirect" => "../assistant/assistandeshb.html"
+        ]);
+        exit;
+    }
+}
+
 
     echo json_encode(["success" => false, "message" => "Identifiants invalides"]);
     exit;
