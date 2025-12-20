@@ -1,99 +1,226 @@
+<?php 
+session_start();
+require_once "../database/db_config.php";
+
+/*
+|--------------------------------------------------------------------------
+| HARD FIX: block access if profile not selected (staff only)
+|--------------------------------------------------------------------------
+| If doctor/assistant comes here WITHOUT selecting a profile,
+| we force them back. Otherwise login will ALWAYS fail.
+*/
+if (
+    $_SERVER['REQUEST_METHOD'] !== 'POST' &&
+    !isset($_SESSION['selected_user_id']) &&
+    isset($_SESSION['login_type']) &&
+    $_SESSION['login_type'] !== 'patient'
+) {
+    header("Location: profil.php");
+    exit;
+
+}
+
+// ================= AJAX LOGIN =================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
+
+    $email    = trim($_POST['email'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if ($email === '' || $password === '') {
+        echo json_encode(["success" => false, "message" => "Champs manquants"]);
+        exit;
+    }
+
+    $db = Database::getInstance()->getConnection();
+
+    /*
+    |--------------------------------------------------------------------------
+    | PATIENT LOGIN (NO PROFILE)
+    |--------------------------------------------------------------------------
+    */ // ======================
+// CASE: PATIENT
+// ======================
+// ======================
+// PATIENT LOGIN (CLEAN & FINAL)
+// ======================
+if (
+    isset($_SESSION['login_type']) &&
+    $_SESSION['login_type'] === 'patient'
+) {
+ $stmt = $db->prepare(
+    "SELECT * FROM patient WHERE pat_email = ?"
+);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$res = $stmt->get_result();
+
+  if ($res->num_rows === 1) {
+    $pat = $res->fetch_assoc();
+
+    // 1️⃣ If password already hashed
+    if (password_verify($password, $pat['pat_password'])) {
+        $loginOK = true;
+    }
+    // 2️⃣ If password still plain text (first login)
+    elseif ($password === $pat['pat_password']) {
+
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $upd = $db->prepare(
+            "UPDATE patient SET pat_password = ? WHERE pat_id = ?"
+        );
+        $upd->bind_param("si", $newHash, $pat['pat_id']);
+        $upd->execute();
+
+        $loginOK = true;
+    } else {
+        $loginOK = false;
+    }
+
+    if ($loginOK) {
+        $_SESSION['user_id'] = $pat['pat_id'];
+        $_SESSION['role']    = 'patient';
+
+        echo json_encode([
+            "success"  => true,
+            "redirect" => "../patient/dashboard.html"
+        ]);
+        exit;
+    }
+
+
+    }
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Email ou mot de passe incorrect"
+    ]);
+    exit;
+}
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF LOGIN (PROFILE REQUIRED)
+    |--------------------------------------------------------------------------
+    */
+    $selectedId = (int) $_SESSION['selected_user_id'];
+
+    // ---------- DOCTOR ----------
+    $stmt = $db->prepare(
+        "SELECT * FROM doctor WHERE doc_id = ? AND doc_email = ?"
+    );
+    $stmt->bind_param("is", $selectedId, $email);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+  if ($res->num_rows === 1) {
+    $doc = $res->fetch_assoc();
+
+    // 1️⃣ If password already hashed
+    if (password_verify($password, $doc['doc_password'])) {
+        $loginOK = true;
+    }
+    // 2️⃣ If password still plain (first login only)
+    elseif ($password === $doc['doc_password']) {
+
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $upd = $db->prepare(
+            "UPDATE doctor SET doc_password = ? WHERE doc_id = ?"
+        );
+        $upd->bind_param("si", $newHash, $doc['doc_id']);
+        $upd->execute();
+
+        $loginOK = true;
+    } else {
+        $loginOK = false;
+    }
+
+    if ($loginOK) {
+        $_SESSION['user_id'] = $doc['doc_id'];
+        $_SESSION['role']    = 'doctor';
+
+        echo json_encode([
+            "success"  => true,
+            "redirect" => ($doc['doc_role'] === 'admin')
+                ? "../MedecinPrincipal/Dash.html"
+                : "../doctor/dashboard.html"
+        ]);
+        exit;
+    }
+}
+
+
+    // ---------- ASSISTANT ----------
+    $stmt = $db->prepare(
+        "SELECT * FROM assistant WHERE assis_id = ? AND assis_email = ?"
+    );
+    $stmt->bind_param("is", $selectedId, $email);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+  if ($res->num_rows === 1) {
+    $assis = $res->fetch_assoc();
+
+    // 1️⃣ If password already hashed
+    if (password_verify($password, $assis['assis_password'])) {
+        $loginOK = true;
+    }
+    // 2️⃣ If password still plain (first login only)
+    elseif ($password === $assis['assis_password']) {
+
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $upd = $db->prepare(
+            "UPDATE assistant SET assis_password = ? WHERE assis_id = ?"
+        );
+        $upd->bind_param("si", $newHash, $assis['assis_id']);
+        $upd->execute();
+
+        $loginOK = true;
+    } else {
+        $loginOK = false;
+    }
+
+    if ($loginOK) {
+        $_SESSION['user_id'] = $assis['assis_id'];
+        $_SESSION['role']    = 'assistant';
+
+        echo json_encode([
+            "success"  => true,
+            "redirect" => "../assistant/assistandeshb.html"
+        ]);
+        exit;
+    }
+}
+
+
+    echo json_encode(["success" => false, "message" => "Identifiants invalides"]);
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion - Clinique</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="script.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .login-container {
-      background-color: white;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    h1 {
-      color: #A6615A;
-      margin-bottom: 25px;
-    }
-
-    .form-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      color: #555;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .connect-btn {
-      background-color: #A6615A;
-      color: white;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.3s;
-    }
-
-    .connect-btn:hover {
-      background-color: #8d524d;
-    }
-  </style>
-
-  
+<meta charset="UTF-8">
+<title>Connexion</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="script.js"></script>
 </head>
-<body class="login-page">
 
-  <div class="login-container">
+<body>
+<div class="login-container">
     <h1>Connexion</h1>
+    <p id="error" style="color:red;"></p>
 
-    <form onsubmit="return false;">
-      <div class="form-group">
-        <label for="email">Adresse email :</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Mot de passe :</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-
-      <button type="button" class="connect-btn" onclick="loginUser()">
-        Se connecter
-      </button>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Mot de passe" required>
+        <button type="submit">Se connecter</button>
     </form>
-  </div>
-
+</div>
 </body>
 </html>
