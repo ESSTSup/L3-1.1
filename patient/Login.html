@@ -1,3 +1,25 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['type'])) {
+
+    $type = $_POST['type'];
+
+    // ✅ Only allowed values
+    if (!in_array($type, ['doctor', 'assistant', 'patient'])) {
+        http_response_code(400);
+        exit;
+    }
+
+    // ✅ Store chosen access type
+    $_SESSION['login_type']  = $type;
+    $_SESSION['access_type'] = $type;
+
+    echo "OK";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -5,8 +27,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choisir le type de compte</title>
   <link rel="stylesheet" href="style.css">
-
   <script defer src="script.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -51,6 +73,8 @@
       padding: 12px 18px;
       border-radius: 8px;
       font-size: 16px;
+      border: none;
+      cursor: pointer;
       transition: background-color 0.3s;
     }
 
@@ -58,9 +82,8 @@
       background-color: #8d524d;
     }
   </style>
-
- 
 </head>
+
 <body class="login-page">
 
   <div class="login-container">
@@ -68,10 +91,9 @@
     <p>Choisissez votre type de compte :</p>
 
     <div class="options">
-     
-      <button class="btn" onclick="selectRoleLogin('doctor', 'profil.html')">Docteur</button>
-      <button class="btn" onclick="selectRoleLogin('assistant', 'profil.html')">Assistant</button>
-      <button class="btn" onclick="selectRoleLogin('patient', 'signin.html')">Patient</button>
+      <button class="btn" onclick="goLogin('doctor')">Docteur</button>
+      <button class="btn" onclick="goLogin('assistant')">Assistant</button>
+      <button class="btn" onclick="goLogin('patient')">Patient</button>
     </div>
   </div>
 
