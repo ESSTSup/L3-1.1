@@ -1,6 +1,12 @@
 <?php 
-<?php
-session_start();
+session_start(); 
+$type = $_SESSION['login_type'] ?? null;
+
+if (!$type) {
+    header("Location: Login.php");
+    exit;
+}
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_user_id'])) {
     $_SESSION['selected_user_id'] = (int) $_POST['selected_user_id'];
@@ -12,8 +18,6 @@ if (!isset($_SESSION['login_type'])) {
     header("Location: Login.php");
     exit;
 }
-?>
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -80,7 +84,8 @@ if (!isset($_SESSION['login_type'])) {
 
 <main class="profiles">
 
-<?php if ($type === 'doctor' || $type === 'admin'): ?>
+<?php 
+if ($type === 'doctor' || $type === 'admin'): ?>
 <section class="doctors">
   <h2>Médecins</h2>
   <div class="grid">
