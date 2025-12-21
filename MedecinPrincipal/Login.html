@@ -1,141 +1,101 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['type'])) {
+
+    $type = $_POST['type'];
+
+    // Only allowed values
+    if (!in_array($type, ['doctor', 'assistant', 'patient'])) {
+        http_response_code(400);
+        exit;
+    }
+
+    //  Store chosen access type
+    $_SESSION['login_type']  = $type;
+    $_SESSION['access_type'] = $type;
+
+    echo "OK";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choisir le type de compte</title>
-  
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 
   <style>
     body {
-      font-family: "Poppins", Arial, sans-serif;
-      background: linear-gradient(135deg,#A6615A,#2E2E2E);
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .login-container {
-      background-color: #fff;
-      padding: 35px 45px;
-      border-radius: 15px;
-      box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+      background-color: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       text-align: center;
-      animation: slideUp 0.6s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
     }
 
     h1 {
       color: #A6615A;
-      margin-bottom: 12px;
-      font-size: 28px;
-      font-weight: bold;
+      margin-bottom: 10px;
     }
 
     p {
-      color: #444;
-      margin-bottom: 28px;
-      font-size: 15px;
+      color: #555;
+      margin-bottom: 25px;
     }
 
     .options {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 15px;
     }
 
     .btn {
       background-color: #A6615A;
       color: white;
-      border: none;
-      padding: 14px 20px;
+      text-decoration: none;
+      padding: 12px 18px;
       border-radius: 8px;
-      font-size: 17px;
+      font-size: 16px;
+      border: none;
       cursor: pointer;
-      font-weight: 500;
-      transition: 0.25s;
-      box-shadow: 0 4px 10px rgba(0,0,0,.15);
+      transition: background-color 0.3s;
     }
 
     .btn:hover {
-      transform: scale(1.07);
-      background-color: #8d514a;
-    }
-
-   
-    #loader {
-      display: none;
-      margin-top: 20px;
-      font-size: 16px;
-      color: #333;
-      font-weight: bold;
-    }
-
-    .spinner {
-      width: 28px;
-      height: 28px;
-      border: 4px solid #A6615A;
-      border-top-color: transparent;
-      border-radius: 50%;
-      margin: 10px auto;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+      background-color: #8d524d;
     }
   </style>
-
-  <script>
-    
-    function selectRole(role, page) {
-      localStorage.setItem("userRole", role);
-
-      document.querySelector(".options").style.display = "none";
-      document.getElementById("loader").style.display = "block";
-
-      setTimeout(()=> {
-        window.location.href = page;
-      },1500); // délai avant redirection (1.5 sec)
-    }
-  </script>
-
 </head>
-<body>
+
+<body class="login-page">
 
   <div class="login-container">
     <h1>Connexion</h1>
     <p>Choisissez votre type de compte :</p>
 
     <div class="options">
-      <button class="btn" onclick="selectRole('doctor', 'ProfilD.html')">Docteur</button>
-      <button class="btn" onclick="selectRole('assistant', 'ProfilA.html')">Assistant</button>
-      <button class="btn" onclick="selectRole('patient', 'ProfilP.html')">Patient</button>
-      
+      <button class="btn" onclick="goLogin('doctor')">Docteur</button>
+      <button class="btn" onclick="goLogin('assistant')">Assistant</button>
+      <button class="btn" onclick="goLogin('patient')">Patient</button>
     </div>
-
-   
-    <div id="loader">
-      <div class="spinner"></div>
-      Chargement...
-    </div>
-
   </div>
 
 </body>
 </html>
-
