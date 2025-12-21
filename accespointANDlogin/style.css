@@ -1,3 +1,359 @@
+/* ===============================
+   MEDICAL INFORMATION PAGE ONLY
+   =============================== */
+
+.medical-page {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+}
+
+/* Main container */
+.medical-page .form-container {
+  max-width: 600px;
+  margin: 60px auto;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 35px 40px;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+/* Title */
+.medical-page h2 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Form groups */
+.medical-page .form-group {
+  margin-bottom: 20px;
+}
+
+/* Labels */
+.medical-page label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2c3e50;
+}
+
+/* Inputs & textarea */
+.medical-page input[type="text"],
+.medical-page input[type="tel"],
+.medical-page textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 14px;
+  resize: vertical;
+}
+
+/* Focus */
+.medical-page input:focus,
+.medical-page textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+}
+
+/* Buttons container */
+.medical-page .form-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+}
+
+/* Previous link */
+.medical-page .previous {
+  padding: 12px 26px;
+  border-radius: 12px;
+  border: 2px solid #667eea;
+  color: #667eea;
+  font-weight: 700;
+  text-decoration: none;
+  background: white;
+}
+
+/* Final action button */
+.medical-page .next-step {
+  padding: 14px 30px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Hover */
+.medical-page .next-step:hover,
+.medical-page .previous:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+/* Footer */
+.medical-page footer {
+  margin-top: 80px;
+  text-align: center;
+  color: white;
+  opacity: 0.9;
+}
+
+/* ===============================
+   SECURITY & PASSWORD PAGE ONLY
+   =============================== */
+
+.security-page {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+}
+
+/* Main container */
+.security-page .form-container {
+  max-width: 560px;
+  margin: 60px auto;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 35px 40px;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+/* Title */
+.security-page h2 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Form groups */
+.security-page .form-group {
+  margin-bottom: 20px;
+}
+
+/* Labels */
+.security-page label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2c3e50;
+}
+
+/* Inputs */
+.security-page input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 14px;
+}
+
+/* Focus */
+.security-page input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+}
+
+/* Password rules */
+.security-page .password-rules {
+  margin-top: 10px;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #555;
+}
+
+.security-page .password-rules li {
+  margin-bottom: 4px;
+}
+
+/* Security tips*
+
+
+/* ===============================
+   CONTACT & ADDRESS PAGE ONLY
+   =============================== */
+
+.contact-page {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+}
+
+/* Main container */
+.contact-page .form-container {
+  max-width: 560px;
+  margin: 60px auto;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 35px 40px;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+/* Title */
+.contact-page h2 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Labels */
+.contact-page label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2c3e50;
+}
+
+/* Inputs */
+.contact-page input[type="text"],
+.contact-page input[type="email"],
+.contact-page input[type="tel"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Focus */
+.contact-page input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+}
+
+/* Buttons container */
+.contact-page .form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+/* Buttons */
+.contact-page button {
+  padding: 12px 26px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Previous */
+.contact-page button:first-child {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+/* Next */
+.contact-page button:last-child {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+/* Hover */
+.contact-page button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+/* ===============================
+   PERSONAL INFORMATION PAGE ONLY
+   =============================== */
+
+.personal-page {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+}
+
+/* Center container */
+.personal-page .form-container {
+  max-width: 520px;
+  margin: 60px auto;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 35px 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+/* Title */
+.personal-page .form-container h2 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+/* Form groups */
+.personal-page .form-group,
+.personal-page .photo-section {
+  margin-bottom: 18px;
+}
+
+/* Labels */
+.personal-page label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2c3e50;
+}
+
+/* Inputs */
+.personal-page input[type="text"],
+.personal-page input[type="date"],
+.personal-page input[type="file"],
+.personal-page select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 14px;
+}
+
+/* Focus */
+.personal-page input:focus,
+.personal-page select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+}
+
+/* Button */
+.personal-page button[type="submit"] {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.personal-page button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+.personal-page button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
 /* ====== GLOBAL RESET & BASE ====== */
 * {
   margin: 0;
