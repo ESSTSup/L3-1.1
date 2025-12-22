@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Dec 15, 2025 at 01:55 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Hôte : 127.0.0.1
+-- Généré le : dim. 21 déc. 2025 à 18:03
+-- Version du serveur : 10.4.32-MariaDB
+-- Version de PHP : 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `medicalclinic`
+-- Base de données : `medicalclinic`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `appointments`
+-- Structure de la table `appointments`
 --
 
 CREATE TABLE `appointments` (
@@ -43,7 +43,7 @@ CREATE TABLE `appointments` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `assistant`
+-- Structure de la table `assistant`
 --
 
 CREATE TABLE `assistant` (
@@ -54,10 +54,18 @@ CREATE TABLE `assistant` (
   `assis_password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `assistant`
+--
+
+INSERT INTO `assistant` (`assis_id`, `assis_name`, `assis_lname`, `assis_email`, `assis_password`) VALUES
+(101, 'BERRAHMEN', '', 'berrahmen@clinic.com', '$2y$10$9Y3Kb7tS8/9frtqANscMoeGA2ZjeKHEE9zKGA45Cvsp178b9PjmXy'),
+(102, 'SLIMANI', '', 'slimani@clinic.com', '$2y$10$1UoRkKZ4GKS0chuetwRwI.esenCf59Tx4wD7LGdCcdt7sT7Rg4QMu');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `assistant_finance`
+-- Structure de la table `assistant_finance`
 --
 
 CREATE TABLE `assistant_finance` (
@@ -75,7 +83,7 @@ CREATE TABLE `assistant_finance` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clinics`
+-- Structure de la table `clinics`
 --
 
 CREATE TABLE `clinics` (
@@ -85,10 +93,17 @@ CREATE TABLE `clinics` (
   `clinic_name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `clinics`
+--
+
+INSERT INTO `clinics` (`clinic_id`, `clinic_email`, `clinic_password`, `clinic_name`) VALUES
+(1, 'test@clinic.com', 'test123', 'TEST CLINIC');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clinic_schedules`
+-- Structure de la table `clinic_schedules`
 --
 
 CREATE TABLE `clinic_schedules` (
@@ -103,7 +118,7 @@ CREATE TABLE `clinic_schedules` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `consultation`
+-- Structure de la table `consultation`
 --
 
 CREATE TABLE `consultation` (
@@ -133,7 +148,7 @@ CREATE TABLE `consultation` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `doctor`
+-- Structure de la table `doctor`
 --
 
 CREATE TABLE `doctor` (
@@ -142,15 +157,28 @@ CREATE TABLE `doctor` (
   `doc_password` varchar(255) NOT NULL,
   `doc_specialite` varchar(100) NOT NULL,
   `doc_telephone` varchar(20) NOT NULL,
-  `doc_role` enum('admin','member') NOT NULL,
+  `doc_role` varchar(20) DEFAULT NULL,
   `doc_name` varchar(50) NOT NULL,
   `doc_lname` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `doctor`
+--
+
+INSERT INTO `doctor` (`doc_id`, `doc_email`, `doc_password`, `doc_specialite`, `doc_telephone`, `doc_role`, `doc_name`, `doc_lname`) VALUES
+(1, 'doc@test.com', '1234', 'cardio', '0550123456', '', 'Ali', 'Bensaid'),
+(2, 'moufouki@clinic.com', '$2y$10$QnqUMEWPTXFErgwmBcPQ2eJULQWgpTQefg3FV9ZuROkDabv/pNDMO', 'general', '0550000001', 'admin', 'MOUFOUKI', ''),
+(3, 'djedjig@clinic.com', '1234', 'general', '0550000002', 'doctor', 'DJEDJIG', ''),
+(4, 'hellal@clinic.com', '1234', 'general', '0550000003', 'doctor', 'HELLAL', ''),
+(5, 'meklati@clinic.com', '1234', 'general', '0550000004', 'doctor', 'MEKLATI', ''),
+(6, 'lachi@clinic.com', '1234', 'general', '0550000005', 'doctor', 'LACHI', ''),
+(7, 'majed@clinic.com', '1234', 'general', '0550000006', 'doctor', 'MAJED', '');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `doctor_assistant`
+-- Structure de la table `doctor_assistant`
 --
 
 CREATE TABLE `doctor_assistant` (
@@ -164,7 +192,7 @@ CREATE TABLE `doctor_assistant` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `doctor_availability`
+-- Structure de la table `doctor_availability`
 --
 
 CREATE TABLE `doctor_availability` (
@@ -182,7 +210,7 @@ CREATE TABLE `doctor_availability` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `patient`
+-- Structure de la table `patient`
 --
 
 CREATE TABLE `patient` (
@@ -192,13 +220,22 @@ CREATE TABLE `patient` (
   `pat_birthday` date NOT NULL,
   `pat_gender` varchar(10) NOT NULL,
   `telephone` varchar(20) NOT NULL,
-  `pat_email` varchar(100) NOT NULL
+  `pat_email` varchar(100) NOT NULL,
+  `pat_password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `patient`
+--
+
+INSERT INTO `patient` (`pat_id`, `pat_name`, `pat_lname`, `pat_birthday`, `pat_gender`, `telephone`, `pat_email`, `pat_password`) VALUES
+(2, 'Maroua', 'BELHINOUS', '1989-05-12', 'Female', '0567867891', 'maroua@gmail.com', '$2y$10$GJ3r6/Bo3QQkOJ3WvMKg8OGJF93kO50hzPzJCzvEtRNa0szADZX5u'),
+(4, 'WAR', 'DII', '2025-12-27', 'Male', '+213541775494', 'warda.moufouki@esst-sup.com', '$2y$10$zE.6knmTYfkuvOgUxfF8A.j3iZHd4sI8.en5ZcdFtTQLDONsD.e6C');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `patient_finance`
+-- Structure de la table `patient_finance`
 --
 
 CREATE TABLE `patient_finance` (
@@ -216,7 +253,30 @@ CREATE TABLE `patient_finance` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `superadmin`
+-- Structure de la table `patient_medical`
+--
+
+CREATE TABLE `patient_medical` (
+  `medical_id` int(11) NOT NULL,
+  `pat_id` int(11) NOT NULL,
+  `allergies` text DEFAULT NULL,
+  `chronic_diseases` text DEFAULT NULL,
+  `emergency_name` varchar(100) DEFAULT NULL,
+  `emergency_phone` varchar(20) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `patient_medical`
+--
+
+INSERT INTO `patient_medical` (`medical_id`, `pat_id`, `allergies`, `chronic_diseases`, `emergency_name`, `emergency_phone`, `created_at`) VALUES
+(4, 4, 'KO', 'LO', 'AIII', '0565678799', '2025-12-21 16:39:07');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `superadmin`
 --
 
 CREATE TABLE `superadmin` (
@@ -230,7 +290,7 @@ CREATE TABLE `superadmin` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `waiting_list`
+-- Structure de la table `waiting_list`
 --
 
 CREATE TABLE `waiting_list` (
@@ -243,11 +303,11 @@ CREATE TABLE `waiting_list` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Indexes for dumped tables
+-- Index pour les tables déchargées
 --
 
 --
--- Indexes for table `appointments`
+-- Index pour la table `appointments`
 --
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`appointment_id`),
@@ -258,33 +318,33 @@ ALTER TABLE `appointments`
   ADD KEY `idx_status` (`status`);
 
 --
--- Indexes for table `assistant`
+-- Index pour la table `assistant`
 --
 ALTER TABLE `assistant`
   ADD PRIMARY KEY (`assis_id`);
 
 --
--- Indexes for table `assistant_finance`
+-- Index pour la table `assistant_finance`
 --
 ALTER TABLE `assistant_finance`
   ADD PRIMARY KEY (`salary_id`),
   ADD UNIQUE KEY `unique_assistant_month` (`assis_id`,`month`);
 
 --
--- Indexes for table `clinics`
+-- Index pour la table `clinics`
 --
 ALTER TABLE `clinics`
   ADD PRIMARY KEY (`clinic_id`);
 
 --
--- Indexes for table `clinic_schedules`
+-- Index pour la table `clinic_schedules`
 --
 ALTER TABLE `clinic_schedules`
   ADD PRIMARY KEY (`schedule_id`),
   ADD UNIQUE KEY `unique_clinic_day` (`clinic_id`,`day_of_week`);
 
 --
--- Indexes for table `consultation`
+-- Index pour la table `consultation`
 --
 ALTER TABLE `consultation`
   ADD PRIMARY KEY (`consultation_id`),
@@ -294,20 +354,20 @@ ALTER TABLE `consultation`
   ADD KEY `clinic_id` (`clinic_id`);
 
 --
--- Indexes for table `doctor`
+-- Index pour la table `doctor`
 --
 ALTER TABLE `doctor`
   ADD PRIMARY KEY (`doc_id`);
 
 --
--- Indexes for table `doctor_assistant`
+-- Index pour la table `doctor_assistant`
 --
 ALTER TABLE `doctor_assistant`
   ADD PRIMARY KEY (`doc_id`,`assis_id`),
   ADD KEY `assis_id` (`assis_id`);
 
 --
--- Indexes for table `doctor_availability`
+-- Index pour la table `doctor_availability`
 --
 ALTER TABLE `doctor_availability`
   ADD PRIMARY KEY (`availability_id`),
@@ -316,13 +376,13 @@ ALTER TABLE `doctor_availability`
   ADD KEY `idx_day` (`day_of_week`);
 
 --
--- Indexes for table `patient`
+-- Index pour la table `patient`
 --
 ALTER TABLE `patient`
   ADD PRIMARY KEY (`pat_id`);
 
 --
--- Indexes for table `patient_finance`
+-- Index pour la table `patient_finance`
 --
 ALTER TABLE `patient_finance`
   ADD PRIMARY KEY (`finance_id`),
@@ -330,14 +390,21 @@ ALTER TABLE `patient_finance`
   ADD KEY `consultation_id` (`consultation_id`);
 
 --
--- Indexes for table `superadmin`
+-- Index pour la table `patient_medical`
+--
+ALTER TABLE `patient_medical`
+  ADD PRIMARY KEY (`medical_id`),
+  ADD KEY `pat_id` (`pat_id`);
+
+--
+-- Index pour la table `superadmin`
 --
 ALTER TABLE `superadmin`
   ADD PRIMARY KEY (`admin_id`),
   ADD UNIQUE KEY `unique_email` (`admin_email`);
 
 --
--- Indexes for table `waiting_list`
+-- Index pour la table `waiting_list`
 --
 ALTER TABLE `waiting_list`
   ADD PRIMARY KEY (`waiting_id`),
@@ -347,87 +414,93 @@ ALTER TABLE `waiting_list`
   ADD KEY `fk_waitinglist_patient` (`pat_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT pour les tables déchargées
 --
 
 --
--- AUTO_INCREMENT for table `appointments`
+-- AUTO_INCREMENT pour la table `appointments`
 --
 ALTER TABLE `appointments`
   MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `assistant`
+-- AUTO_INCREMENT pour la table `assistant`
 --
 ALTER TABLE `assistant`
-  MODIFY `assis_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `assis_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
--- AUTO_INCREMENT for table `assistant_finance`
+-- AUTO_INCREMENT pour la table `assistant_finance`
 --
 ALTER TABLE `assistant_finance`
   MODIFY `salary_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `clinics`
+-- AUTO_INCREMENT pour la table `clinics`
 --
 ALTER TABLE `clinics`
-  MODIFY `clinic_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `clinic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `clinic_schedules`
+-- AUTO_INCREMENT pour la table `clinic_schedules`
 --
 ALTER TABLE `clinic_schedules`
   MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `consultation`
+-- AUTO_INCREMENT pour la table `consultation`
 --
 ALTER TABLE `consultation`
   MODIFY `consultation_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `doctor`
+-- AUTO_INCREMENT pour la table `doctor`
 --
 ALTER TABLE `doctor`
-  MODIFY `doc_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `doc_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `doctor_availability`
+-- AUTO_INCREMENT pour la table `doctor_availability`
 --
 ALTER TABLE `doctor_availability`
   MODIFY `availability_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `patient`
+-- AUTO_INCREMENT pour la table `patient`
 --
 ALTER TABLE `patient`
-  MODIFY `pat_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `patient_finance`
+-- AUTO_INCREMENT pour la table `patient_finance`
 --
 ALTER TABLE `patient_finance`
   MODIFY `finance_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `superadmin`
+-- AUTO_INCREMENT pour la table `patient_medical`
+--
+ALTER TABLE `patient_medical`
+  MODIFY `medical_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT pour la table `superadmin`
 --
 ALTER TABLE `superadmin`
   MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `waiting_list`
+-- AUTO_INCREMENT pour la table `waiting_list`
 --
 ALTER TABLE `waiting_list`
   MODIFY `waiting_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Contraintes pour les tables déchargées
 --
 
 --
--- Constraints for table `appointments`
+-- Contraintes pour la table `appointments`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`pat_id`) REFERENCES `patient` (`pat_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -435,19 +508,19 @@ ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `assistant_finance`
+-- Contraintes pour la table `assistant_finance`
 --
 ALTER TABLE `assistant_finance`
   ADD CONSTRAINT `assistant_finance_ibfk_1` FOREIGN KEY (`assis_id`) REFERENCES `assistant` (`assis_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `clinic_schedules`
+-- Contraintes pour la table `clinic_schedules`
 --
 ALTER TABLE `clinic_schedules`
   ADD CONSTRAINT `clinic_schedules_ibfk_1` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `consultation`
+-- Contraintes pour la table `consultation`
 --
 ALTER TABLE `consultation`
   ADD CONSTRAINT `consultation_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -456,28 +529,34 @@ ALTER TABLE `consultation`
   ADD CONSTRAINT `consultation_ibfk_4` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `doctor_assistant`
+-- Contraintes pour la table `doctor_assistant`
 --
 ALTER TABLE `doctor_assistant`
   ADD CONSTRAINT `doctor_assistant_ibfk_1` FOREIGN KEY (`doc_id`) REFERENCES `doctor` (`doc_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `doctor_assistant_ibfk_2` FOREIGN KEY (`assis_id`) REFERENCES `assistant` (`assis_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `doctor_availability`
+-- Contraintes pour la table `doctor_availability`
 --
 ALTER TABLE `doctor_availability`
   ADD CONSTRAINT `doctor_availability_ibfk_1` FOREIGN KEY (`doc_id`) REFERENCES `doctor` (`doc_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `doctor_availability_ibfk_2` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `patient_finance`
+-- Contraintes pour la table `patient_finance`
 --
 ALTER TABLE `patient_finance`
   ADD CONSTRAINT `patient_finance_ibfk_1` FOREIGN KEY (`pat_id`) REFERENCES `patient` (`pat_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `patient_finance_ibfk_2` FOREIGN KEY (`consultation_id`) REFERENCES `consultation` (`consultation_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `waiting_list`
+-- Contraintes pour la table `patient_medical`
+--
+ALTER TABLE `patient_medical`
+  ADD CONSTRAINT `patient_medical_ibfk_1` FOREIGN KEY (`pat_id`) REFERENCES `patient` (`pat_id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `waiting_list`
 --
 ALTER TABLE `waiting_list`
   ADD CONSTRAINT `waiting_list_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`) ON DELETE CASCADE ON UPDATE CASCADE,
