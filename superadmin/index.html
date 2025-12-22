@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Clinic Management</title>
+    <link rel="stylesheet" href="superadmin.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Clinic Manager</h2>
+                <p>Super Admin Dashboard</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html" class="active"><i>📊</i> <span>Dashboard</span></a></li>
+                <li><a href="clinics.html"><i>🏥</i> <span>Clinics</span></a></li>
+                <li><a href="subscriptions.html"><i>💰</i> <span>Subscriptions</span></a></li>
+                <li><a href="requests.html"><i>📋</i> <span>Requests</span></a></li>
+                <li><a href="archived.html"><i>🗄️</i> <span>Archived</span></a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Super Admin Dashboard</h1>
+                <div class="user-info">
+                    <span>Super Admin</span>
+                    <div class="user-avatar">SA</div>
+                </div>
+            </div>
+
+            <div class="cards-container" id="statsContainer">
+                <!-- Stats will be loaded here -->
+                <div class="card">
+                    <div class="card-icon primary">🏥</div>
+                    <h3>Total Clinics</h3>
+                    <p>Loading...</p>
+                    <div class="card-value">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon secondary">💰</div>
+                    <h3>Premium Clinics</h3>
+                    <p>Loading...</p>
+                    <div class="card-value">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon warning">👨‍⚕️</div>
+                    <h3>Active Doctors</h3>
+                    <p>Loading...</p>
+                    <div class="card-value">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon danger">🗄️</div>
+                    <h3>Archived Clinics</h3>
+                    <p>Loading...</p>
+                    <div class="card-value">0</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Recent Clinics</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-outline" onclick="loadRecentClinics()">Refresh</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Clinic Name</th>
+                            <th>Email</th>
+                            <th>Location</th>
+                            <th>Doctors</th>
+                            <th>Plan</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentClinicsTable">
+                        <!-- Recent clinics will be loaded here -->
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px;">
+                                Loading recent clinics...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDashboardStats();
+        loadRecentClinics();
+    });
+    
+    async function loadDashboardStats() {
+        try {
+            const response = await fetch('api.php?action=stats');
+            const result = await response.json();
+            
+            if (result.success) {
+                const stats = result.data;
+                
+                // Update stats cards
+                document.querySelector('#statsContainer .card:nth-child(1) .card-value').textContent = stats.total_clinics;
+                document.querySelector('#statsContainer .card:nth-child(1) p').textContent = 'Active clinics';
+                
+                document.querySelector('#statsContainer .card:nth-child(2) .card-value').textContent = stats.premium_clinics;
+                document.querySelector('#statsContainer .card:nth-child(2) p').textContent = 'Premium subscriptions';
+                
+                document.querySelector('#statsContainer .card:nth-child(3) .card-value').textContent = stats.active_doctors;
+                document.querySelector('#statsContainer .card:nth-child(3) p').textContent = 'Registered doctors';
+                
+                document.querySelector('#statsContainer .card:nth-child(4) .card-value').textContent = stats.archived_clinics;
+                document.querySelector('#statsContainer .card:nth-child(4) p').textContent = 'Archived (30 days)';
+                
+                // Update recent clinics from stats data
+                if (stats.recent_clinics && stats.recent_clinics.length > 0) {
+                    updateRecentClinics(stats.recent_clinics);
+                } else {
+                    // Fallback to loading all clinics if no recent ones
+                    loadRecentClinics();
+                }
+            } else {
+                console.error('Error loading stats:', result.message);
+                // Fallback to loading clinics the old way
+                loadRecentClinics();
+            }
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+            // Fallback to loading clinics the old way
+            loadRecentClinics();
+        }
+    }
+    
+    async function loadRecentClinics() {
+        try {
+            const response = await fetch('api.php');
+            const result = await response.json();
+            
+            const tbody = document.getElementById('recentClinicsTable');
+            if (!tbody) return;
+            
+            if (result.success && result.data && result.data.length > 0) {
+                updateRecentClinics(result.data.slice(0, 5)); // Show last 5
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            No clinics found. Create your first clinic!
+                        </td>
+                    </tr>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading recent clinics:', error);
+            document.getElementById('recentClinicsTable').innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px; color: #dc3545;">
+                        Error loading data
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    function updateRecentClinics(clinics) {
+        const tbody = document.getElementById('recentClinicsTable');
+        if (!tbody || !clinics || clinics.length === 0) return;
+        
+        let html = '';
+        clinics.forEach(clinic => {
+            html += `
+                <tr>
+                    <td><strong>${clinic.clinic_name}</strong></td>
+                    <td>${clinic.clinic_email}</td>
+                    <td>${clinic.city || ''}, ${clinic.state || ''}</td>
+                    <td>${clinic.doctor_count || 0}</td>
+                    <td><span class="plan-badge plan-${clinic.subscription_plan || 'free'}">
+                        ${clinic.subscription_plan ? clinic.subscription_plan.charAt(0).toUpperCase() + clinic.subscription_plan.slice(1) : 'Free'}
+                    </span></td>
+                    <td>${clinic.created_at ? clinic.created_at.split(' ')[0] : 'N/A'}</td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+</script>
+</body>
+</html>

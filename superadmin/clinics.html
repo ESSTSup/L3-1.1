@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinics Management</title>
+    <link rel="stylesheet" href="superadmin.css">
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        /* Button styles */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+        
+        .btn-outline:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        /* Badge styles */
+        .plan-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .plan-free {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .plan-premium {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.archived {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Loading animation */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Required field indicator */
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+        
+        small.help-text {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        /* View Clinic Modal Specific Styles */
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .detail-label {
+            flex: 0 0 120px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+        
+        .doctor-card {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007bff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .doctor-card.principal {
+            border-left-color: #28a745;
+            background: #f0f9ff;
+        }
+        
+        .doctor-info h5 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .doctor-info p {
+            margin: 0 0 3px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .doctor-info small {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .doctor-role {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .doctor-role.role-admin {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .badge-count {
+            background: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Clinic Manager</h2>
+                <p>Super Admin Dashboard</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"><i>📊</i> <span>Dashboard</span></a></li>
+                <li><a href="clinics.html" class="active"><i>🏥</i> <span>Clinics</span></a></li>
+                <li><a href="subscriptions.html"><i>💰</i> <span>Subscriptions</span></a></li>
+                <li><a href="requests.html"><i>📋</i> <span>Requests</span></a></li>
+                <li><a href="archived.html"><i>🗄️</i> <span>Archived</span></a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Clinics Management</h1>
+                <div class="user-info">
+                    <span>Super Admin</span>
+                    <div class="user-avatar">SA</div>
+                </div>
+            </div>
+
+            <div class="page-title">Manage Clinics</div>
+            <p class="page-description">Create and manage all clinics in the system.</p>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Clinics List</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" id="addClinicBtn">+ Add New Clinic</button>
+                        <button class="btn btn-outline" onclick="debugAPI()">Test API</button>
+                    </div>
+                </div>
+                
+                <div id="loading" style="text-align: center; padding: 20px; display: none;">
+                    <div class="spinner"></div> Loading clinics...
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Clinic Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Doctors</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clinicsTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px; color: #666;">
+                                Loading clinics...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="debugInfo" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid #007bff;">
+                <h4>Debug Information</h4>
+                <pre id="debugOutput"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Clinic Modal -->
+    <div class="modal" id="addClinicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Clinic</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addClinicForm">
+                    <h4>Clinic Information</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Clinic Name</label>
+                            <input type="text" id="clinicName" class="form-control" required placeholder="Enter clinic name">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Clinic Email</label>
+                            <input type="email" id="clinicEmail" class="form-control" required placeholder="clinic@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Clinic Password</label>
+                            <input type="password" id="clinicPassword" class="form-control" required placeholder="Minimum 6 characters">
+                            <small class="help-text">Used for clinic admin login</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Phone</label>
+                            <input type="tel" id="clinicPhone" class="form-control" required 
+                                   placeholder="05xxxxxxxx" pattern="[0-9]{10}" title="10 digits starting with 05,06,07">
+                            <small class="help-text">Format: 05xxxxxxxx, 06xxxxxxxx, or 07xxxxxxxx</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Address</label>
+                            <input type="text" id="address" class="form-control" required placeholder="Street address">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">City</label>
+                            <input type="text" id="city" class="form-control" required placeholder="City name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">State</label>
+                            <input type="text" id="state" class="form-control" required placeholder="State/Province">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Postal Code</label>
+                            <input type="text" id="postalCode" class="form-control" required placeholder="Postal code">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subscription Plan</label>
+                            <select id="subscriptionPlan" class="form-control">
+                                <option value="free">Free</option>
+                                <option value="premium">Premium ($49.99/month)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Handicap Access</label>
+                            <select id="handicapAccessible" class="form-control">
+                                <option value="handicap-friendly">Handicap Friendly</option>
+                                <option value="not-accessible">Not Accessible</option>
+                                <option value="partial">Partial</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                        Principal Doctor Information
+                    </h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Doctor First Name</label>
+                            <input type="text" id="doctorFirstName" class="form-control" required placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Doctor Last Name</label>
+                            <input type="text" id="doctorLastName" class="form-control" required placeholder="Last Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="required">Doctor Email</label>
+                            <input type="email" id="doctorEmail" class="form-control" required placeholder="doctor@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Doctor Password</label>
+                            <input type="password" id="doctorPassword" class="form-control" required placeholder="Minimum 6 characters">
+                            <small class="help-text">Used for doctor admin login</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Specialization</label>
+                            <input type="text" id="doctorSpecialite" class="form-control" required 
+                                   value="General Medicine" placeholder="Medical specialty">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of Doctors</label>
+                            <input type="number" id="numberOfDoctors" class="form-control" 
+                                   min="1" max="20" value="1">
+                            <small class="help-text">Total doctors including principal doctor</small>
+                        </div>
+                        <div class="form-group">
+                            <!-- Empty for alignment -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close">Cancel</button>
+                <button class="btn btn-primary" id="saveClinicBtn">Save Clinic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Clinic Modal (NEW - Added this missing modal) -->
+    <div class="modal" id="viewClinicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Clinic Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="viewLoading" style="text-align: center; padding: 40px; display: none;">
+                    <div class="spinner"></div> Loading clinic details...
+                </div>
+                
+                <div id="viewError" class="error-message" style="display: none;">
+                    <p id="errorMessage"></p>
+                    <button class="btn btn-sm btn-outline" onclick="location.reload()">Retry</button>
+                </div>
+                
+                <div id="clinicDetails" style="display: none;">
+                    <div class="detail-row">
+                        <div class="detail-label">Clinic Name:</div>
+                        <div class="detail-value"><strong id="detailClinicName"></strong></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Clinic ID:</div>
+                        <div class="detail-value" id="detailClinicId"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Email:</div>
+                        <div class="detail-value" id="detailClinicEmail"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Phone:</div>
+                        <div class="detail-value" id="detailClinicPhone"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Address:</div>
+                        <div class="detail-value" id="detailClinicAddress"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Location:</div>
+                        <div class="detail-value" id="detailClinicLocation"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Postal Code:</div>
+                        <div class="detail-value" id="detailClinicPostal"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Handicap Access:</div>
+                        <div class="detail-value" id="detailClinicAccess"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Created Date:</div>
+                        <div class="detail-value" id="detailClinicCreated"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Number of Doctors:</div>
+                        <div class="detail-value" id="detailClinicDoctors"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Subscription Plan:</div>
+                        <div class="detail-value">
+                            <span id="detailClinicPlan" class="plan-badge"></span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status:</div>
+                        <div class="detail-value" id="detailClinicStatus"></div>
+                    </div>
+                    
+                    <div class="section-title">
+                        <h4>Doctors at this Clinic</h4>
+                        <span class="badge-count" id="doctorsCountBadge">0</span>
+                    </div>
+                    
+                    <div id="doctorsList" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Doctors will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close">Close</button>
+                <button class="btn btn-danger" id="archiveFromViewBtn">Archive Clinic</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing...');
+        loadClinics();
+        setupModal();
+        setupForm();
+    });
+    
+    async function loadClinics() {
+        const tbody = document.getElementById('clinicsTableBody');
+        const loading = document.getElementById('loading');
+        
+        if (loading) loading.style.display = 'block';
+        
+        try {
+            console.log('Loading clinics from API...');
+            
+            const response = await fetch('api.php');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('API response:', result);
+            
+            if (loading) loading.style.display = 'none';
+            
+            if (result.success && result.data) {
+                renderClinics(result.data);
+            } else {
+                showError(`Failed to load clinics: ${result.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            if (loading) loading.style.display = 'none';
+            showError(`Connection error: ${error.message}`);
+            console.error('Full error:', error);
+        }
+    }
+    
+    function renderClinics(clinics) {
+        const tbody = document.getElementById('clinicsTableBody');
+        if (!tbody) return;
+        
+        if (!clinics || clinics.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px;">
+                        No clinics found. Click "Add New Clinic" to create your first clinic.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        clinics.forEach(clinic => {
+            html += `
+                <tr>
+                    <td>${clinic.clinic_id || 'N/A'}</td>
+                    <td><strong>${clinic.clinic_name || 'Unnamed'}</strong></td>
+                    <td>${clinic.clinic_email || 'No email'}</td>
+                    <td>${clinic.clinic_phone || ''}</td>
+                    <td>${clinic.city || ''}, ${clinic.state || ''}</td>
+                    <td>${clinic.doctor_count || 0}</td>
+                    <td><span class="plan-badge plan-${clinic.subscription_plan || 'free'}">
+                        ${(clinic.subscription_plan || 'Free').toUpperCase()}
+                    </span></td>
+                    <td><span class="status ${clinic.archived ? 'archived' : 'active'}">
+                        ${clinic.archived ? 'Archived' : 'Active'}
+                    </span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="viewClinic(${clinic.clinic_id})">
+                            View
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="archiveClinic(${clinic.clinic_id})">
+                            Archive
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+    
+    function setupModal() {
+        const addBtn = document.getElementById('addClinicBtn');
+        const modal = document.getElementById('addClinicModal');
+        const viewModal = document.getElementById('viewClinicModal');
+        const closeBtns = document.querySelectorAll('.modal-close');
+        
+        console.log('Setting up modals:', {addBtn, modal, viewModal});
+        
+        if (addBtn && modal) {
+            addBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Add button clicked, showing modal');
+                modal.classList.add('active');
+                document.getElementById('addClinicForm').reset();
+            });
+        }
+        
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Close button clicked');
+                document.querySelectorAll('.modal').forEach(m => {
+                    m.classList.remove('active');
+                });
+            });
+        });
+        
+        // Close modals when clicking outside
+        [modal, viewModal].forEach(modalEl => {
+            if (modalEl) {
+                modalEl.addEventListener('click', function(e) {
+                    if (e.target === modalEl) {
+                        modalEl.classList.remove('active');
+                    }
+                });
+            }
+        });
+    }
+    
+    function setupForm() {
+        const saveBtn = document.getElementById('saveClinicBtn');
+        const form = document.getElementById('addClinicForm');
+        
+        console.log('Setting up form:', {saveBtn, form});
+        
+        if (!saveBtn || !form) return;
+        
+        saveBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                clinic_name: document.getElementById('clinicName').value.trim(),
+                clinic_email: document.getElementById('clinicEmail').value.trim(),
+                clinic_password: document.getElementById('clinicPassword').value,
+                clinic_phone: document.getElementById('clinicPhone').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                state: document.getElementById('state').value.trim(),
+                postal_code: document.getElementById('postalCode').value.trim(),
+                subscription_plan: document.getElementById('subscriptionPlan').value,
+                handicap_accessible: document.getElementById('handicapAccessible').value,
+                number_of_doctors: parseInt(document.getElementById('numberOfDoctors').value) || 1,
+                principal_doctor_name: document.getElementById('doctorFirstName').value.trim(),
+                principal_doctor_lname: document.getElementById('doctorLastName').value.trim(),
+                principal_doctor_email: document.getElementById('doctorEmail').value.trim(),
+                principal_doctor_password: document.getElementById('doctorPassword').value,
+                principal_doctor_specialite: document.getElementById('doctorSpecialite').value.trim()
+            };
+            
+            console.log('Form data:', formData);
+            
+            const required = ['clinic_name', 'clinic_email', 'clinic_password', 'clinic_phone',
+                            'address', 'city', 'state', 'postal_code',
+                            'principal_doctor_name', 'principal_doctor_lname', 
+                            'principal_doctor_email', 'principal_doctor_password'];
+            
+            for (const field of required) {
+                if (!formData[field]) {
+                    alert(`Please fill in all required fields. Missing: ${field.replace(/_/g, ' ')}`);
+                    return;
+                }
+            }
+            
+            const phoneRegex = /^(05|06|07)[0-9]{8}$/;
+            const cleanPhone = formData.clinic_phone.replace(/\D/g, '');
+            
+            if (!phoneRegex.test(cleanPhone)) {
+                alert('Phone must be 10 digits starting with 05, 06, or 07 (e.g., 0512345678)');
+                document.getElementById('clinicPhone').focus();
+                return;
+            }
+            
+            formData.clinic_phone = cleanPhone;
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.clinic_email)) {
+                alert('Invalid clinic email address');
+                document.getElementById('clinicEmail').focus();
+                return;
+            }
+            
+            if (!emailRegex.test(formData.principal_doctor_email)) {
+                alert('Invalid doctor email address');
+                document.getElementById('doctorEmail').focus();
+                return;
+            }
+            
+            if (formData.clinic_password.length < 6) {
+                alert('Clinic password must be at least 6 characters long');
+                document.getElementById('clinicPassword').focus();
+                return;
+            }
+            
+            if (formData.principal_doctor_password.length < 6) {
+                alert('Doctor password must be at least 6 characters long');
+                document.getElementById('doctorPassword').focus();
+                return;
+            }
+            
+            if (!confirm(`Create new clinic "${formData.clinic_name}"?\n\nClinic Email: ${formData.clinic_email}\nDoctor Email: ${formData.principal_doctor_email}\nPlan: ${formData.subscription_plan}`)) {
+                return;
+            }
+            
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<div class="spinner"></div> Creating...';
+            
+            try {
+                console.log('Sending data to API:', formData);
+                
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseText = await response.text();
+                console.log('Raw response text:', responseText);
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (jsonError) {
+                    console.error('JSON parse error:', jsonError);
+                    console.error('Response was:', responseText);
+                    throw new Error('Invalid JSON response from server');
+                }
+                
+                console.log('Parsed result:', result);
+                
+                if (result.success) {
+                    const creds = result.data.credentials;
+                    const message = `✅ CLINIC CREATED SUCCESSFULLY!\n\n🏥 CLINIC LOGIN:\nEmail: ${creds.clinic.email}\nPassword: ${creds.clinic.password}\n\n👨‍⚕️ DOCTOR ADMIN LOGIN:\nEmail: ${creds.doctor.email}\nPassword: ${creds.doctor.password}\n\n⚠️ IMPORTANT: Save these credentials! They cannot be retrieved later.`;
+                    
+                    alert(message);
+                    
+                    document.getElementById('addClinicModal').classList.remove('active');
+                    document.getElementById('addClinicForm').reset();
+                    
+                    loadClinics();
+                } else {
+                    alert(`❌ Error: ${result.message || 'Failed to create clinic'}`);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert(`❌ Error: ${error.message}\n\nCheck console for details.`);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            }
+        });
+        
+        form.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.target.matches('button, [type="submit"]')) {
+                e.preventDefault();
+                saveBtn.click();
+            }
+        });
+    }
+    
+    async function archiveClinic(id) {
+        if (!confirm('Are you sure you want to archive this clinic?\n\nArchived clinics can be restored from the Archived page.')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`api.php?action=archive&id=${id}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('✅ Clinic archived successfully');
+                loadClinics();
+            } else {
+                alert(`❌ Error: ${result.message || 'Archive failed'}`);
+            }
+        } catch (error) {
+            alert(`❌ Network error: ${error.message}`);
+        }
+    }
+    
+    async function viewClinic(id) {
+        const modal = document.getElementById('viewClinicModal');
+        const loading = document.getElementById('viewLoading');
+        const details = document.getElementById('clinicDetails');
+        const errorDiv = document.getElementById('viewError');
+        
+        details.style.display = 'none';
+        errorDiv.style.display = 'none';
+        loading.style.display = 'block';
+        modal.classList.add('active');
+        
+        try {
+            const response = await fetch(`api.php?action=view&id=${id}`);
+            const result = await response.json();
+            
+            loading.style.display = 'none';
+            
+            if (result.success && result.data) {
+                const clinic = result.data.clinic;
+                const doctors = result.data.doctors || [];
+                
+                document.getElementById('detailClinicName').textContent = clinic.clinic_name;
+                document.getElementById('detailClinicId').textContent = clinic.clinic_id;
+                document.getElementById('detailClinicEmail').textContent = clinic.clinic_email;
+                document.getElementById('detailClinicPhone').textContent = clinic.clinic_phone;
+                document.getElementById('detailClinicAddress').textContent = clinic.address;
+                document.getElementById('detailClinicLocation').textContent = `${clinic.city}, ${clinic.state}`;
+                document.getElementById('detailClinicPostal').textContent = clinic.postal_code;
+                document.getElementById('detailClinicAccess').textContent = clinic.handicap_accessible ? clinic.handicap_accessible.replace('-', ' ') : 'N/A';
+                document.getElementById('detailClinicCreated').textContent = clinic.created_at ? clinic.created_at.split(' ')[0] : 'N/A';
+                document.getElementById('detailClinicDoctors').textContent = clinic.doctor_count || doctors.length;
+                
+                const planBadge = document.getElementById('detailClinicPlan');
+                planBadge.textContent = clinic.subscription_plan ? clinic.subscription_plan.toUpperCase() : 'FREE';
+                planBadge.className = 'plan-badge plan-' + (clinic.subscription_plan || 'free');
+                
+                const statusEl = document.getElementById('detailClinicStatus');
+                if (clinic.archived) {
+                    statusEl.innerHTML = '<span class="status archived">Archived</span>';
+                    document.getElementById('archiveFromViewBtn').style.display = 'none';
+                } else {
+                    statusEl.innerHTML = '<span class="status active">Active</span>';
+                    document.getElementById('archiveFromViewBtn').style.display = 'block';
+                    
+                    const archiveBtn = document.getElementById('archiveFromViewBtn');
+                    archiveBtn.onclick = function() {
+                        modal.classList.remove('active');
+                        archiveClinic(id);
+                    };
+                }
+                
+                const doctorsList = document.getElementById('doctorsList');
+                const doctorsCountBadge = document.getElementById('doctorsCountBadge');
+                
+                if (doctors.length > 0) {
+                    doctorsCountBadge.textContent = doctors.length;
+                    let doctorsHtml = '';
+                    
+                    doctors.forEach(doctor => {
+    const isPrincipal = doctor.is_principal || doctor.doc_role === 'admin';
+    doctorsHtml += `
+        <div class="doctor-card ${isPrincipal ? 'principal' : ''}">
+            <div class="doctor-info">
+                <h5>Dr. ${doctor.doc_name} ${doctor.doc_lname}</h5>
+                <p>${doctor.doc_email}</p>
+                <p>Specialty: ${doctor.doc_specialite || 'General'}</p>
+            </div>
+            <div>
+                <span class="doctor-role ${doctor.doc_role === 'admin' ? 'role-admin' : 'role-doctor'}">
+                    ${isPrincipal ? 'PRINCIPAL DOCTOR' : doctor.doc_role || 'DOCTOR'}
+                </span>
+            </div>
+        </div>
+    `;
+});
+                    
+                    doctorsList.innerHTML = doctorsHtml;
+                } else {
+                    doctorsCountBadge.textContent = '0';
+                    doctorsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No doctors found</p>';
+                }
+                
+                details.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'block';
+                document.getElementById('errorMessage').textContent = result.message || 'Failed to load clinic details';
+            }
+        } catch (error) {
+            loading.style.display = 'none';
+            errorDiv.style.display = 'block';
+            document.getElementById('errorMessage').textContent = `Connection error: ${error.message}`;
+            console.error('Error loading clinic details:', error);
+        }
+    }
+    
+    async function debugAPI() {
+        const debugOutput = document.getElementById('debugOutput');
+        const debugInfo = document.getElementById('debugInfo');
+        
+        debugInfo.style.display = 'block';
+        debugOutput.textContent = 'Testing API connection...\n\n';
+        
+        try {
+            debugOutput.textContent += 'Fetching from: api.php\n';
+            
+            const startTime = Date.now();
+            const response = await fetch('api.php');
+            const endTime = Date.now();
+            
+            debugOutput.textContent += `Response time: ${endTime - startTime}ms\n`;
+            debugOutput.textContent += `Status: ${response.status} ${response.statusText}\n\n`;
+            
+            const result = await response.json();
+            debugOutput.textContent += `API Response:\n`;
+            debugOutput.textContent += JSON.stringify(result, null, 2);
+            
+            if (result.success) {
+                debugOutput.textContent += `\n\n✅ API is working correctly!`;
+                debugOutput.textContent += `\nFound ${result.data ? result.data.length : 0} clinics`;
+                
+                setTimeout(() => {
+                    loadClinics();
+                    debugOutput.textContent += `\n\nReloading clinics list...`;
+                }, 500);
+            } else {
+                debugOutput.textContent += `\n\n❌ API error: ${result.message}`;
+            }
+        } catch (error) {
+            debugOutput.textContent += `\n\n❌ Fetch Error: ${error.message}`;
+        }
+    }
+    
+    function showError(message) {
+        const tbody = document.getElementById('clinicsTableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px; color: #dc3545;">
+                        ❌ ${message}
+                        <br><br>
+                        <button class="btn btn-sm btn-outline" onclick="debugAPI()">
+                            Debug API Connection
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="loadClinics()">
+                            Retry
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restoration Successful - Clinic Management</title>
+    <link rel="stylesheet" href="superadmin.css">
+    <style>
+        .confirmation-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+        
+        .confirmation-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .confirmation-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-icon.success {
+            color: var(--secondary);
+        }
+        
+        .confirmation-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .confirmation-message {
+            color: var(--gray);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .confirmation-details {
+            background: var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .detail-value {
+            color: var(--gray);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-large {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+        }
+        
+        .success-note {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--secondary);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        @media (max-width: 576px) {
+            .confirmation-card {
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-large {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon success">✅</div>
+            <h1 class="confirmation-title">Restoration Successful</h1>
+            
+            <p class="confirmation-message">
+                The clinic has been successfully restored from archive and is now active in the system.
+            </p>
+            
+            <div class="confirmation-details">
+                <div class="detail-item">
+                    <span class="detail-label">Clinic Name:</span>
+                    <span class="detail-value">City Health Clinic</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Clinic ID:</span>
+                    <span class="detail-value">CL004</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">Miami, FL</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Restored By:</span>
+                    <span class="detail-value">Super Admin</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date & Time:</span>
+                    <span class="detail-value" id="currentDateTime"></span>
+                </div>
+            </div>
+            
+            <div class="success-note">
+                <strong>Note:</strong> The clinic has been reactivated with its previous subscription plan and settings. 
+                All historical data has been preserved.
+            </div>
+            
+            <div class="action-buttons">
+                <a href="archived.html" class="btn btn-outline btn-large">Back to Archived</a>
+                <a href="clinics.html" class="btn btn-primary btn-large">View Active Clinics</a>
+                <a href="index.html" class="btn btn-outline btn-large">Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+     
+        const now = new Date();
+        document.getElementById('currentDateTime').textContent = 
+            now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+    </script>
+</body>
+</html>
