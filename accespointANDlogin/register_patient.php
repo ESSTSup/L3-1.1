@@ -6,7 +6,7 @@ require_once __DIR__ . '/../database/db_config.php';
 if (!isset($_SESSION['register'])) {
     header("Location: personalInformation.php");
     exit;
-}
+}        
 
 $data = $_SESSION['register'];
 
