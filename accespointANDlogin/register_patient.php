@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/../database/db_config.php';
 
-/* 🚫 Block direct access */
+/*  Block direct access */
 if (!isset($_SESSION['register'])) {
     header("Location: personalInformation.php");
     exit;
@@ -10,7 +10,7 @@ if (!isset($_SESSION['register'])) {
 
 $data = $_SESSION['register'];
 
-/* 🔒 Required data validation */
+/*  Required data validation */
 $required = [
     'first_name',
     'last_name',
@@ -29,16 +29,16 @@ foreach ($required as $key) {
     }
 }
 
-/* 🧠 DB + error reporting */
+/*  DB + error reporting */
 $db = Database::getInstance()->getConnection();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-/* 🔁 Transaction start */
+/* Transaction start */
 $db->begin_transaction();
 
 try {
 
-    /* 1️⃣ Prevent duplicate email */
+    /* 1️ Prevent duplicate email */
     $stmt = $db->prepare("SELECT pat_id FROM patient WHERE pat_email = ?");
     $stmt->bind_param("s", $data['email']);
     $stmt->execute();
@@ -49,7 +49,7 @@ try {
     }
     $stmt->close();
 
-    /* 2️⃣ Insert patient */
+    /*  Insert patient */
     $stmt = $db->prepare("
         INSERT INTO patient 
         (pat_name, pat_lname, pat_birthday, pat_gender, telephone, pat_email, pat_password)
@@ -94,7 +94,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    /* ✅ All good */
+    /* .*/
     $db->commit();
 
 } catch (Exception $e) {
@@ -102,13 +102,13 @@ try {
     die("Registration failed: " . $e->getMessage());
 }
 
-/* 🔐 Auto-login */
+/* Auto-login */
 $_SESSION['patient_id'] = $patId;
 $_SESSION['role'] = 'patient';
 
-/* 🧹 Cleanup */
+/*  Cleanup */
 unset($_SESSION['register']);
 
-/* 🚀 Redirect */
+/*  Redirect */
 header("Location: ../patient/dashboard.html");
 exit;
