@@ -4,6 +4,7 @@ log in information :
    0-for a clinic:
       -email:clinic1@gmail.com
       -password:clinic1 
+      
    1-for admin doctor: 
       -email:yasminedjedjig@gmail.com
       -password:yasmine123
