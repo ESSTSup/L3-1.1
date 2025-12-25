@@ -1,9 +1,12 @@
 # L3-1.1
 log in information :
 
+   0-for a clinic:
+      -email:clinic1@gmail.com
+      -password:clinic1 
    1-for admin doctor: 
-      -email: yasminedjedjig@gmail.com
-      -password: yasmine123
+      -email:yasminedjedjig@gmail.com
+      -password:yasmine123
       
   2-for doctor: 
       -email: 
