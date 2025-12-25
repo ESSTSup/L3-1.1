@@ -1,3 +1,21 @@
+<?php
+// Inclure la configuration de la base de données
+include 'db_config.php';
+
+// Récupérer les docteurs depuis la base de données
+try {
+    // Connexion à la base de données
+    $db = getPDOConnection();
+    
+    // Récupérer tous les docteurs
+    $stmt = $db->prepare("SELECT * FROM doctor");
+    $stmt->execute();
+    $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    echo "Erreur de connexion : " . $e->getMessage();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,7 +28,7 @@
   <header>
     <h1>Liste des Docteurs</h1>
     <nav>
-      <a href="AddD.html" class="btn">Ajouter un docteur</a>
+      <a href="AddD.php" class="btn">Ajouter un docteur</a>
       <a href="Dash.html" class="btn">Dashboard</a>
     </nav>
   </header>
@@ -26,65 +44,38 @@
           <th>Actions</th> 
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <!-- Afficher les docteurs ici -->
+        <?php foreach ($doctors as $doctor): ?>
+          <tr>
+            <td><?= htmlspecialchars($doctor['doc_name'] . ' ' . $doctor['doc_lname']) ?></td>
+            <td><?= htmlspecialchars($doctor['doc_specialite']) ?></td>
+            <td><?= htmlspecialchars($doctor['doc_telephone']) ?></td>
+            <td><?= htmlspecialchars($doctor['doc_email']) ?></td>
+            <td>
+              <button onclick="window.location.href='viewdoctor.php?id=<?= $doctor['doc_id'] ?>'">Voir</button>
+              <button onclick="window.location.href='editdoctor.php?id=<?= $doctor['doc_id'] ?>'">Modifier</button>
+              <button onclick="deleteDoctor(<?= $doctor['doc_id'] ?>)">Supprimer</button>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
     </table>
   </main>
 
   <script>
-    function loadDoctors() {
-      const doctors = JSON.parse(localStorage.getItem("doctors")) || [];
-      const tbody = document.querySelector("tbody");
-
-      tbody.innerHTML = "";
-
-      if (doctors.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" style="text-align: center; padding: 2rem; color: #757575; font-style: italic;">
-              Aucun docteur enregistré. <a href="AddD.html">Ajouter un docteur</a>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      doctors.forEach((doc, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${doc.name || 'Non spécifié'}</td>
-          <td>${doc.speciality || 'Non spécifié'}</td>
-          <td>${doc.phone || 'Non spécifié'}</td>
-          <td>${doc.email || 'Non spécifié'}</td>
-          <td>
-            <button onclick="deleteDoctor(${index})" style="background: red; color: white; border: none; padding: 5px 8px; cursor: pointer; border-radius: 4px;">
-              Supprimer
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    
-    function deleteDoctor(index) {
-      const doctors = JSON.parse(localStorage.getItem("doctors")) || [];
-
+    function deleteDoctor(docId) {
       if (confirm("Voulez-vous vraiment supprimer ce docteur ?")) {
-        doctors.splice(index, 1); 
-        localStorage.setItem("doctors", JSON.stringify(doctors)); 
-        loadDoctors(); 
+        // Envoyer une requête PHP pour supprimer le docteur
+        fetch('delete_doctor.php?id=' + docId)
+          .then(response => response.text())
+          .then(data => {
+            alert(data);
+            window.location.reload(); // Recharger la page après suppression
+          })
+          .catch(error => alert('Erreur lors de la suppression : ' + error));
       }
     }
-
-
-    document.addEventListener('DOMContentLoaded', loadDoctors);
-
-   
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'doctors') {
-        loadDoctors();
-      }
-    });
   </script>
 </body>
 </html>
