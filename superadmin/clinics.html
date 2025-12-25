@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinics Management</title>
+    <link rel="stylesheet" href="superadmin.css">
+    <link rel="stylesheet" href="clinics.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Clinic Manager</h2>
+                <p>Super Admin Dashboard</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"><i>📊</i> <span>Dashboard</span></a></li>
+                <li><a href="clinics.html" class="active"><i>🏥</i> <span>Clinics</span></a></li>
+                <li><a href="subscriptions.html"><i>💰</i> <span>Subscriptions</span></a></li>
+                <li><a href="requests.html"><i>📋</i> <span>Requests</span></a></li>
+                <li><a href="archived.html"><i>🗄️</i> <span>Archived</span></a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Clinics Management</h1>
+                <div class="user-info">
+                    <span>Super Admin</span>
+                    <div class="user-avatar">SA</div>
+                </div>
+            </div>
+
+            <div class="page-title">Manage Clinics</div>
+            <p class="page-description">Create and manage all clinics in the system.</p>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Clinics List</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" id="addClinicBtn">+ Add New Clinic</button>
+                 
+                    </div>
+                </div>
+                
+                <div id="loading" class="loading-overlay">
+                    <div class="spinner"></div> Loading clinics...
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Clinic Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Doctors</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clinicsTableBody">
+                        <tr>
+                            <td colspan="9" class="empty-state">
+                                Loading clinics...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="debugInfo" class="debug-info">
+                <h4>Debug Information</h4>
+                <pre id="debugOutput"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Clinic Modal -->
+    <div class="modal" id="addClinicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Clinic</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addClinicForm">
+                    <h4>Clinic Information</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Clinic Name</label>
+                            <input type="text" id="clinicName" class="form-control" required placeholder="Enter clinic name">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Clinic Email</label>
+                            <input type="email" id="clinicEmail" class="form-control" required placeholder="clinic@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Clinic Password</label>
+                            <input type="password" id="clinicPassword" class="form-control" required placeholder="Minimum 6 characters">
+                            <small class="help-text">Used for clinic admin login</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Phone</label>
+                            <input type="tel" id="clinicPhone" class="form-control" required 
+                                   placeholder="05xxxxxxxx" pattern="[0-9]{10}" title="10 digits starting with 05,06,07">
+                            <small class="help-text">Format: 05xxxxxxxx, 06xxxxxxxx, or 07xxxxxxxx</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Address</label>
+                            <input type="text" id="address" class="form-control" required placeholder="Street address">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">City</label>
+                            <input type="text" id="city" class="form-control" required placeholder="City name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">State</label>
+                            <input type="text" id="state" class="form-control" required placeholder="State/Province">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Postal Code</label>
+                            <input type="text" id="postalCode" class="form-control" required placeholder="Postal code">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subscription Plan</label>
+                            <select id="subscriptionPlan" class="form-control">
+                                <option value="free">Free</option>
+                                <option value="premium">Premium ($49.99/month)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Handicap Access</label>
+                            <select id="handicapAccessible" class="form-control">
+                                <option value="handicap-friendly">Handicap Friendly</option>
+                                <option value="not-accessible">Not Accessible</option>
+                                <option value="partial">Partial</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h4 class="section-title">Principal Doctor Information</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Doctor First Name</label>
+                            <input type="text" id="doctorFirstName" class="form-control" required placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Doctor Last Name</label>
+                            <input type="text" id="doctorLastName" class="form-control" required placeholder="Last Name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Doctor Email</label>
+                            <input type="email" id="doctorEmail" class="form-control" required placeholder="doctor@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Doctor Password</label>
+                            <input type="password" id="doctorPassword" class="form-control" required placeholder="Minimum 6 characters">
+                            <small class="help-text">Used for doctor admin login</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Specialization</label>
+                            <input type="text" id="doctorSpecialite" class="form-control" required 
+                                   value="General Medicine" placeholder="Medical specialty">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Doctors</label>
+                            <input type="number" id="numberOfDoctors" class="form-control" 
+                                   min="1" max="20" value="1">
+                            <small class="help-text">Total doctors including principal doctor</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close">Cancel</button>
+                <button class="btn btn-primary" id="saveClinicBtn">Save Clinic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Clinic Modal -->
+    <div class="modal" id="viewClinicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Clinic Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="viewLoading" class="loading-overlay">
+                    <div class="spinner"></div> Loading clinic details...
+                </div>
+                
+                <div id="viewError" class="error-message" style="display: none;">
+                    <p id="errorMessage"></p>
+                    <button class="btn btn-sm btn-outline" onclick="location.reload()">Retry</button>
+                </div>
+                
+                <div id="clinicDetails" style="display: none;">
+                    <div class="detail-row">
+                        <div class="detail-label">Clinic Name:</div>
+                        <div class="detail-value"><strong id="detailClinicName"></strong></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Clinic ID:</div>
+                        <div class="detail-value" id="detailClinicId"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Email:</div>
+                        <div class="detail-value" id="detailClinicEmail"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Phone:</div>
+                        <div class="detail-value" id="detailClinicPhone"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Address:</div>
+                        <div class="detail-value" id="detailClinicAddress"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Location:</div>
+                        <div class="detail-value" id="detailClinicLocation"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Postal Code:</div>
+                        <div class="detail-value" id="detailClinicPostal"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Handicap Access:</div>
+                        <div class="detail-value" id="detailClinicAccess"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Created Date:</div>
+                        <div class="detail-value" id="detailClinicCreated"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Number of Doctors:</div>
+                        <div class="detail-value" id="detailClinicDoctors"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Subscription Plan:</div>
+                        <div class="detail-value">
+                            <span id="detailClinicPlan" class="plan-badge"></span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status:</div>
+                        <div class="detail-value" id="detailClinicStatus"></div>
+                    </div>
+                    
+                    <div class="section-title">
+                        <h4>Doctors at this Clinic</h4>
+                        <span class="badge-count" id="doctorsCountBadge">0</span>
+                    </div>
+                    
+                    <div id="doctorsList" class="doctors-list">
+                        <!-- Doctors will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close">Close</button>
+                <button class="btn btn-danger" id="archiveFromViewBtn">Archive Clinic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Clinic Modal -->
+    <div class="modal" id="editClinicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Clinic</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="editLoading" class="loading-overlay">
+                    <div class="spinner"></div> Loading clinic details...
+                </div>
+                
+                <div id="editError" class="error-message" style="display: none;">
+                    <p id="editErrorMessage"></p>
+                </div>
+                
+                <form id="editClinicForm" style="display: none;">
+                    <input type="hidden" id="editClinicId">
+                    
+                    <div class="edit-clinic-section">
+                        <h4>Basic Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Clinic Name</label>
+                                <input type="text" id="editClinicName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Clinic Email</label>
+                                <input type="email" id="editClinicEmail" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="editClinicPhone" class="form-control" 
+                                       pattern="[0-9]{10}">
+                            </div>
+                            <div class="form-group">
+                                <label>Subscription Plan</label>
+                                <select id="editSubscriptionPlan" class="form-control">
+                                    <option value="free">Free</option>
+                                    <option value="premium">Premium ($49.99/month)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-clinic-section">
+                        <h4>Location</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" id="editAddress" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="editCity" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" id="editState" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Postal Code</label>
+                                <input type="text" id="editPostalCode" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Handicap Access</label>
+                                <select id="editHandicapAccessible" class="form-control">
+                                    <option value="handicap-friendly">Handicap Friendly</option>
+                                    <option value="not-accessible">Not Accessible</option>
+                                    <option value="partial">Partial</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-clinic-section">
+                        <h4>Clinic Settings</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Number of Doctors</label>
+                                <input type="number" id="editNumberOfDoctors" class="form-control" min="1" max="20">
+                                <small class="help-text">Total doctors including principal doctor</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <div style="margin-top: 8px;">
+                                    <span id="editClinicStatus" class="status"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close">Cancel</button>
+                <button class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="clinics.js"></script>
+</body>
+</html>
