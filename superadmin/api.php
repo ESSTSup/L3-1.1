@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once '../database/db_config.php';
+require_once 'db_config.php';
 
 // Get PDO connection
 try {
@@ -272,6 +272,208 @@ if (isset($_GET['action']) && $_GET['action'] === 'stats') {
         respond(false, 'Error loading dashboard stats: ' . $e->getMessage());
     }
 }
+
+
+
+
+
+/* =========================
+   SUBSCRIPTION REQUESTS
+========================= */
+
+/* GET ALL REQUESTS */
+if (isset($_GET['action']) && $_GET['action'] === 'get_requests') {
+    try {
+        $stmt = $pdo->query("
+            SELECT 
+                sr.*,
+                c.clinic_email,
+                c.city,
+                c.state
+            FROM subscription_requests sr
+            JOIN clinics c ON sr.clinic_id = c.clinic_id
+            WHERE sr.status = 'pending'
+            ORDER BY sr.request_date DESC
+        ");
+        $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        respond(true, 'Subscription requests loaded', $requests);
+    } catch (PDOException $e) {
+        respond(false, 'Error loading requests: ' . $e->getMessage());
+    }
+}
+
+/* CREATE SUBSCRIPTION REQUEST */
+if (isset($_GET['action']) && $_GET['action'] === 'create_request') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    
+    try {
+        // Get clinic current subscription
+        $stmt = $pdo->prepare("
+            SELECT clinic_id, clinic_name, subscription_plan 
+            FROM clinics 
+            WHERE clinic_id = ?
+        ");
+        $stmt->execute([$data['clinic_id']]);
+        $clinic = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$clinic) {
+            respond(false, 'Clinic not found');
+        }
+        
+        // Check if there's already a pending request
+        $checkStmt = $pdo->prepare("
+            SELECT request_id 
+            FROM subscription_requests 
+            WHERE clinic_id = ? AND status = 'pending'
+        ");
+        $checkStmt->execute([$data['clinic_id']]);
+        
+        if ($checkStmt->fetch()) {
+            respond(false, 'You already have a pending request');
+        }
+        
+        // Insert new request
+        $stmt = $pdo->prepare("
+            INSERT INTO subscription_requests 
+            (clinic_id, clinic_name, current_plan, requested_plan, request_date, status)
+            VALUES (?, ?, ?, ?, NOW(), 'pending')
+        ");
+        
+        $stmt->execute([
+            $data['clinic_id'],
+            $clinic['clinic_name'],
+            $clinic['subscription_plan'],
+            $data['requested_plan']
+        ]);
+        
+        respond(true, 'Subscription request submitted successfully');
+    } catch (PDOException $e) {
+        respond(false, 'Error creating request: ' . $e->getMessage());
+    }
+}
+
+/* PROCESS REQUEST (APPROVE/REJECT) */
+if (isset($_GET['action']) && $_GET['action'] === 'process_request') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    
+    try {
+        // Start transaction
+        $pdo->beginTransaction();
+        
+        // Get request details
+        $stmt = $pdo->prepare("
+            SELECT * FROM subscription_requests 
+            WHERE request_id = ? AND status = 'pending'
+        ");
+        $stmt->execute([$data['request_id']]);
+        $request = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$request) {
+            $pdo->rollBack();
+            respond(false, 'Request not found or already processed');
+        }
+        
+        // Update request status
+        $stmt = $pdo->prepare("
+            UPDATE subscription_requests 
+            SET status = ?, 
+                processed_date = NOW(),
+                notes = ?
+            WHERE request_id = ?
+        ");
+        $stmt->execute([
+            $data['action'], // 'approved' or 'rejected'
+            $data['notes'] ?? null,
+            $data['request_id']
+        ]);
+        
+        // If approved, update clinic subscription
+        if ($data['action'] === 'approved') {
+            $stmt = $pdo->prepare("
+                UPDATE clinics 
+                SET subscription_plan = ?, 
+                    subscription_updated_at = NOW()
+                WHERE clinic_id = ?
+            ");
+            $stmt->execute([
+                $request['requested_plan'],
+                $request['clinic_id']
+            ]);
+        }
+        
+        $pdo->commit();
+        respond(true, "Request {$data['action']} successfully");
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        respond(false, 'Error processing request: ' . $e->getMessage());
+    }
+}
+
+/* UPDATE CLINIC SUBSCRIPTION DIRECTLY */
+if (isset($_GET['action']) && $_GET['action'] === 'update_subscription') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE clinics 
+            SET subscription_plan = ?, 
+                subscription_updated_at = NOW()
+            WHERE clinic_id = ?
+        ");
+        $stmt->execute([
+            $data['new_plan'],
+            $data['clinic_id']
+        ]);
+        
+        respond(true, 'Subscription updated successfully');
+    } catch (PDOException $e) {
+        respond(false, 'Error updating subscription: ' . $e->getMessage());
+    }
+}
+
+/* UPDATE CLINIC INFORMATION */
+if (isset($_GET['action']) && $_GET['action'] === 'update_clinic') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    
+    try {
+        $fields = [];
+        $values = [];
+        
+        // Build dynamic update query
+        $allowedFields = [
+            'clinic_name', 'clinic_phone', 'address', 'city', 
+            'state', 'postal_code', 'handicap_accessible', 
+            'subscription_plan', 'number_of_doctors'
+        ];
+        
+        foreach ($allowedFields as $field) {
+            if (isset($data[$field])) {
+                $fields[] = "$field = ?";
+                $values[] = $data[$field];
+            }
+        }
+        
+        if (empty($fields)) {
+            respond(false, 'No fields to update');
+        }
+        
+        // Add clinic_id to values
+        $values[] = $data['clinic_id'];
+        
+        $sql = "UPDATE clinics SET " . implode(', ', $fields) . " WHERE clinic_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($values);
+        
+        respond(true, 'Clinic updated successfully');
+    } catch (PDOException $e) {
+        respond(false, 'Error updating clinic: ' . $e->getMessage());
+    }
+}
+
+
+
+
 
 respond(false, 'Invalid request');
 ?>

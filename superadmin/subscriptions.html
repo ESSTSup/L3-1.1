@@ -174,13 +174,38 @@
             }
         }
         
-        function changePlan(clinicId, currentPlan) {
-            const newPlan = currentPlan === 'premium' ? 'free' : 'premium';
-            
-            if (confirm(`Change this clinic from ${currentPlan} to ${newPlan} plan?`)) {
-                alert(`Plan would be changed to ${newplan}.\n\nDatabase update not implemented yet.`);
-            }
+        async function changePlan(clinicId, currentPlan, clinicName) {
+    const newPlan = currentPlan === 'premium' ? 'free' : 'premium';
+    
+    if (!confirm(`Change "${clinicName}" from ${currentPlan} to ${newPlan} plan?\n\n${newPlan === 'premium' ? 'This will charge $49.99/month' : 'This will make the clinic free'}`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('api.php?action=update_subscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                clinic_id: clinicId,
+                new_plan: newPlan
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`✅ Subscription changed to ${newPlan} for ${clinicName}`);
+            loadSubscriptions();
+            loadSubscriptionStats();
+        } else {
+            alert(`❌ Error: ${result.message}`);
         }
+    } catch (error) {
+        alert(`❌ Network error: ${error.message}`);
+    }
+}
     </script>
 </body>
 </html>

@@ -5,10 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subscription Requests - Clinic Management</title>
     <link rel="stylesheet" href="superadmin.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .request-details {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
-      
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2>Clinic Manager</h2>
@@ -20,12 +142,9 @@
                 <li><a href="subscriptions.html"><i>💰</i> <span>Subscriptions</span></a></li>
                 <li><a href="requests.html" class="active"><i>📋</i> <span>Requests</span></a></li>
                 <li><a href="archived.html"><i>🗄️</i> <span>Archived</span></a></li>
-                <li><a href="#"><i>⚙️</i> <span>Settings</span></a></li>
-              
             </ul>
         </div>
 
-      
         <div class="main-content">
             <div class="header">
                 <h1>Subscription Requests</h1>
@@ -42,9 +161,14 @@
                 <div class="table-header">
                     <h2>Subscription Change Requests</h2>
                     <div class="table-actions">
-                        <button class="btn btn-outline">Filter</button>
+                        <button class="btn btn-outline" onclick="loadRequests()">Refresh</button>
                     </div>
                 </div>
+                
+                <div id="loading" style="text-align: center; padding: 20px; display: none;">
+                    <div class="spinner"></div> Loading requests...
+                </div>
+                
                 <table>
                     <thead>
                         <tr>
@@ -56,38 +180,10 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="requestsTable">
                         <tr>
-                            <td>MediCare Center</td>
-                            <td><span class="plan-badge plan-premium">Premium</span></td>
-                            <td><span class="plan-badge plan-free">Free</span></td>
-                            <td>2023-10-15</td>
-                            <td><span class="status pending">Pending</span></td>
-                            <td>
-                                <a href="approve-confirmation.html" class="btn btn-sm btn-secondary">Approve</a>
-                                <a href="reject-confirmation.html" class="btn btn-sm btn-danger">Reject</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>HealthPlus Clinic</td>
-                            <td><span class="plan-badge plan-free">Free</span></td>
-                            <td><span class="plan-badge plan-premium">Premium</span></td>
-                            <td>2023-10-12</td>
-                            <td><span class="status pending">Pending</span></td>
-                            <td>
-                                <a href="approve-confirmation.html" class="btn btn-sm btn-secondary">Approve</a>
-                                <a href="reject-confirmation.html" class="btn btn-sm btn-danger">Reject</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Family Care Center</td>
-                            <td><span class="plan-badge plan-free">Free</span></td>
-                            <td><span class="plan-badge plan-premium">Premium</span></td>
-                            <td>2023-10-10</td>
-                            <td><span class="status pending">Pending</span></td>
-                            <td>
-                                <a href="approve-confirmation.html" class="btn btn-sm btn-secondary">Approve</a>
-                                <a href="reject-confirmation.html" class="btn btn-sm btn-danger">Reject</a>
+                            <td colspan="6" style="text-align: center; padding: 20px;">
+                                Loading requests...
                             </td>
                         </tr>
                     </tbody>
@@ -96,6 +192,250 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Process Request Modal -->
+    <div class="modal" id="processModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Process Request</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="requestInfo">
+                    <!-- Request details will be loaded here -->
+                </div>
+                
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="processNotes" class="form-control" placeholder="Add notes for the clinic..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close">Cancel</button>
+                <button class="btn btn-danger" id="rejectBtn">Reject</button>
+                <button class="btn btn-primary" id="approveBtn">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let currentRequestId = null;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        loadRequests();
+        setupModal();
+    });
+    
+    async function loadRequests() {
+        const loading = document.getElementById('loading');
+        const tbody = document.getElementById('requestsTable');
+        
+        if (loading) loading.style.display = 'block';
+        
+        try {
+            const response = await fetch('api.php?action=get_requests');
+            const result = await response.json();
+            
+            if (loading) loading.style.display = 'none';
+            
+            if (result.success && result.data) {
+                renderRequests(result.data);
+            } else {
+                showError(result.message || 'Failed to load requests');
+            }
+        } catch (error) {
+            if (loading) loading.style.display = 'none';
+            showError(`Connection error: ${error.message}`);
+        }
+    }
+    
+    function renderRequests(requests) {
+        const tbody = document.getElementById('requestsTable');
+        
+        if (!requests || requests.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
+                        <h3>No Pending Requests</h3>
+                        <p>All subscription requests have been processed.</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        requests.forEach(request => {
+            const date = new Date(request.request_date).toLocaleDateString();
+            
+            html += `
+                <tr>
+                    <td>
+                        <strong>${request.clinic_name}</strong>
+                        <br>
+                        <small>${request.clinic_email}</small>
+                        <br>
+                        <small>${request.city}, ${request.state}</small>
+                    </td>
+                    <td><span class="plan-badge plan-${request.current_plan}">
+                        ${request.current_plan === 'premium' ? 'Premium' : 'Free'}
+                    </span></td>
+                    <td><span class="plan-badge plan-${request.requested_plan}">
+                        ${request.requested_plan === 'premium' ? 'Premium' : 'Free'}
+                    </span></td>
+                    <td>${date}</td>
+                    <td><span class="status pending">Pending</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="openProcessModal(${request.request_id})">
+                            Process
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+    
+    function setupModal() {
+        const modal = document.getElementById('processModal');
+        const closeBtns = document.querySelectorAll('.modal-close');
+        const approveBtn = document.getElementById('approveBtn');
+        const rejectBtn = document.getElementById('rejectBtn');
+        
+        // Close modal
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+        });
+        
+        // Close when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+        
+        // Approve button
+        approveBtn.addEventListener('click', async function() {
+            await processRequest('approved');
+        });
+        
+        // Reject button
+        rejectBtn.addEventListener('click', async function() {
+            await processRequest('rejected');
+        });
+    }
+    
+    async function openProcessModal(requestId) {
+        currentRequestId = requestId;
+        const modal = document.getElementById('processModal');
+        const requestInfo = document.getElementById('requestInfo');
+        
+        // Load request details
+        try {
+            const response = await fetch('api.php?action=get_requests');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const request = result.data.find(r => r.request_id == requestId);
+                
+                if (request) {
+                    const date = new Date(request.request_date).toLocaleString();
+                    const revenueChange = request.requested_plan === 'premium' ? '+$49.99' : '-$49.99';
+                    
+                    requestInfo.innerHTML = `
+                        <div class="request-details">
+                            <p><strong>Clinic:</strong> ${request.clinic_name}</p>
+                            <p><strong>Email:</strong> ${request.clinic_email}</p>
+                            <p><strong>From:</strong> <span class="plan-badge plan-${request.current_plan}">
+                                ${request.current_plan === 'premium' ? 'Premium' : 'Free'}
+                            </span></p>
+                            <p><strong>To:</strong> <span class="plan-badge plan-${request.requested_plan}">
+                                ${request.requested_plan === 'premium' ? 'Premium' : 'Free'}
+                            </span></p>
+                            <p><strong>Monthly Revenue Change:</strong> ${revenueChange}</p>
+                            <p><strong>Requested:</strong> ${date}</p>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading request details:', error);
+        }
+        
+        modal.classList.add('active');
+        document.getElementById('processNotes').value = '';
+    }
+    
+    async function processRequest(action) {
+        if (!currentRequestId) return;
+        
+        const notes = document.getElementById('processNotes').value;
+        const approveBtn = document.getElementById('approveBtn');
+        const rejectBtn = document.getElementById('rejectBtn');
+        const originalApproveText = approveBtn.textContent;
+        const originalRejectText = rejectBtn.textContent;
+        
+        // Disable buttons and show spinner
+        approveBtn.disabled = true;
+        rejectBtn.disabled = true;
+        approveBtn.innerHTML = '<div class="spinner"></div> Processing...';
+        rejectBtn.innerHTML = '<div class="spinner"></div> Processing...';
+        
+        try {
+            const response = await fetch('api.php?action=process_request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    request_id: currentRequestId,
+                    action: action,
+                    notes: notes
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`✅ Request ${action} successfully!`);
+                document.getElementById('processModal').classList.remove('active');
+                loadRequests();
+                
+                // Refresh subscription stats if on same domain
+                if (window.parent && window.parent.loadSubscriptionStats) {
+                    window.parent.loadSubscriptionStats();
+                }
+            } else {
+                alert(`❌ Error: ${result.message}`);
+            }
+        } catch (error) {
+            alert(`❌ Network error: ${error.message}`);
+        } finally {
+            // Restore buttons
+            approveBtn.disabled = false;
+            rejectBtn.disabled = false;
+            approveBtn.textContent = originalApproveText;
+            rejectBtn.textContent = originalRejectText;
+        }
+    }
+    
+    function showError(message) {
+        const tbody = document.getElementById('requestsTable');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 40px; color: #dc3545;">
+                    ❌ ${message}
+                    <br><br>
+                    <button class="btn btn-sm btn-primary" onclick="loadRequests()">
+                        Retry
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+    </script>
 </body>
 </html>
