@@ -185,13 +185,14 @@ CREATE TABLE `doctor` (
 --
 
 INSERT INTO `doctor` (`doc_id`, `doc_email`, `doc_password`, `doc_specialite`, `doc_telephone`, `doc_role`, `doc_name`, `doc_lname`, `clinic_id`, `is_principal`) VALUES
-(13, 'yasminedjedjig@gmail.com', '$2y$10$OFYFm1fowxszu7bG4AnZOOkJCj9pjX5U2C56eQM/I.q2Ab3e7YHJK', 'General Medicine', '0654789523', 'admin', 'Yasmine', 'Djedjig', 16, 1),
-(2, 'moufouki@clinic.com', '$2y$10$QnqUMEWPTXFErgwmBcPQ2eJULQWgpTQefg3FV9ZuROkDabv/pNDMO', 'General Medicine', '0550000001', 'doctor', 'MOUFOUKI', ''),
-(3, 'djedjig@clinic.com', '1234', 'General Medicine', '0550000002', 'doctor', 'DJEDJIG', ''),
-(4, 'hellal@clinic.com', '1234', 'General Medicine', '0550000003', 'doctor', 'HELLAL', ''),
-(5, 'meklati@clinic.com', '1234', 'General Medicine', '0550000004', 'doctor', 'MEKLATI', ''),
-(6, 'lachi@clinic.com', '1234', 'General Medicine', '0550000005', 'doctor', 'LACHI', ''),
-(7, 'majed@clinic.com', '1234', 'General Medicine', '0550000006', 'doctor', 'MAJED', '');
+(2, 'moufouki@clinic.com', '$2y$10$QnqUMEWPTXFErgwmBcPQ2eJULQWgpTQefg3FV9ZuROkDabv/pNDMO', 'General Medicine', '0550000001', '', 'MOUFOUKI', '', 16, 0),
+(3, 'djedjig@clinic.com', '1234', 'General Medicine', '0550000002', '', 'DJEDJIG', '', 16, 0),
+(4, 'hellal@clinic.com', '1234', 'General Medicine', '0550000003', '', 'HELLAL', '', 16, 0),
+(5, 'meklati@clinic.com', '1234', 'General Medicine', '0550000004', '', 'MEKLATI', '', 16, 0),
+(6, 'lachi@clinic.com', '1234', 'General Medicine', '0550000005', '', 'LACHI', '', 16, 0),
+(7, 'majed@clinic.com', '1234', 'General Medicine', '0550000006', '', 'MAJED', '', 16, 0),
+(13, 'yasminedjedjig@gmail.com', '$2y$10$OFYFm1fowxszu7bG4AnZOOkJCj9pjX5U2C56eQM/I.q2Ab3e7YHJK', 'General Medicine', '0654789523', 'admin', 'Yasmine', 'Djedjig', 16, 1);
+
 -- --------------------------------------------------------
 
 --
