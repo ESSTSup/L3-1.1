@@ -1,6 +1,6 @@
 <?php
 
-include 'db_config.php';
+require_once 'db_config.php';
 
 // Récupérer les paramètres de mois et d'année depuis la requête GET
 $month = isset($_GET['month']) ? intval($_GET['month']) : date('m');

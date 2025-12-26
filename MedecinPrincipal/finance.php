@@ -1,6 +1,6 @@
 <?php
 // Inclure la configuration de la base de données
-include 'db_config.php';
+require_once 'db_config.php';
 
 // Récupérer les paiements et salaires depuis la base de données
 header('Content-Type: application/json');

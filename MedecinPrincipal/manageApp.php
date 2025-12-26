@@ -3,7 +3,7 @@
 session_start();
 
 // Inclure la configuration de la base de données
-include('db_config.php');
+require_once 'db_config.php';
 
 // Récupérer les rendez-vous selon le rôle
 function getAppointmentsByRole($role) {
@@ -154,7 +154,7 @@ if (isset($_GET['export'])) {
         </div>
     </section>
 
-    <a href="Dash.php" class="back-button">← Retour au Dashboard</a>
+    <a href="Dash.html" class="back-button">← Retour au Dashboard</a>
 </main>
 
 </body>

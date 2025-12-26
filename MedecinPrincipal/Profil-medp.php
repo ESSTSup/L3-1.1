@@ -1,7 +1,6 @@
 <?php
 // Inclure la configuration de la base de données
-include('db_config.php');
-
+require_once 'db_config.php';
 
 $pdo = getPDOConnection();
 
@@ -92,3 +91,4 @@ function getPDOConnection() {
 
 </body>
 </html>
+

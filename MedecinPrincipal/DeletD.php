@@ -1,6 +1,6 @@
 <?php
 // Inclure la configuration de la base de données
-include 'db_config.php';
+require_once 'db_config.php';
 
 if (isset($_GET['id'])) {
     $doctorId = $_GET['id'];

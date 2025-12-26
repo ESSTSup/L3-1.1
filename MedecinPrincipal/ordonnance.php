@@ -1,6 +1,6 @@
 <?php
 // Inclure la configuration de la base de données
-include('db_config.php');
+require_once 'db_config.php';
 
 // Vérifier si la méthode de la requête est POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
