@@ -1,7 +1,7 @@
 <?php
-require_once 'db_config.php'; // Inclure la configuration de la base de données
+require_once 'db_config.php'; 
 
-// Traitement du formulaire d'ajout d'assistant
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $doctor = $_POST['doctor'];
@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $status = $_POST['status'];
 
-    // Validation des champs
+   
     if (empty($name) || empty($doctor) || empty($phone) || empty($email)) {
         echo "Tous les champs sont obligatoires!";
         exit;
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([
             ':name' => $name,
             ':doctor' => $doctor,
-            ':email' => $email
+            ':email' => $email,
         ]);
 
         // Redirection après insertion réussie

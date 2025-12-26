@@ -1,5 +1,5 @@
 <?php
-// Inclure la configuration de la base de données pour la connexion
+
 include 'db_config.php';
 
 // Récupérer les paramètres de mois et d'année depuis la requête GET

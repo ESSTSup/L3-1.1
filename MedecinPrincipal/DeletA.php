@@ -129,7 +129,7 @@ if ($assistantId) {
           assistants = assistants.filter(a => a.id !== id);
           localStorage.setItem("assistants", JSON.stringify(assistants));
           alert(`${assistant.name} has been deleted.`);
-          window.location.href = 'ListofA.html'; // Redirect to the list after deletion
+          window.location.href = 'ListofA.php'; // Redirect to the list after deletion
         }
       };
     });

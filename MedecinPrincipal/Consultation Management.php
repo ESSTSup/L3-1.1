@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <h1>Consultation Management</h1>
 
     <div class="container">
-      <form id="consultationForm" action="consultation.php" method="POST">
+      <form id="consultationForm" action="Consultation Management.php" method="POST">
         <div>
           <label for="patient">Patient Name:</label>
           <input type="text" id="patient" name="patient" required />
