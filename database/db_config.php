@@ -1,23 +1,26 @@
 <?php
 
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'medicalclinic');
-
-
-function getDBConnection() {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+class Database {
+    private $connection;
     
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    public function __construct($host, $user, $pass, $name) {
+        $this->connection = new mysqli($host, $user, $pass, $name);
+        
+        if ($this->connection->connect_error) {
+            throw new Exception("Connection failed: " . $this->connection->connect_error);
+        }
     }
     
-    return $conn;
+    public static function create() {
+        return new self('localhost', 'root', '', 'medicalclinic');
+    }
+    
+    public function getConnection() {
+        return $this->connection;
+    }
+    
+    public function close() {
+        $this->connection->close();
+    }
 }
-
-
-function closeDBConnection($conn) {
-    $conn->close();
-}
-?>
+?> wela hadi manich sure
