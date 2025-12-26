@@ -23,4 +23,5 @@ class Database {
         $this->connection->close();
     }
 }
-?> wela hadi manich sure
+?> 
+
