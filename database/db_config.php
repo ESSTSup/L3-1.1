@@ -1,27 +1,86 @@
 <?php
+// db_config.php - Database configuration for Clinic Management System
 
-class Database {
-    private $connection;
+class DatabaseConfig {
+    private static $instance = null;
+    private $pdo = null;
+
     
-    public function __construct($host, $user, $pass, $name) {
-        $this->connection = new mysqli($host, $user, $pass, $name);
-        
-        if ($this->connection->connect_error) {
-            throw new Exception("Connection failed: " . $this->connection->connect_error);
+    private $host = 'localhost';
+    private $dbname = 'medicalclinic';
+    private $username = 'root';
+    private $password = ''; 
+    private $charset = 'utf8mb4';
+
+    private function __construct() {
+       
+    }
+
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
+        return self::$instance;
     }
-    
-    public static function create() {
-        return new self('localhost', 'root', '', 'medicalclinic');
-    }
-    
+
     public function getConnection() {
-        return $this->connection;
+        if ($this->pdo === null) {
+            try {
+                $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset={$this->charset}";
+                $options = [
+                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES   => false,
+                    PDO::ATTR_PERSISTENT         => false,
+                ];
+
+                $this->pdo = new PDO($dsn, $this->username, $this->password, $options);
+                
+                // Test connection
+                $this->pdo->query("SELECT 1");
+                
+            } catch (PDOException $e) {
+                throw new Exception("Database Connection Failed: " . $e->getMessage());
+            }
+        }
+        return $this->pdo;
     }
-    
-    public function close() {
-        $this->connection->close();
+
+    public function closeConnection() {
+        $this->pdo = null;
+    }
+
+   
+    public static function getPDOConnection() {
+        return self::getInstance()->getConnection();
     }
 }
-?> 
 
+
+function getPDOConnection() {
+    return DatabaseConfig::getPDOConnection();
+}
+
+function getDatabase() {
+    return DatabaseConfig::getInstance()->getConnection();
+}
+
+
+function testDatabaseConnection() {
+    try {
+        $pdo = getPDOConnection();
+        echo "✅ Database connection successful!<br>";
+        
+      
+        $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+        echo "✅ Tables in database: " . implode(", ", $tables) . "<br>";
+        
+        return true;
+    } catch (Exception $e) {
+        echo "❌ Database connection failed: " . $e->getMessage() . "<br>";
+        return false;
+    }
+}
+
+
+?>
