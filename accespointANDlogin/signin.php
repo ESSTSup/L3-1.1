@@ -4,10 +4,10 @@ require_once "../database/db_config.php";
 
 /*
 |--------------------------------------------------------------------------
-| HARD FIX: block access if profile not selected (staff only)
+| HARD FIX: block access if profile not selected 
 |--------------------------------------------------------------------------
 | If doctor/assistant comes here WITHOUT selecting a profile,
-| we force them back. Otherwise login will ALWAYS fail.
+| we force them back. 
 */
 if (
     $_SERVER['REQUEST_METHOD'] !== 'POST' &&
@@ -39,8 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
     |--------------------------------------------------------------------------
     */ // ======================
 // CASE: PATIENT
-// ======================
-// ======================
+// =====
 // PATIENT LOGIN (CLEAN & FINAL)
 // ======================
 if (
@@ -57,11 +56,11 @@ $res = $stmt->get_result();
   if ($res->num_rows === 1) {
     $pat = $res->fetch_assoc();
 
-    // 1️⃣ If password already hashed
+    // 1️ If password already hashed
     if (password_verify($password, $pat['pat_password'])) {
         $loginOK = true;
     }
-    // 2️⃣ If password still plain text (first login)
+    // 2️ If password still plain text (first login)
     elseif ($password === $pat['pat_password']) {
 
         $newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -118,11 +117,11 @@ $res = $stmt->get_result();
   if ($res->num_rows === 1) {
     $doc = $res->fetch_assoc();
 
-    // 1️⃣ If password already hashed
+    // 1️ If password already hashed
     if (password_verify($password, $doc['doc_password'])) {
         $loginOK = true;
     }
-    // 2️⃣ If password still plain (first login only)
+    // 2️ If password still plain (first login only)
     elseif ($password === $doc['doc_password']) {
 
         $newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -164,11 +163,11 @@ $res = $stmt->get_result();
   if ($res->num_rows === 1) {
     $assis = $res->fetch_assoc();
 
-    // 1️⃣ If password already hashed
+    // 1️ If password already hashed
     if (password_verify($password, $assis['assis_password'])) {
         $loginOK = true;
     }
-    // 2️⃣ If password still plain (first login only)
+    // 2️ If password still plain (first login only)
     elseif ($password === $assis['assis_password']) {
 
         $newHash = password_hash($password, PASSWORD_DEFAULT);
