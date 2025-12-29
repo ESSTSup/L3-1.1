@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         errorBox.innerText = "";
 
-        // ✅ VALIDATION FRONT (aligned with backend reality)
+        // VALIDATION FRONT (aligned with backend reality)
         if (email === "" || password === "") {
             errorBox.innerText = "Tous les champs sont obligatoires.";
             return;
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Your DB passwords are plain text (ex: 1234)
         // Blocking < 6 here was breaking valid logins
 
-        // ✅ AJAX
+        //  AJAX
         const data = new FormData();
         data.append("ajax", "1");
         data.append("email", email);
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (type === "patient") {
             window.location.href = "signin.php";
         } else {
-            // ✅ doctor & assistant MUST pass clinic login first
+            //  doctor & assistant MUST pass clinic login first
             window.location.href = "clinic_login.php";
         }
     });
@@ -210,3 +210,4 @@ function validateMedical() {
 
   return true;
 }
+
