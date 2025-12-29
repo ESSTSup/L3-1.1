@@ -4,7 +4,7 @@ $type = $_SESSION['login_type'] ?? null;
 
 if (!$type) {
     header("Location: Login.php");
-    exit;
+    exit; 
 }
 
 
