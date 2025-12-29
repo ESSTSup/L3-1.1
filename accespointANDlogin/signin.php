@@ -1,27 +1,13 @@
-<?php 
+<?php
 session_start();
 require_once "../database/db_config.php";
 
-/*
-|--------------------------------------------------------------------------
-| HARD FIX: block access if profile not selected 
-|--------------------------------------------------------------------------
-| If doctor/assistant comes here WITHOUT selecting a profile,
-| we force them back. 
-*/
-if (
-    $_SERVER['REQUEST_METHOD'] !== 'POST' &&
-    !isset($_SESSION['selected_user_id']) &&
-    isset($_SESSION['login_type']) &&
-    $_SESSION['login_type'] !== 'patient'
-) {
-    header("Location: profil.php");
-    exit;
-
-}
-
-// ================= AJAX LOGIN =================
+/* =========================
+   AJAX LOGIN HANDLER ONLY
+========================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
+
+    header('Content-Type: application/json');
 
     $email    = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
@@ -31,52 +17,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         exit;
     }
 
-    $db = Database::getInstance()->getConnection();
+    $db = DatabaseConfig::getPDOConnection();
 
-    /*
-    |--------------------------------------------------------------------------
-    | PATIENT LOGIN (NO PROFILE)
-    |--------------------------------------------------------------------------
-    */ // ======================
-// CASE: PATIENT
-// =====
-// PATIENT LOGIN (CLEAN & FINAL)
-// ======================
-if (
-    isset($_SESSION['login_type']) &&
-    $_SESSION['login_type'] === 'patient'
-) {
- $stmt = $db->prepare(
-    "SELECT * FROM patient WHERE pat_email = ?"
-);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$res = $stmt->get_result();
+    /* ---------- PATIENT ---------- */
+    if (($_SESSION['login_type'] ?? '') === 'patient') {
 
-  if ($res->num_rows === 1) {
-    $pat = $res->fetch_assoc();
-
-    // 1️ If password already hashed
-    if (password_verify($password, $pat['pat_password'])) {
-        $loginOK = true;
-    }
-    // 2️ If password still plain text (first login)
-    elseif ($password === $pat['pat_password']) {
-
-        $newHash = password_hash($password, PASSWORD_DEFAULT);
-
-        $upd = $db->prepare(
-            "UPDATE patient SET pat_password = ? WHERE pat_id = ?"
+        $stmt = $db->prepare(
+            "SELECT pat_id, pat_password FROM patient WHERE pat_email = ?"
         );
-        $upd->bind_param("si", $newHash, $pat['pat_id']);
-        $upd->execute();
+        $stmt->execute([$email]);
+        $pat = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $loginOK = true;
-    } else {
-        $loginOK = false;
-    }
+        if (!$pat) {
+            echo json_encode(["success" => false, "message" => "Email ou mot de passe incorrect"]);
+            exit;
+        }
 
-    if ($loginOK) {
+        $valid =
+            password_verify($password, $pat['pat_password']) ||
+            $password === $pat['pat_password'];
+
+        if (!$valid) {
+            echo json_encode(["success" => false, "message" => "Email ou mot de passe incorrect"]);
+            exit;
+        }
+
+        // migrate plaintext if needed
+        if ($password === $pat['pat_password']) {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $db->prepare(
+                "UPDATE patient SET pat_password = ? WHERE pat_id = ?"
+            )->execute([$hash, $pat['pat_id']]);
+        }
+
         $_SESSION['user_id'] = $pat['pat_id'];
         $_SESSION['role']    = 'patient';
 
@@ -87,119 +60,87 @@ $res = $stmt->get_result();
         exit;
     }
 
-
-    }
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Email ou mot de passe incorrect"
-    ]);
-    exit;
-}
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | STAFF LOGIN (PROFILE REQUIRED)
-    |--------------------------------------------------------------------------
-    */
-    $selectedId = (int) $_SESSION['selected_user_id'];
-
-    // ---------- DOCTOR ----------
-    $stmt = $db->prepare(
-        "SELECT * FROM doctor WHERE doc_id = ? AND doc_email = ?"
-    );
-    $stmt->bind_param("is", $selectedId, $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
-
-  if ($res->num_rows === 1) {
-    $doc = $res->fetch_assoc();
-
-    // 1️ If password already hashed
-    if (password_verify($password, $doc['doc_password'])) {
-        $loginOK = true;
-    }
-    // 2️ If password still plain (first login only)
-    elseif ($password === $doc['doc_password']) {
-
-        $newHash = password_hash($password, PASSWORD_DEFAULT);
-
-        $upd = $db->prepare(
-            "UPDATE doctor SET doc_password = ? WHERE doc_id = ?"
-        );
-        $upd->bind_param("si", $newHash, $doc['doc_id']);
-        $upd->execute();
-
-        $loginOK = true;
-    } else {
-        $loginOK = false;
-    }
-
-    if ($loginOK) {
-        $_SESSION['user_id'] = $doc['doc_id'];
-        $_SESSION['role']    = 'doctor';
-
-        echo json_encode([
-            "success"  => true,
-            "redirect" => ($doc['doc_role'] === 'admin')
-                ? "../MedecinPrincipal/Dash.html"
-                : "../doctor/dashboard.html"
-        ]);
+    /* ---------- STAFF ---------- */
+    if (!isset($_SESSION['selected_user_id'])) {
+        echo json_encode(["success" => false, "message" => "Profil non sélectionné"]);
         exit;
     }
-}
 
+    $id = (int) $_SESSION['selected_user_id'];
 
-    // ---------- ASSISTANT ----------
+    /* DOCTOR */
     $stmt = $db->prepare(
-        "SELECT * FROM assistant WHERE assis_id = ? AND assis_email = ?"
+        "SELECT doc_id, doc_password, doc_role
+         FROM doctor
+         WHERE doc_id = ? AND doc_email = ?"
     );
-    $stmt->bind_param("is", $selectedId, $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
+    $stmt->execute([$id, $email]);
+    $doc = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if ($res->num_rows === 1) {
-    $assis = $res->fetch_assoc();
+    if ($doc) {
+        $valid =
+            password_verify($password, $doc['doc_password']) ||
+            $password === $doc['doc_password'];
 
-    // 1️ If password already hashed
-    if (password_verify($password, $assis['assis_password'])) {
-        $loginOK = true;
+        if ($valid) {
+            if ($password === $doc['doc_password']) {
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $db->prepare(
+                    "UPDATE doctor SET doc_password = ? WHERE doc_id = ?"
+                )->execute([$hash, $doc['doc_id']]);
+            }
+
+            $_SESSION['user_id'] = $doc['doc_id'];
+            $_SESSION['role']    = 'doctor';
+
+            echo json_encode([
+                "success"  => true,
+                "redirect" => ($doc['doc_role'] === 'admin')
+                    ? "../MedecinPrincipal/Dash.html"
+                    : "../doctor/dashboard.html"
+            ]);
+            exit;
+        }
     }
-    // 2️ If password still plain (first login only)
-    elseif ($password === $assis['assis_password']) {
 
-        $newHash = password_hash($password, PASSWORD_DEFAULT);
+    /* ASSISTANT */
+    $stmt = $db->prepare(
+        "SELECT assis_id, assis_password
+         FROM assistant
+         WHERE assis_id = ? AND assis_email = ?"
+    );
+    $stmt->execute([$id, $email]);
+    $a = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $upd = $db->prepare(
-            "UPDATE assistant SET assis_password = ? WHERE assis_id = ?"
-        );
-        $upd->bind_param("si", $newHash, $assis['assis_id']);
-        $upd->execute();
+    if ($a) {
+        $valid =
+            password_verify($password, $a['assis_password']) ||
+            $password === $a['assis_password'];
 
-        $loginOK = true;
-    } else {
-        $loginOK = false;
+        if ($valid) {
+            if ($password === $a['assis_password']) {
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $db->prepare(
+                    "UPDATE assistant SET assis_password = ? WHERE assis_id = ?"
+                )->execute([$hash, $a['assis_id']]);
+            }
+
+            $_SESSION['user_id'] = $a['assis_id'];
+            $_SESSION['role']    = 'assistant';
+
+            echo json_encode([
+                "success"  => true,
+                "redirect" => "../assistant/assistandeshb.html"
+            ]);
+            exit;
+        }
     }
-
-    if ($loginOK) {
-        $_SESSION['user_id'] = $assis['assis_id'];
-        $_SESSION['role']    = 'assistant';
-
-        echo json_encode([
-            "success"  => true,
-            "redirect" => "../assistant/assistandeshb.html"
-        ]);
-        exit;
-    }
-}
-
 
     echo json_encode(["success" => false, "message" => "Identifiants invalides"]);
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -210,7 +151,8 @@ $res = $stmt->get_result();
 <script defer src="script.js"></script>
 </head>
 
-<body>
+<body class="login-page">
+
 <div class="login-container">
     <h1>Connexion</h1>
     <p id="error" style="color:red;"></p>
