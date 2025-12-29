@@ -29,13 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Mot de passe incorrect");
     }
 
-    // ✅ PRESERVE EXISTING FLOW
+    //  PRESERVE EXISTING FLOW
     if (!isset($_SESSION['login_type'])) {
         header("Location: Login.php");
         exit;
     }
 
-    // ✅ SESSION OK
+    //  SESSION OK
     $_SESSION['clinic_id'] = $clinic['clinic_id'];
 
     header("Location: profil.php");
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="login-page">
+<body class="login-page"> 
   <div class="login-container">
     <h1>Connexion Clinique</h1>
 
