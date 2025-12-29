@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="personalInformation.php" class="btn previous">Previous</a>
  <button type="submit">Next Step</button>
 
-      </div>
+      </div> 
     </form>
   </div>
 
