@@ -1,54 +1,40 @@
-// ================= AJAX SIGNIN + VALIDATION =================
+// ================= SIGN IN FORM SUBMISSION =================
+  // ================= SIGN IN FORM SUBMISSION =================
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("loginForm");
-    if (!form) return;
 
-    form.addEventListener("submit", e => {
-        e.preventDefault();
+  const form = document.getElementById("loginForm");
+  const errorBox = document.getElementById("error");
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const errorBox = document.getElementById("error");
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-        errorBox.innerText = "";
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-        // VALIDATION FRONT (aligned with backend reality)
-        if (email === "" || password === "") {
-            errorBox.innerText = "Tous les champs sont obligatoires.";
-            return;
-        }
+      const data = new FormData();
+      data.append("ajax", "1");
+      data.append("email", email);
+      data.append("password", password);
 
-        if (!validateEmail(email)) {
-            errorBox.innerText = "Email invalide.";
-            return;
-        }
-
-        // ❌ REMOVED password length rule
-        // Your DB passwords are plain text (ex: 1234)
-        // Blocking < 6 here was breaking valid logins
-
-        //  AJAX
-        const data = new FormData();
-        data.append("ajax", "1");
-        data.append("email", email);
-        data.append("password", password);
-
-        fetch("signin.php", {
-            method: "POST",
-            body: data
-        })
+      fetch("signin.php", {
+        method: "POST",
+        body: data
+      })
         .then(res => res.json())
         .then(json => {
-            if (json.success) {
-                window.location.href = json.redirect;
-            } else {
-                errorBox.innerText = json.message;
-            }
+          if (json.success) {
+            window.location.href = json.redirect;
+          } else {
+            errorBox.innerText = json.message;
+          }
         })
         .catch(() => {
-            errorBox.innerText = "Erreur serveur.";
+          errorBox.innerText = "Erreur serveur.";
         });
     });
+  }
+
 });
 
 // ================= ROLE ENTRY (doctor / assistant / patient) =================
@@ -62,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (type === "patient") {
             window.location.href = "signin.php";
         } else {
-            //  doctor & assistant MUST pass clinic login first
+            // ✅ doctor & assistant MUST pass clinic login first
             window.location.href = "clinic_login.php";
         }
     });
@@ -210,4 +196,3 @@ function validateMedical() {
 
   return true;
 }
-
