@@ -1,16 +1,14 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database/db_config.php';
+require_once "../database/db_config.php";
 
-/*  Block direct access */
 if (!isset($_SESSION['register'])) {
     header("Location: personalInformation.php");
     exit;
-}        
+}
 
 $data = $_SESSION['register'];
 
-/*  Required data validation */
 $required = [
     'first_name',
     'last_name',
@@ -29,35 +27,27 @@ foreach ($required as $key) {
     }
 }
 
-/*  DB + error reporting */
-$db = Database::getInstance()->getConnection();
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-/* Transaction start */
-$db->begin_transaction();
+$db = DatabaseConfig::getPDOConnection();
 
 try {
+    $db->beginTransaction();
 
-    /* 1️ Prevent duplicate email */
-    $stmt = $db->prepare("SELECT pat_id FROM patient WHERE pat_email = ?");
-    $stmt->bind_param("s", $data['email']);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
+    // prevent duplicate email
+    $check = $db->prepare(
+        "SELECT pat_id FROM patient WHERE pat_email = ?"
+    );
+    $check->execute([$data['email']]);
+    if ($check->fetch()) {
         throw new Exception("Email already registered");
     }
-    $stmt->close();
 
-    /*  Insert patient */
-    $stmt = $db->prepare("
-        INSERT INTO patient 
+    // insert patient
+    $stmt = $db->prepare(
+        "INSERT INTO patient
         (pat_name, pat_lname, pat_birthday, pat_gender, telephone, pat_email, pat_password)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ");
-
-    $stmt->bind_param(
-        "sssssss",
+        VALUES (?, ?, ?, ?, ?, ?, ?)"
+    );
+    $stmt->execute([
         $data['first_name'],
         $data['last_name'],
         $data['birth_date'],
@@ -65,50 +55,36 @@ try {
         $data['phone'],
         $data['email'],
         $data['password']
-    );
+    ]);
 
-    $stmt->execute();
-    $patId = $db->insert_id;
-    $stmt->close();
+    $patId = $db->lastInsertId();
 
-    /* 3️⃣ Prepare nullable medical fields */
-    $allergies = $data['allergies'] ?? null;
-    $chronic   = $data['chronic'] ?? null;
-
-    /* 4️⃣ Insert medical info */
-    $stmt = $db->prepare("
-        INSERT INTO patient_medical
+    // insert medical info
+    $stmt = $db->prepare(
+        "INSERT INTO patient_medical
         (pat_id, allergies, chronic_diseases, emergency_name, emergency_phone)
-        VALUES (?, ?, ?, ?, ?)
-    ");
-
-    $stmt->bind_param(
-        "issss",
+        VALUES (?, ?, ?, ?, ?)"
+    );
+    $stmt->execute([
         $patId,
-        $allergies,
-        $chronic,
+        $data['allergies'] ?? null,
+        $data['chronic'] ?? null,
         $data['emergency_name'],
         $data['emergency_phone']
-    );
+    ]);
 
-    $stmt->execute();
-    $stmt->close();
-
-    /* .*/
     $db->commit();
 
 } catch (Exception $e) {
-    $db->rollback();
-    die("Registration failed: " . $e->getMessage()); 
+    $db->rollBack();
+    die("Registration failed: " . $e->getMessage());
 }
 
-/* Auto-login */
-$_SESSION['patient_id'] = $patId;
-$_SESSION['role'] = 'patient';
+// auto-login
+$_SESSION['user_id'] = $patId;
+$_SESSION['role']    = 'patient';
 
-/*  Cleanup */
 unset($_SESSION['register']);
 
-/*  Redirect */
 header("Location: ../patient/dashboard.html");
 exit;
