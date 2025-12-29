@@ -4,44 +4,40 @@ require_once "../database/db_config.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $clinic_id = trim($_POST['clinic_id'] ?? '');
-    $password  = trim($_POST['password'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
+    $password = trim($_POST['password'] ?? '');
 
-    if ($clinic_id === '' || $password === '') {
-        die("Requête invalide");
+    if ($email === '' || $password === '') {
+        die("Invalid request");
     }
 
-    $db = Database::getInstance()->getConnection();
+    $db = DatabaseConfig::getPDOConnection();
 
-    $stmt = $db->prepare("SELECT * FROM clinics WHERE clinic_id = ?");
-    $stmt->bind_param("i", $clinic_id);
-    $stmt->execute();
-    $res = $stmt->get_result();
+    $stmt = $db->prepare(
+        "SELECT clinic_id, clinic_password 
+         FROM clinics 
+         WHERE clinic_email = ? AND archived = 0"
+    );
+    $stmt->execute([$email]);
+    $clinic = $stmt->fetch();
 
-    if ($res->num_rows !== 1) {
-        die("Clinique introuvable");
+    if (!$clinic) {
+        die("Clinic not found");
     }
 
-    $clinic = $res->fetch_assoc();
-
-    // plain text password (test mode)
-    if ($password !== $clinic['clinic_password']) {
-        die("Mot de passe incorrect");
+    if (!password_verify($password, $clinic['clinic_password'])) {
+        die("Wrong password");
     }
 
-    //  PRESERVE EXISTING FLOW
-    if (!isset($_SESSION['login_type'])) {
-        header("Location: Login.php");
-        exit;
-    }
-
-    //  SESSION OK
+    //  STORE CLINIC CONTEXT
     $_SESSION['clinic_id'] = $clinic['clinic_id'];
+    $_SESSION['login_type'] = 'staff';
 
     header("Location: profil.php");
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -51,12 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="login-page"> 
+<body class="login-page">
   <div class="login-container">
     <h1>Connexion Clinique</h1>
 
     <form method="POST">
-      <input type="text" name="clinic_id" placeholder="ID Clinique" required>
+      <input type="email" name="email" placeholder="Email Clinique" required>   
       <input type="password" name="password" placeholder="Mot de passe Clinique" required>
       <button type="submit">Entrer</button>
     </form>
