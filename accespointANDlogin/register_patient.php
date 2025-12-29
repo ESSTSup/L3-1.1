@@ -99,7 +99,7 @@ try {
 
 } catch (Exception $e) {
     $db->rollback();
-    die("Registration failed: " . $e->getMessage());
+    die("Registration failed: " . $e->getMessage()); 
 }
 
 /* Auto-login */
