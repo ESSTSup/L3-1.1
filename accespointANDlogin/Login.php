@@ -5,13 +5,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['type'])) {
 
     $type = $_POST['type'];
 
-    //  Only allowed values
+    // ✅ Only allowed values
     if (!in_array($type, ['doctor', 'assistant', 'patient'])) {
         http_response_code(400);
         exit;
     }
 
-    //  Store chosen access type
+    // ✅ Store chosen access type
     $_SESSION['login_type']  = $type;
     $_SESSION['access_type'] = $type;
 
