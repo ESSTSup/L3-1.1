@@ -1,79 +1,62 @@
-<?php 
-session_start(); 
-$type = $_SESSION['login_type'] ?? null;
+<?php
+session_start();
 
-if (!$type) {
+require_once "../database/db_config.php";
+
+/* SECURITY */
+if (!isset($_SESSION['clinic_id'], $_SESSION['login_type'])) {
     header("Location: Login.php");
-    exit; 
+    exit;
 }
 
+$db        = DatabaseConfig::getPDOConnection();
+$clinicId  = $_SESSION['clinic_id'];
+   $loginType = $_SESSION['access_type']; // doctor | assistant
 
+
+/* HANDLE PROFILE CLICK */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_user_id'])) {
     $_SESSION['selected_user_id'] = (int) $_POST['selected_user_id'];
     http_response_code(200);
     exit;
 }
 
-if (!isset($_SESSION['login_type'])) {
-    header("Location: Login.php");
-    exit;
+/* =========================
+   FETCH DATA (STRICT LOGIC)
+========================= */
+
+$doctors = [];
+$assistants = [];
+
+/* DOCTOR LOGIN → SHOW DOCTORS */
+if ($loginType === 'doctor') {
+    $stmt = $db->prepare(
+        "SELECT doc_id, doc_name, doc_lname
+         FROM doctor
+         WHERE clinic_id = ?"
+    );
+    $stmt->execute([$clinicId]);
+    $doctors = $stmt->fetchAll();
+}
+
+/* ASSISTANT LOGIN → SHOW ASSISTANTS */
+if ($loginType === 'assistant') {
+    $stmt = $db->prepare(
+        "SELECT assis_id, assis_name, assis_lname
+         FROM assistant"
+    );
+    $stmt->execute();
+    $assistants = $stmt->fetchAll();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profil - Clinique</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="script.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f6f6f6;
-      margin: 0;
-      padding: 0;
-    }
-    main {
-      padding: 30px;
-      text-align: center;
-    }
-    h2 {
-      color: #A6615A;
-      margin-top: 40px;
-    }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .card {
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 180px;
-      padding: 15px;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-      text-align: center;
-    }
-    .card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-    .card img {
-      width: 100%;
-      border-radius: 50%;
-    }
-    .card p {
-      margin-top: 10px;
-      font-weight: bold;
-      color: #333;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Équipe Médicale</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="script.js"></script>
 </head>
 
 <body>
@@ -84,63 +67,64 @@ if (!isset($_SESSION['login_type'])) {
 
 <main class="profiles">
 
-<?php 
-if ($type === 'doctor' || $type === 'admin'): ?>
-<section class="doctors">
-  <h2>Médecins</h2>
-  <div class="grid">
+<?php if ($loginType === 'doctor'): ?>
+<!-- ========== DOCTORS ONLY ========== -->
 
-    <div class="card" onclick="selectUser(2)">
-      <img src="https://randomuser.me/api/portraits/women/45.jpg">
-      <p>Dre MOUFOUKI</p>
-    </div>
 
-    <div class="card" onclick="selectUser(3)">
-      <img src="https://randomuser.me/api/portraits/women/40.jpg">
-      <p>Dre DJEDJIG</p>
-    </div>
 
-    <div class="card" onclick="selectUser(4)">
-      <img src="https://randomuser.me/api/portraits/women/42.jpg">
-      <p>Dre HELLAL</p>
-    </div>
+<h2>Médecins</h2>
 
-    <div class="card" onclick="selectUser(5)">
-      <img src="https://randomuser.me/api/portraits/women/41.jpg">
-      <p>Dre MEKLATI</p>
-    </div>
+<div class="grid">
+<?php foreach ($doctors as $doc): ?>
 
-    <div class="card" onclick="selectUser(6)">
-      <img src="https://randomuser.me/api/portraits/women/43.jpg">
-      <p>Dre LACHI</p>
-    </div>
+  <?php
+    // ONLY MAJED is a man (doc_id = 7)
+    if ((int)$doc['doc_id'] === 7) {
+        $gender = 'men';
+        $photoId = 45;
+    } else {
+        $gender = 'women';
+        // stable photo per doctor
+        $photoId = ($doc['doc_id'] % 90) + 1;
+    }
+  ?>
 
-    <div class="card" onclick="selectUser(7)">
-      <img src="https://randomuser.me/api/portraits/men/60.jpg">
-      <p>Dr MAJED</p>
-    </div>
-
+  <div class="card" onclick="selectUser(<?= $doc['doc_id'] ?>)">
+    <img src="https://randomuser.me/api/portraits/<?= $gender ?>/<?= $photoId ?>.jpg">
+    <p>
+      Dr <?= htmlspecialchars($doc['doc_name']) ?>
+      <?= htmlspecialchars($doc['doc_lname']) ?>
+    </p>
   </div>
-</section>
+
+<?php endforeach; ?>
+</div>
+
 <?php endif; ?>
 
-<?php if ($type === 'assistant'): ?>
-<section class="assistants">
+<?php if ($loginType === 'assistant'): ?>
+<!-- ========== ASSISTANTS ONLY ========== -->
+<section>
   <h2>Assistants</h2>
   <div class="grid">
 
-    <div class="card" onclick="selectUser(101)">
-      <img src="https://randomuser.me/api/portraits/men/30.jpg">
-      <p>Assis BERRAHMEN</p>
-    </div>
-
-    <div class="card" onclick="selectUser(102)">
-      <img src="https://randomuser.me/api/portraits/men/31.jpg">
-      <p>Assis Slimani</p>
-    </div>
+    <?php if (empty($assistants)): ?>
+        <p>Aucun assistant trouvé.</p>
+    <?php else: ?>
+        <?php foreach ($assistants as $a): ?>
+            <div class="card" onclick="selectUser(<?= $a['assis_id'] ?>)">
+                <img src="https://randomuser.me/api/portraits/women/40.jpg">
+                <p>
+                  <?= htmlspecialchars($a['assis_name']) ?>
+                  <?= htmlspecialchars($a['assis_lname']) ?>
+                </p>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
 
   </div>
 </section>
+
 <?php endif; ?>
 
 </main>
