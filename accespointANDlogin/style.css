@@ -370,13 +370,7 @@ body {
   flex-direction: column;
 }
 
-/* Center login container on pages with .login-container */
-body:has(.login-container):not(:has(main)):not(:has(header)) {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 20px;
-}
+
 
 /* ====== LOGIN PAGE SPECIFIC ====== */
 body.login-page {
@@ -538,13 +532,27 @@ main h2 {
 }
 
 /* ====== PROFILE GRID ====== */
-.grid,
-.profile-grid {
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, 220px);
   gap: 25px;
-  margin-top: 25px;
+  justify-content: center;
 }
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 220px);
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: repeat(1, 220px);
+  }
+}
+
 
 /* ====== PROFILE CARDS ====== */
 .card,
