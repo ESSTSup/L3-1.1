@@ -20,7 +20,7 @@
                 <li><a href="subscriptions.html"><i>💰</i> <span>Subscriptions</span></a></li>
                 <li><a href="requests.html"><i>📋</i> <span>Requests</span></a></li>
                 <li><a href="archived.html" class="active"><i>🗄️</i> <span>Archived</span></a></li>
-                <li><a href="#"><i>⚙️</i> <span>Settings</span></a></li>
+               
                 
             </ul>
         </div>
@@ -40,57 +40,159 @@
             <div class="table-container">
                 <div class="table-header">
                     <h2>Archived Clinics</h2>
-                    <div class="table-actions">
-                        <button class="btn btn-outline">Filter</button>
-                    </div>
+                    
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Clinic Name</th>
-                            <th>Location</th>
-                            <th>Last Subscription</th>
-                            <th>Archived Date</th>
-                            <th>Days Remaining</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>City Health Clinic</td>
-                            <td>Miami, FL</td>
-                            <td>Basic</td>
-                            <td>2023-09-20</td>
-                            <td><span class="badge badge-warning">12 days</span></td>
-                            <td>
-                                 <a href="restoration-success.html" class="btn btn-sm btn-primary">Restore</a>
-                               <a href="clinic-info.html?id=CL002" class="btn btn-sm btn-outline">view history</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Wellness Center</td>
-                            <td>Seattle, WA</td>
-                            <td>Standard</td>
-                            <td>2023-09-25</td>
-                            <td><span class="badge badge-warning">17 days</span></td>
-                            <td>
-                                  <a href="restoration-success.html" class="btn btn-sm btn-primary">Restore</a>
-                                 <a href="clinic-info.html?id=CL002" class="btn btn-sm btn-outline">view history</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Community Medical</td>
-                            <td>Denver, CO</td>
-                            <td>Premium</td>
-                            <td>2023-10-05</td>
-                            <td><span class="badge badge-warning">27 days</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary restore-clinic">Restore</button>
-                                <button class="btn btn-sm btn-outline view-history">View History</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+               <div class="table-container">
+    <div class="table-header">
+        <h2>Archived Clinics</h2>
+        <div class="table-actions">
+            <button class="btn btn-outline" onclick="loadArchivedClinics()">Refresh</button>
+        </div>
+    </div>
+    
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div> Loading archived clinics...
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Clinic Name</th>
+                <th>Location</th>
+                <th>Last Subscription</th>
+                <th>Archived Date</th>
+                <th>Days Remaining</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="archivedTableBody">
+            <tr>
+                <td colspan="6" class="empty-state">
+                    Loading archived clinics...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Load archived clinics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadArchivedClinics();
+    });
+    
+    async function loadArchivedClinics() {
+        const tbody = document.getElementById('archivedTableBody');
+        const loading = document.getElementById('loading');
+        
+        if (loading) loading.style.display = 'block';
+        
+        try {
+            const response = await fetch('api.php?action=archived');
+            const result = await response.json();
+            
+            if (loading) loading.style.display = 'none';
+            
+            if (result.success && result.data) {
+                renderArchivedClinics(result.data);
+            } else {
+                showError(`Failed to load archived clinics: ${result.message}`);
+            }
+        } catch (error) {
+            if (loading) loading.style.display = 'none';
+            showError(`Connection error: ${error.message}`);
+        }
+    }
+    
+    function renderArchivedClinics(clinics) {
+        const tbody = document.getElementById('archivedTableBody');
+        if (!tbody) return;
+        
+        if (!clinics || clinics.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        No archived clinics found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        clinics.forEach(clinic => {
+            const archivedDate = clinic.archived_at ? clinic.archived_at.split(' ')[0] : 'N/A';
+            const daysRemaining = clinic.days_remaining || 30;
+            const badgeClass = daysRemaining < 10 ? 'badge-danger' : 'badge-warning';
+            
+            html += `
+                <tr>
+                    <td><strong>${clinic.clinic_name || 'Unnamed'}</strong></td>
+                    <td>${clinic.city || ''}, ${clinic.state || ''}</td>
+                    <td><span class="plan-badge plan-${clinic.subscription_plan || 'free'}">
+                        ${(clinic.subscription_plan || 'Free').toUpperCase()}
+                    </span></td>
+                    <td>${archivedDate}</td>
+                    <td><span class="badge ${badgeClass}">${daysRemaining} days</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="restoreClinic(${clinic.clinic_id}, '${escapeString(clinic.clinic_name)}')">
+                            Restore
+                        </button>
+                       
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+    
+    async function restoreClinic(id, clinicName) {
+        if (!confirm(`Are you sure you want to restore the clinic "${clinicName}"?\n\nThis will make it active again.`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`api.php?action=restore&id=${id}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`✅ Clinic "${clinicName}" restored successfully!`);
+                loadArchivedClinics();
+                
+             window.location.href = 'restoration-success.html';
+            } else {
+                alert(`❌ Error: ${result.message || 'Restore failed'}`);
+            }
+        } catch (error) {
+            alert(`❌ Network error: ${error.message}`);
+        }
+    }
+    
+    
+    
+    function showError(message) {
+        const tbody = document.getElementById('archivedTableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state" style="color: #dc3545;">
+                        ❌ ${message}
+                        <br><br>
+                        <button class="btn btn-sm btn-primary" onclick="loadArchivedClinics()">
+                            Retry
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    function escapeString(str) {
+        if (!str) return '';
+        return str.replace(/'/g, "\\'");
+    }
+</script>
             </div>
         </div>
     </div>

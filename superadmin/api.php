@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once 'db_config.php';
+require_once 'validator.php'; // Added validator
 
 // Get PDO connection
 try {
@@ -76,29 +77,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['action'])) {
 /* =========================
    CREATE CLINIC + PRINCIPAL DOCTOR
 ========================= */
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
     try {
         $data = json_decode(file_get_contents("php://input"), true);
         if (!$data) respond(false, 'Invalid JSON');
 
-        $required = [
-            'clinic_name','clinic_email','clinic_password','clinic_phone',
-            'address','city','state','postal_code',
-            'principal_doctor_name','principal_doctor_lname',
-            'principal_doctor_email','principal_doctor_password'
-        ];
-
-        foreach ($required as $field) {
-            if (empty($data[$field])) {
-                respond(false, "Missing field: $field");
-            }
+        // Use the Validator
+        $validator = new Validator($data);
+        
+        if (!$validator->validateClinicCreation($data)) {
+            respond(false, $validator->getErrorString());
         }
 
-        // check clinic email
+        // Check clinic email uniqueness
         $check = $pdo->prepare("SELECT clinic_id FROM clinics WHERE clinic_email = ?");
         $check->execute([$data['clinic_email']]);
         if ($check->fetch()) {
             respond(false, 'Clinic email already exists');
+        }
+        
+        // Check doctor email uniqueness
+        $checkDoctor = $pdo->prepare("SELECT doc_id FROM doctor WHERE doc_email = ?");
+        $checkDoctor->execute([$data['principal_doctor_email']]);
+        if ($checkDoctor->fetch()) {
+            respond(false, 'Doctor email already exists');
         }
 
         // insert clinic
@@ -137,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([
             $data['principal_doctor_email'],
             password_hash($data['principal_doctor_password'], PASSWORD_DEFAULT),
-            $data['principal_doctor_specialite'] ?? 'General',
+            $data['principal_doctor_specialite'] ?? 'General Medicine',
             $data['clinic_phone'],
             'admin',
             $data['principal_doctor_name'],
@@ -182,6 +184,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'archive') {
         respond(false, 'Error archiving clinic: ' . $e->getMessage());
     }
 }
+
 /* =========================
    GET SINGLE CLINIC DETAILS
 ========================= */
@@ -226,6 +229,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'view' && isset($_GET['id'])) 
         respond(false, 'Error loading clinic details: ' . $e->getMessage());
     }
 }
+
 /* =========================
    DASHBOARD STATS
 ========================= */
@@ -273,10 +277,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'stats') {
     }
 }
 
-
-
-
-
 /* =========================
    SUBSCRIPTION REQUESTS
 ========================= */
@@ -308,6 +308,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'create_request') {
     $data = json_decode(file_get_contents("php://input"), true);
     
     try {
+        // Use validator
+        $validator = new Validator($data);
+        if (!$validator->validateSubscriptionRequest($data)) {
+            respond(false, $validator->getErrorString());
+        }
+        
         // Get clinic current subscription
         $stmt = $pdo->prepare("
             SELECT clinic_id, clinic_name, subscription_plan 
@@ -415,6 +421,16 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_subscription') {
     $data = json_decode(file_get_contents("php://input"), true);
     
     try {
+        // Validate
+        if (empty($data['clinic_id']) || empty($data['new_plan'])) {
+            respond(false, 'Missing clinic_id or new_plan');
+        }
+        
+        $validator = new Validator(['subscription_plan' => $data['new_plan']]);
+        if (!$validator->validateSubscriptionPlan('subscription_plan')) {
+            respond(false, $validator->getErrorString());
+        }
+        
         $stmt = $pdo->prepare("
             UPDATE clinics 
             SET subscription_plan = ?, 
@@ -437,6 +453,16 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_clinic') {
     $data = json_decode(file_get_contents("php://input"), true);
     
     try {
+        // Use validator
+        $validator = new Validator($data);
+        if (!$validator->validateClinicUpdate($data)) {
+            respond(false, $validator->getErrorString());
+        }
+        
+        if (empty($data['clinic_id'])) {
+            respond(false, 'Missing clinic_id');
+        }
+        
         $fields = [];
         $values = [];
         
@@ -474,6 +500,55 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_clinic') {
 
 
 
+/* =========================
+   RESTORE CLINIC
+========================= */
+if (isset($_GET['action']) && $_GET['action'] === 'restore') {
+    if (empty($_GET['id'])) respond(false, 'Missing clinic id');
 
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE clinics 
+            SET archived = 0
+            WHERE clinic_id = ?
+        ");
+        $stmt->execute([$_GET['id']]);
+
+        respond(true, 'Clinic restored');
+    } catch (PDOException $e) {
+        respond(false, 'Error restoring clinic: ' . $e->getMessage());
+    }
+}
+
+/* =========================
+   GET ARCHIVED CLINICS
+========================= */
+if (isset($_GET['action']) && $_GET['action'] === 'archived') {
+    try {
+        $stmt = $pdo->query("
+            SELECT 
+                c.clinic_id,
+                c.clinic_name,
+                c.clinic_email,
+                c.clinic_phone,
+                c.city,
+                c.state,
+                c.subscription_plan,
+                c.archived_at,
+                c.created_at,
+                (SELECT COUNT(*) FROM doctor d WHERE d.clinic_id = c.clinic_id) AS doctor_count,
+                DATEDIFF(DATE_ADD(c.archived_at, INTERVAL 30 DAY), NOW()) as days_remaining
+            FROM clinics c
+            WHERE c.archived = 1
+            ORDER BY c.archived_at DESC
+        ");
+
+        $clinics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        respond(true, 'Archived clinics loaded', $clinics);
+    } catch (PDOException $e) {
+        respond(false, 'Error loading archived clinics: ' . $e->getMessage());
+    }
+}
 respond(false, 'Invalid request');
 ?>
