@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="form-container">
     <h2>Personal Information</h2>
 
-    <form method="POST" >
+<form method="POST" onsubmit="return validatePersonalInfo();">
+
 
       <div class="photo-section">
         <label for="photo">PHOTO</label><br>

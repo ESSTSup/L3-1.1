@@ -77,25 +77,28 @@ if ($loginType === 'assistant') {
 <div class="grid">
 <?php foreach ($doctors as $doc): ?>
 
-  <?php
-    // ONLY MAJED is a man (doc_id = 7)
-    if ((int)$doc['doc_id'] === 7) {
-        $gender = 'men';
-        $photoId = 45;
-    } else {
-        $gender = 'women';
-        // stable photo per doctor
-        $photoId = ($doc['doc_id'] % 90) + 1;
-    }
-  ?>
+<?php
+$photoMap = [
+  'MOUFOUKI' => 'moufouki.jpg',
+  'MEKLATI' => 'meklati.jpg',
+  'LACHI'   => 'lachi.jpg',
+  'HELLAL'  => 'hellal.jpg',
+ 'YASMINE' => 'yasmine.jpg',
 
-  <div class="card" onclick="selectUser(<?= $doc['doc_id'] ?>)">
-    <img src="https://randomuser.me/api/portraits/<?= $gender ?>/<?= $photoId ?>.jpg">
-    <p>
-      Dr <?= htmlspecialchars($doc['doc_name']) ?>
-      <?= htmlspecialchars($doc['doc_lname']) ?>
-    </p>
-  </div>
+  'MAJED'   => 'majed.jpg',
+];
+
+$lastName = strtoupper(trim($doc['doc_name']));
+$photo = $photoMap[$lastName] ?? 'default.jpg';
+?>
+
+<div class="card" onclick="selectUser(<?= $doc['doc_id'] ?>)">
+  <img src="../img/team/<?= $photo ?>" alt="<?= htmlspecialchars($lastName) ?>">
+  <p>
+    Dr <?= htmlspecialchars($doc['doc_name']) ?>
+  </p>
+</div>
+
 
 <?php endforeach; ?>
 </div>
@@ -111,16 +114,30 @@ if ($loginType === 'assistant') {
     <?php if (empty($assistants)): ?>
         <p>Aucun assistant trouvé.</p>
     <?php else: ?>
+
         <?php foreach ($assistants as $a): ?>
-            <div class="card" onclick="selectUser(<?= $a['assis_id'] ?>)">
-                <img src="https://randomuser.me/api/portraits/women/40.jpg">
-                <p>
-                  <?= htmlspecialchars($a['assis_name']) ?>
-                  <?= htmlspecialchars($a['assis_lname']) ?>
-                </p>
-            </div>
+<?php
+$assistantPhotos = [
+  'SLIMANI'    => 'SLIMANI.jpg',
+  'BERRAHMEN' => 'BERRAHMEN.jpg',
+  'MAJED'     => 'MAJED.jpg',
+];
+
+$lastName = strtoupper(trim($a['assis_name']));
+$photo = $assistantPhotos[$lastName] ?? 'default.jpg';
+?>
+
+<div class="card" onclick="selectUser(<?= $a['assis_id'] ?>)">
+  <img src="../img/team/<?= $photo ?>" alt="<?= htmlspecialchars($lastName) ?>">
+  <p><?= htmlspecialchars($a['assis_name']) ?></p>
+</div>
+
+
         <?php endforeach; ?>
+
     <?php endif; ?>
+
+
 
   </div>
 </section>
